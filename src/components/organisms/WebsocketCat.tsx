@@ -19,6 +19,9 @@ const WebsocketCat = () => {
   const [restedBy, setRestedBy] = useState<string | null>(null)
   const [logs, setLogs] = useState<LogEntry[]>([])
   const [timeRemaining, setTimeRemaining] = useState<string>('')
+  const [isAnimating, setIsAnimating] = useState(false)
+  const [animationKey, setAnimationKey] = useState(0)
+  const [displayedState, setDisplayedState] = useState<CatState>('playing')
   const terminalRef = useRef<HTMLDivElement>(null)
   const socketRef = useRef(getSocket())
   const currentUser = authService.getCurrentUser()
@@ -72,6 +75,33 @@ const WebsocketCat = () => {
       terminalRef.current.scrollTop = terminalRef.current.scrollHeight
     }
   }, [logs])
+
+  // Trigger animation when cat state changes
+  useEffect(() => {
+    // Skip animation on initial mount
+    if (animationKey === 0) {
+      setDisplayedState(catState)
+      setAnimationKey(1)
+      return
+    }
+
+    // Only animate if state actually changed
+    if (catState === displayedState) {
+      return
+    }
+
+    // Start animation
+    setIsAnimating(true)
+    
+    // Animation duration: 1.5s
+    const timer = setTimeout(() => {
+      setIsAnimating(false)
+      setDisplayedState(catState)
+      setAnimationKey(prev => prev + 1)
+    }, 1500)
+
+    return () => clearTimeout(timer)
+  }, [catState, displayedState, animationKey])
 
   // Socket.io setup
   useEffect(() => {
@@ -177,20 +207,34 @@ const WebsocketCat = () => {
       <div className="max-w-6xl mx-auto relative">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Lijevi dio - Slika mačke i Reset dugme */}
-          <div className="flex flex-col items-center space-y-6">
-            <div className="w-full max-w-xs">
+          <div className="flex flex-col items-center relative">
+            {/* Container za animaciju - fiksna visina */}
+            <div className="w-full max-w-xs relative cat-container">
+              {/* Old image - exiting */}
+              {isAnimating && (
+                <Image
+                  key={`old-${animationKey}`}
+                  src={getCatImage(displayedState)}
+                  alt="Websocket Cat"
+                  className="w-full h-auto rounded-lg cat-image cat-exiting"
+                  rounded
+                />
+              )}
+              {/* New image - entering */}
               <Image
-                src={getCatImage(catState)}
+                key={`new-${animationKey}`}
+                src={getCatImage(isAnimating ? catState : displayedState)}
                 alt="Websocket Cat"
-                className="w-full h-auto rounded-lg"
+                className={`w-full h-auto rounded-lg cat-image ${isAnimating ? 'cat-entering animating' : 'cat-entering'}`}
                 rounded
               />
             </div>
+            {/* Dugme ispod, fiksna pozicija */}
             <Button 
               onClick={handleReset} 
               variant="primary" 
               size="lg" 
-              className="w-full max-w-xs"
+              className="w-full max-w-xs mt-6"
               disabled={isResting}
             >
               {getRestButtonText()}
@@ -231,6 +275,64 @@ const WebsocketCat = () => {
       </div>
 
       <style>{`
+        section {
+          overflow-x: hidden;
+        }
+
+        .cat-container {
+          height: 300px;
+          position: relative;
+        }
+
+        .cat-image {
+          width: 100%;
+          height: auto;
+        }
+
+        .cat-exiting {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          max-width: 20rem;
+          will-change: transform;
+          animation: catExit 1.5s ease-in forwards;
+        }
+
+        .cat-entering {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          max-width: 20rem;
+        }
+
+        .cat-entering.animating {
+          will-change: transform;
+          animation: catEnter 1.5s ease-out forwards;
+        }
+
+        @keyframes catExit {
+          0% {
+            transform: translate3d(0, 0, 0);
+          }
+          100% {
+            transform: translate3d(calc(-100vw - 2rem), 0, 0);
+          }
+        }
+
+        @keyframes catEnter {
+          0% {
+            transform: translate3d(calc(100% + 30vw), 0, 0);
+          }
+          60% {
+            transform: translate3d(0, 0, 0);
+          }
+          100% {
+            transform: translate3d(0, 0, 0);
+          }
+        }
+
         .terminal-container {
           background: #1e1e1e;
           border-radius: 8px;
