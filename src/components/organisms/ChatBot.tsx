@@ -6,7 +6,7 @@ const ChatBot = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
-      content: 'Zdravo! 😸 Ja sam AI chatbot koji razgovara samo o mačkama! Postavi mi bilo koje pitanje o mačkama, njihovom ponašanju, zdravlju, negi ili bilo čemu što se tiče mačaka.',
+      content: 'Zdravo! 😸 Ja sam AI chatbot koji razgovara samo o mačkama!',
       timestamp: new Date()
     }
   ])
@@ -28,7 +28,12 @@ const ChatBot = () => {
   }, [messages])
 
   const handleSend = async () => {
-    if (!inputValue.trim() || isLoading) return
+    console.log('[CHATBOT] Send button clicked', { inputValue, isLoading })
+    
+    if (!inputValue.trim() || isLoading) {
+      console.log('[CHATBOT] Cannot send - empty input or already loading')
+      return
+    }
 
     const userMessage: ChatMessage = {
       role: 'user',
@@ -36,12 +41,16 @@ const ChatBot = () => {
       timestamp: new Date()
     }
 
+    console.log('[CHATBOT] Sending message:', userMessage.content)
+
     setMessages(prev => [...prev, userMessage])
     setInputValue('')
     setIsLoading(true)
 
     try {
+      console.log('[CHATBOT] Calling chatService.sendMessage...')
       const response = await chatService.sendMessage(userMessage.content)
+      console.log('[CHATBOT] Received response:', response)
       
       const assistantMessage: ChatMessage = {
         role: 'assistant',
@@ -49,10 +58,11 @@ const ChatBot = () => {
         timestamp: new Date()
       }
 
+      console.log('[CHATBOT] Adding assistant message to chat')
       setMessages(prev => [...prev, assistantMessage])
     } catch (error) {
-      console.error('Chat error:', error)
-      console.error('Error details:', error)
+      console.error('[CHATBOT] Chat error:', error)
+      console.error('[CHATBOT] Error details:', error)
       const errorMessage: ChatMessage = {
         role: 'assistant',
         content: 'Izvinjavam se, došlo je do greške. Pokušaj ponovo! 😸',
@@ -61,6 +71,7 @@ const ChatBot = () => {
       setMessages(prev => [...prev, errorMessage])
     } finally {
       setIsLoading(false)
+      console.log('[CHATBOT] Request completed, loading set to false')
     }
   }
 
@@ -70,7 +81,7 @@ const ChatBot = () => {
       setMessages([
         {
           role: 'assistant',
-          content: 'Zdravo! 😸 Ja sam AI chatbot koji razgovara samo o mačkama! Postavi mi bilo koje pitanje o mačkama, njihovom ponašanju, zdravlju, negi ili bilo čemu što se tiče mačaka.',
+          content: 'Postavi mi bilo koje pitanje o mačkama, njihovom ponašanju, zdravlju, negi ili bilo čemu što se tiče mačaka.',
           timestamp: new Date()
         }
       ])
@@ -86,6 +97,12 @@ const ChatBot = () => {
     }
   }
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Allow only text characters: letters, numbers, spaces, and basic punctuation
+    const textOnly = e.target.value.replace(/[^\p{L}\p{N}\s.,!?;:'"()-]/gu, '')
+    setInputValue(textOnly)
+  }
+
   return (
     <div className="w-full mx-auto relative flex flex-col items-center">
       {/* Input sekcija */}
@@ -95,7 +112,7 @@ const ChatBot = () => {
             type="text"
             placeholder="Postavi pitanje o mačkama..."
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={handleInputChange}
             onKeyPress={handleKeyPress}
             disabled={isLoading}
             className="flex-1"
@@ -175,7 +192,7 @@ const ChatBot = () => {
             {isLoading && (
               <div className="flex justify-end">
                 <div 
-                  className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-tl-3xl rounded-bl-3xl rounded-br-sm px-5 py-3 shadow-lg"
+                  className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl px-5 py-3 shadow-lg"
                   style={{
                     boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
                   }}
