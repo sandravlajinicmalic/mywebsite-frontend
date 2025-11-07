@@ -53,7 +53,14 @@ const Text = ({
     success: 'text-green-600 dark:text-green-400',
   }
   
-  const classes = `${sizes[size]} ${weights[weight]} ${colors[color]} ${className}`
+  // Automatically apply heading font and weight for h1-h6 elements
+  const isHeading = typeof Component === 'string' && ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'].includes(Component)
+  const headingFont = isHeading ? 'font-heading' : ''
+  
+  // Use weight 600 (semibold) for all headings, otherwise use the specified weight (default 400/normal for body text)
+  const effectiveWeight = isHeading ? 'semibold' : weight
+  
+  const classes = `${sizes[size]} ${weights[effectiveWeight]} ${colors[color]} ${headingFont} ${className}`
   
   return (
     <Component className={classes} {...props}>

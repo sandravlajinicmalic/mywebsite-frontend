@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Button, Input, Text } from '../components/atoms'
 import { ROUTES } from '../constants'
 import { authService } from '../services/auth'
+import { useI18n } from '../contexts/i18n'
 
 const Login = () => {
   const [nickname, setNickname] = useState('')
@@ -10,6 +11,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
+  const { t } = useI18n()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -25,9 +27,9 @@ const Login = () => {
     } catch (err: unknown) {
       // Handle error
       if (err instanceof Error) {
-        setError(err.message || 'Došlo je do greške prilikom prijave')
+        setError(err.message || t('login.error'))
       } else {
-        setError('Došlo je do greške prilikom prijave. Pokušajte ponovo.')
+        setError(t('login.error.generic'))
       }
       console.error('Login error:', err)
     } finally {
@@ -40,10 +42,10 @@ const Login = () => {
       <div className="max-w-md w-full">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-8">
           <Text as="h1" size="4xl" weight="bold" className="mb-2 text-center text-gray-900 dark:text-white">
-            Dobrodošli
+            {t('login.welcome')}
           </Text>
           <Text size="base" color="muted" className="mb-8 text-center">
-            Unesite vaše podatke da biste nastavili
+            {t('login.subtitle')}
           </Text>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -55,8 +57,8 @@ const Login = () => {
 
             <Input
               type="text"
-              label="Nickname"
-              placeholder="Unesite vaš nickname"
+              label={t('login.nickname')}
+              placeholder={t('login.nickname.placeholder')}
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
               required
@@ -65,8 +67,8 @@ const Login = () => {
 
             <Input
               type="email"
-              label="Email adresa"
-              placeholder="Unesite vašu email adresu"
+              label={t('login.email')}
+              placeholder={t('login.email.placeholder')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -80,7 +82,7 @@ const Login = () => {
               className="w-full"
               disabled={loading}
             >
-              {loading ? 'Učitavanje...' : 'Next'}
+              {loading ? t('login.loading') : t('login.submit')}
             </Button>
           </form>
         </div>

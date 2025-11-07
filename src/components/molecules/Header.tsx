@@ -1,46 +1,44 @@
-import { Link, useNavigate } from 'react-router-dom'
-import { Trophy, LogOut } from 'lucide-react'
-import { Button, Image, Text } from '../atoms'
-import { ROUTES, APP_NAME } from '../../constants'
+import { Link } from 'react-router-dom'
+import { Trophy } from 'lucide-react'
+import { Text } from '../atoms'
+import { ROUTES } from '../../constants'
 import { authService } from '../../services/auth'
+import { useI18n } from '../../contexts/i18n'
+import UserMenu from './UserMenu'
 
 const Header = () => {
-  const navigate = useNavigate()
+  const { t } = useI18n()
   const user = authService.getCurrentUser()
   const userNickname = user?.nickname || 'User'
   const userAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(userNickname)}&background=6366f1&color=fff&size=40`
 
-  const handleLogout = () => {
-    authService.logout()
-    navigate(ROUTES.LOGIN)
-  }
-
   return (
-    <header className="bg-white dark:bg-gray-800 shadow-lg sticky top-0 z-50">
+    <header className="bg-transparent sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center py-4">
-          <Link 
-            to={ROUTES.HOME} 
-            className="text-2xl font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
-          >
-            {APP_NAME}
-          </Link>
+          <div></div>
           
-          <nav className="flex items-center gap-4">
-            <Link to={ROUTES.HOME}>
-              <Button variant="outline" size="sm">
-                Home
-              </Button>
+          <nav className="flex items-center gap-6">
+            <Link 
+              to={ROUTES.HOME}
+              className="text-base font-medium text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors underline-offset-4 uppercase cursor-pointer"
+              style={{ fontFamily: '"Barlow Semi Condensed", sans-serif' }}
+            >
+              {t('nav.home')}
             </Link>
-            <Link to={ROUTES.ABOUT}>
-              <Button variant="outline" size="sm">
-                About
-              </Button>
+            <Link 
+              to={ROUTES.ABOUT}
+              className="text-base font-medium text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors underline-offset-4 uppercase cursor-pointer"
+              style={{ fontFamily: '"Barlow Semi Condensed", sans-serif' }}
+            >
+              {t('nav.about')}
             </Link>
             
             {/* User Info */}
             {user && (
-              <div className="flex items-center gap-3 ml-4 pl-4 border-l border-gray-300 dark:border-gray-600">
+              <>
+                <div className="h-4 w-px bg-gray-300 dark:bg-gray-600 mx-2"></div>
+                <div className="flex items-center gap-6 px-1">
                 <Text size="base" weight="medium" className="text-gray-900 dark:text-white">
                   {userNickname}
                 </Text>
@@ -50,26 +48,9 @@ const Header = () => {
                   strokeWidth={2}
                 />
                 
-                <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-indigo-500 dark:border-indigo-400">
-                  <Image
-                    src={userAvatar}
-                    alt={`${userNickname} avatar`}
-                    roundedFull
-                    objectFit="cover"
-                    className="w-full h-full"
-                  />
+                <UserMenu userNickname={userNickname} userAvatar={userAvatar} />
                 </div>
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleLogout}
-                  className="ml-2"
-                  title="Logout"
-                >
-                  <LogOut className="w-4 h-4" />
-                </Button>
-              </div>
+              </>
             )}
           </nav>
         </div>

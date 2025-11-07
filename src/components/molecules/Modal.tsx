@@ -1,5 +1,5 @@
 import { ReactNode, useEffect } from 'react'
-import { Button, Text } from '../atoms'
+import { Text } from '../atoms'
 
 export interface ModalProps {
   isOpen: boolean
