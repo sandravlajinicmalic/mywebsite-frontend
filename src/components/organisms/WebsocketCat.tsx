@@ -3,7 +3,7 @@ import { Button, Image } from '../atoms'
 import getSocket from '../../services/socket'
 import { authService } from '../../services/auth'
 
-type CatState = 'ziva' | 'mrtva' | 'igra_se' | 'dosadno' | 'angry'
+type CatState = 'playing' | 'zen' | 'sleeping' | 'happy' | 'tired' | 'angry'
 
 interface LogEntry {
   id: string
@@ -13,27 +13,25 @@ interface LogEntry {
 }
 
 const WebsocketCat = () => {
-  const [catState, setCatState] = useState<CatState>('ziva')
+  const [catState, setCatState] = useState<CatState>('playing')
   const [isResting, setIsResting] = useState(false)
   const [restEndTime, setRestEndTime] = useState<Date | null>(null)
   const [restedBy, setRestedBy] = useState<string | null>(null)
   const [logs, setLogs] = useState<LogEntry[]>([])
   const [timeRemaining, setTimeRemaining] = useState<string>('')
-  const [animationKey, setAnimationKey] = useState(0)
   const terminalRef = useRef<HTMLDivElement>(null)
-  const catAnimationRef = useRef<HTMLDivElement>(null)
   const socketRef = useRef(getSocket())
-  const previousStateRef = useRef<CatState>(catState)
   const currentUser = authService.getCurrentUser()
 
   // Map cat state to image
   const getCatImage = (state: CatState): string => {
     const imageMap: Record<CatState, string> = {
-      ziva: '/images/heavy-metal.svg',
-      mrtva: '/images/meditation.svg',
-      igra_se: '/images/education.svg',
-      dosadno: '/images/tired.svg',
-      angry: '/images/angry.svg'
+        playing: '/images/heavy-metal.svg',
+        zen: '/images/meditation.svg',
+        sleeping: '/images/sleeping.svg',
+        happy: '/images/education.svg',
+        tired: '/images/tired.svg',
+        angry: '/images/angry.svg'
     }
     return imageMap[state] || '/images/heavy-metal.svg'
   }
@@ -75,56 +73,6 @@ const WebsocketCat = () => {
     }
   }, [logs])
 
-  // Handle REST state - cat stays visible at center during REST
-  useEffect(() => {
-    if (catAnimationRef.current) {
-      if (isResting) {
-        // REST is active - show cat at center, no animation
-        catAnimationRef.current.style.animation = 'none'
-        catAnimationRef.current.style.transform = 'translateX(0%)'
-        catAnimationRef.current.style.visibility = 'visible'
-      } else {
-        // REST ended - hide cat
-        catAnimationRef.current.style.animation = 'none'
-        catAnimationRef.current.style.visibility = 'hidden'
-      }
-    }
-  }, [isResting])
-
-  // Restart animation when animationKey changes (only if not resting)
-  useEffect(() => {
-    if (catAnimationRef.current && animationKey > 0 && !isResting) {
-      // Reset animation and position - start completely hidden on the right
-      catAnimationRef.current.style.animation = 'none'
-      catAnimationRef.current.style.transform = 'translateX(calc(100% + 20rem))'
-      catAnimationRef.current.style.visibility = 'hidden'
-      // Force reflow
-      void catAnimationRef.current.offsetHeight
-      
-      // Hide cat after animation ends
-      const handleAnimationEnd = () => {
-        if (catAnimationRef.current && !isResting) {
-          catAnimationRef.current.style.visibility = 'hidden'
-        }
-      }
-      
-      // Restart animation
-      requestAnimationFrame(() => {
-        if (catAnimationRef.current && !isResting) {
-          catAnimationRef.current.style.visibility = 'visible'
-          catAnimationRef.current.style.animation = 'catWalk 10s ease-in-out forwards'
-          catAnimationRef.current.addEventListener('animationend', handleAnimationEnd, { once: true })
-        }
-      })
-      
-      return () => {
-        if (catAnimationRef.current) {
-          catAnimationRef.current.removeEventListener('animationend', handleAnimationEnd)
-        }
-      }
-    }
-  }, [animationKey, isResting])
-
   // Socket.io setup
   useEffect(() => {
     const socket = socketRef.current
@@ -148,14 +96,7 @@ const WebsocketCat = () => {
     // Listen for cat state changes
     socket.on('cat-state-changed', (data: { state: CatState }) => {
       console.log('Cat state changed:', data.state)
-      const previousState = previousStateRef.current
       setCatState(data.state)
-      // Restart animation when state actually changes
-      // Note: Animation will be blocked by isResting check in useEffect
-      if (previousState !== data.state) {
-        previousStateRef.current = data.state
-        setAnimationKey(prev => prev + 1)
-      }
     })
 
     // Listen for REST activation
@@ -221,7 +162,7 @@ const WebsocketCat = () => {
 
   const getRestButtonText = (): string => {
     if (!isResting) {
-      return 'REST (5 min)'
+      return 'REST (1 min)'
     }
 
     if (currentUser?.nickname === restedBy) {
@@ -234,26 +175,16 @@ const WebsocketCat = () => {
   return (
     <section className="w-full bg-transparent py-6 px-8 md:px-12 lg:px-16 relative z-10">
       <div className="max-w-6xl mx-auto relative">
-        {/* Mačka - pozicionirana apsolutno da može da se pomera preko terminala */}
-        <div className="cat-animation-wrapper">
-          <div 
-            ref={catAnimationRef}
-            className="w-full max-w-xs cat-animation-container"
-          >
-            <Image
-              src={getCatImage(catState)}
-              alt="Websocket Cat"
-              className="w-full h-auto rounded-lg"
-              rounded
-            />
-          </div>
-        </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Lijevi dio - Slika mačke i Reset dugme */}
           <div className="flex flex-col items-center space-y-6">
-            <div className="w-full max-w-xs" style={{ visibility: 'hidden' }}>
-              {/* Placeholder za layout */}
+            <div className="w-full max-w-xs">
+              <Image
+                src={getCatImage(catState)}
+                alt="Websocket Cat"
+                className="w-full h-auto rounded-lg"
+                rounded
+              />
             </div>
             <Button 
               onClick={handleReset} 
@@ -300,65 +231,6 @@ const WebsocketCat = () => {
       </div>
 
       <style>{`
-        .cat-animation-wrapper {
-          position: absolute;
-          left: 0;
-          top: 0;
-          width: 100%;
-          height: 100%;
-          pointer-events: none;
-          z-index: 1;
-          overflow: hidden;
-        }
-
-        .cat-animation-container {
-          position: absolute;
-          left: 0;
-          top: 0;
-          width: 20rem;
-          max-width: 20rem;
-          z-index: 1;
-          will-change: transform;
-          visibility: hidden;
-        }
-
-        @keyframes catWalk {
-          0% {
-            transform: translateX(calc(100% + 20rem));
-          }
-          10% {
-            transform: translateX(0%);
-          }
-          90% {
-            transform: translateX(0%);
-          }
-          100% {
-            transform: translateX(calc(-100% - 20rem));
-          }
-        }
-
-        @media (max-width: 768px) {
-          .cat-animation-container {
-            width: 100%;
-            max-width: 20rem;
-          }
-          
-          @keyframes catWalk {
-            0% {
-              transform: translateX(calc(100vw + 10rem));
-            }
-            10% {
-              transform: translateX(0%);
-            }
-            90% {
-              transform: translateX(0%);
-            }
-            100% {
-              transform: translateX(calc(-100% - 10rem));
-            }
-          }
-        }
-
         .terminal-container {
           background: #1e1e1e;
           border-radius: 8px;
