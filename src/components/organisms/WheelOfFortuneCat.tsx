@@ -1,8 +1,10 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Text, Image } from '../atoms'
 import { Button } from '../atoms'
 import { Trophy } from 'lucide-react'
 import Modal from '../molecules/Modal'
+import { wheelService } from '../../services'
+import { authService } from '../../services'
 
 const WHEEL_ITEMS = [
   'NewIcon',
@@ -21,12 +23,79 @@ const WheelOfFortuneCat = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [winningItem, setWinningItem] = useState<string | null>(null)
   const [trophyAnimated, setTrophyAnimated] = useState(false)
+  const [canSpin, setCanSpin] = useState(true)
+  const [cooldownSeconds, setCooldownSeconds] = useState(0)
   const wheelRef = useRef<HTMLDivElement>(null)
+  const lastSpinTimeRef = useRef<number | null>(null)
 
-  const spinWheel = () => {
-    if (isSpinning) return
+  // Check initial cooldown status on mount (only once, no periodic calls)
+  useEffect(() => {
+    const user = authService.getCurrentUser()
+    if (!user) {
+      setCanSpin(false)
+      return
+    }
+
+    // Get last spin time from localStorage if available
+    const storedLastSpin = localStorage.getItem('wheel_last_spin_time')
+    if (storedLastSpin) {
+      const lastSpinTime = parseInt(storedLastSpin, 10)
+      const now = Date.now()
+      const timeSinceLastSpin = now - lastSpinTime
+      const cooldownMs = 2 * 60 * 1000 // 2 minutes
+
+      if (timeSinceLastSpin < cooldownMs) {
+        lastSpinTimeRef.current = lastSpinTime
+        const remainingMs = cooldownMs - timeSinceLastSpin
+        const remainingSeconds = Math.ceil(remainingMs / 1000)
+        setCooldownSeconds(remainingSeconds)
+        setCanSpin(false)
+      } else {
+        // Cooldown expired, clear storage
+        localStorage.removeItem('wheel_last_spin_time')
+        lastSpinTimeRef.current = null
+        setCooldownSeconds(0)
+        setCanSpin(true)
+      }
+    }
+  }, [])
+
+  // Update cooldown timer every second (only local, no API calls)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (lastSpinTimeRef.current) {
+        const now = Date.now()
+        const timeSinceLastSpin = now - lastSpinTimeRef.current
+        const cooldownMs = 2 * 60 * 1000 // 2 minutes
+        const remainingMs = cooldownMs - timeSinceLastSpin
+
+        if (remainingMs > 0) {
+          const remainingSeconds = Math.ceil(remainingMs / 1000)
+          setCooldownSeconds(remainingSeconds)
+          setCanSpin(false)
+        } else {
+          setCooldownSeconds(0)
+          setCanSpin(true)
+          lastSpinTimeRef.current = null
+          localStorage.removeItem('wheel_last_spin_time')
+        }
+      }
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [])
+
+  const spinWheel = async () => {
+    if (isSpinning || !canSpin) return
+
+    const user = authService.getCurrentUser()
+    if (!user) {
+      alert('Morate biti prijavljeni da biste zavrteli točak')
+      return
+    }
 
     setIsSpinning(true)
+    setCanSpin(false)
     
     const spins = Math.floor(Math.random() * 5) + 3
     const segmentAngle = 360 / WHEEL_ITEMS.length
@@ -41,7 +110,7 @@ const WheelOfFortuneCat = () => {
     
     setRotation(prev => prev + finalRotation)
     
-    setTimeout(() => {
+    setTimeout(async () => {
       setIsSpinning(false)
       
       const normalizedRotation = ((totalRotationAfter % 360) + 360) % 360
@@ -56,6 +125,41 @@ const WheelOfFortuneCat = () => {
       console.log('Pozicija na vrhu:', positionAtTop, 'prilagođeno:', adjustedPosition)
       
       setWinningItem(actualWinningItem)
+      
+      // Save spin to backend - this is the only API call
+      try {
+        await wheelService.spin(actualWinningItem)
+        // Set cooldown locally after successful spin
+        const spinTime = Date.now()
+        lastSpinTimeRef.current = spinTime
+        localStorage.setItem('wheel_last_spin_time', spinTime.toString())
+        setCooldownSeconds(120) // 2 minutes
+        setCanSpin(false)
+      } catch (error: any) {
+        console.error('Error saving spin:', error)
+        // If error is cooldown, extract cooldown seconds and set timer
+        if (error.cooldownSeconds) {
+          const remainingMs = error.cooldownSeconds * 1000
+          const spinTime = Date.now() - (2 * 60 * 1000 - remainingMs)
+          lastSpinTimeRef.current = spinTime
+          localStorage.setItem('wheel_last_spin_time', spinTime.toString())
+          setCooldownSeconds(error.cooldownSeconds)
+        } else if (error.response?.data?.cooldownSeconds) {
+          const remainingMs = error.response.data.cooldownSeconds * 1000
+          const spinTime = Date.now() - (2 * 60 * 1000 - remainingMs)
+          lastSpinTimeRef.current = spinTime
+          localStorage.setItem('wheel_last_spin_time', spinTime.toString())
+          setCooldownSeconds(error.response.data.cooldownSeconds)
+        } else {
+          // Default to 2 minutes on error
+          const spinTime = Date.now()
+          lastSpinTimeRef.current = spinTime
+          localStorage.setItem('wheel_last_spin_time', spinTime.toString())
+          setCooldownSeconds(120)
+        }
+        setCanSpin(false)
+      }
+      
       setTrophyAnimated(false)
       setTimeout(() => {
         setIsModalOpen(true)
@@ -239,12 +343,16 @@ const WheelOfFortuneCat = () => {
             <div className="flex justify-center mt-8">
               <Button
                 onClick={spinWheel}
-                disabled={isSpinning}
+                disabled={isSpinning || !canSpin}
                 variant="primary"
                 size="lg"
                 className="min-w-[200px]"
               >
-                {isSpinning ? 'Vrti se...' : 'Zavrti'}
+                {isSpinning 
+                  ? 'Vrti se...' 
+                  : !canSpin 
+                    ? `Sačekaj ${cooldownSeconds}s` 
+                    : 'Zavrti'}
               </Button>
             </div>
           </div>
