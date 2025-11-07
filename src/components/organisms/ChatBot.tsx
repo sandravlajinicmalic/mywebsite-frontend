@@ -157,61 +157,63 @@ const ChatBot = () => {
             }}
           />
           {/* Messages oblačići */}
-          <div ref={messagesContainerRef} className="h-[400px] overflow-y-auto overflow-x-hidden pl-4 pr-1 pt-4 pb-4 bg-transparent space-y-4 custom-scrollbar" style={{ scrollbarGutter: 'stable' }}>
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={`flex ${message.role === 'user' ? 'justify-start' : 'justify-end'}`}
-              >
+          <div ref={messagesContainerRef} className="h-[400px] overflow-y-auto overflow-x-hidden pl-4 pr-1 pt-4 pb-0 bg-transparent custom-scrollbar flex flex-col" style={{ scrollbarGutter: 'stable' }}>
+            <div className="flex-1 space-y-4">
+              {messages.map((message, index) => (
                 <div
-                  className={`max-w-[95%] rounded-3xl px-5 py-3 shadow-lg ${
-                    message.role === 'user'
-                      ? 'bg-indigo-600 text-white rounded-tl-sm'
-                      : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-tl-3xl rounded-bl-3xl rounded-br-sm'
-                  }`}
-                  style={{
-                    boxShadow: message.role === 'user' 
-                      ? '0 4px 6px -1px rgba(79, 70, 229, 0.3), 0 2px 4px -1px rgba(79, 70, 229, 0.2)'
-                      : '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
-                  }}
+                  key={index}
+                  className={`flex ${message.role === 'user' ? 'justify-start' : 'justify-end'}`}
                 >
-                  <Text size="sm" className="whitespace-pre-wrap">
-                    {message.content}
-                  </Text>
-                  {message.timestamp && (
-                    <Text size="xs" className={`mt-1 ${message.role === 'user' ? 'text-indigo-100' : 'text-gray-500 dark:text-gray-400'}`}>
-                      {message.timestamp.toLocaleTimeString('sr-RS', { 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
-                      })}
+                  <div
+                    className={`max-w-[95%] rounded-3xl px-5 py-3 shadow-lg ${
+                      message.role === 'user'
+                        ? 'bg-indigo-600 text-white rounded-tl-sm'
+                        : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-tl-3xl rounded-bl-3xl rounded-br-sm'
+                    }`}
+                    style={{
+                      boxShadow: message.role === 'user' 
+                        ? '0 4px 6px -1px rgba(79, 70, 229, 0.3), 0 2px 4px -1px rgba(79, 70, 229, 0.2)'
+                        : '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                    }}
+                  >
+                    <Text size="sm" className="whitespace-pre-wrap">
+                      {message.content}
                     </Text>
-                  )}
-                </div>
-              </div>
-            ))}
-            {isLoading && (
-              <div className="flex justify-end">
-                <div 
-                  className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl px-5 py-3 shadow-lg"
-                  style={{
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
-                  }}
-                >
-                  <div className="flex gap-1">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                    {message.timestamp && (
+                      <Text size="xs" className={`mt-1 ${message.role === 'user' ? 'text-indigo-100' : 'text-gray-500 dark:text-gray-400'}`}>
+                        {message.timestamp.toLocaleTimeString('sr-RS', { 
+                          hour: '2-digit', 
+                          minute: '2-digit' 
+                        })}
+                      </Text>
+                    )}
                   </div>
                 </div>
-              </div>
-            )}
+              ))}
+              {isLoading && (
+                <div className="flex justify-end">
+                  <div 
+                    className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl px-5 py-3 shadow-lg"
+                    style={{
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                    }}
+                  >
+                    <div className="flex gap-1">
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
             {/* Dugme Obriši na dnu - fiksirano unutar scroll kontejnera */}
-            <div className="sticky bottom-0 pt-4 pb-4 flex justify-end bg-transparent">
+            <div className="sticky bottom-0 pt-4 pb-4 flex justify-end z-10 mt-auto">
               <Button
                 variant="outline"
                 size="md"
                 onClick={handleClear}
-                className="bg-black hover:bg-gray-800 text-white border-2 border-pink-500"
+                className="bg-black hover:bg-gray-800 text-white border-2 border-pink-500 shadow-lg"
               >
                 Obriši
               </Button>
