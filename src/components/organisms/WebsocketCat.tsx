@@ -20,6 +20,7 @@ const WebsocketCat = () => {
   const [logs, setLogs] = useState<LogEntry[]>([])
   const [timeRemaining, setTimeRemaining] = useState<string>('')
   const [isAnimating, setIsAnimating] = useState(false)
+  const [showOldImage, setShowOldImage] = useState(false)
   const [animationKey, setAnimationKey] = useState(0)
   const [displayedState, setDisplayedState] = useState<CatState>('playing')
   const terminalRef = useRef<HTMLDivElement>(null)
@@ -92,6 +93,12 @@ const WebsocketCat = () => {
 
     // Start animation
     setIsAnimating(true)
+    setShowOldImage(true)
+    
+    // Hide old image after 700ms (gives time for smooth exit)
+    const hideOldTimer = setTimeout(() => {
+      setShowOldImage(false)
+    }, 700)
     
     // Animation duration: 1.5s
     const timer = setTimeout(() => {
@@ -100,7 +107,10 @@ const WebsocketCat = () => {
       setAnimationKey(prev => prev + 1)
     }, 1500)
 
-    return () => clearTimeout(timer)
+    return () => {
+      clearTimeout(timer)
+      clearTimeout(hideOldTimer)
+    }
   }, [catState, displayedState, animationKey])
 
   // Socket.io setup
@@ -211,7 +221,7 @@ const WebsocketCat = () => {
             {/* Container za animaciju - fiksna visina */}
             <div className="w-full max-w-xs relative cat-container">
               {/* Old image - exiting */}
-              {isAnimating && (
+              {showOldImage && (
                 <Image
                   key={`old-${animationKey}`}
                   src={getCatImage(displayedState)}
@@ -296,7 +306,7 @@ const WebsocketCat = () => {
           width: 100%;
           max-width: 20rem;
           will-change: transform;
-          animation: catExit 1.5s ease-in forwards;
+          animation: catExit 0.7s ease-in forwards;
         }
 
         .cat-entering {
