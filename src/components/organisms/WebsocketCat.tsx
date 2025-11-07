@@ -14,9 +14,9 @@ interface LogEntry {
 
 const WebsocketCat = () => {
   const [catState, setCatState] = useState<CatState>('playing')
-  const [isResting, setIsResting] = useState(false)
-  const [restEndTime, setRestEndTime] = useState<Date | null>(null)
-  const [restedBy, setRestedBy] = useState<string | null>(null)
+  const [isSleeping, setIsSleeping] = useState(false)
+  const [sleepEndTime, setSleepEndTime] = useState<Date | null>(null)
+  const [sleptBy, setSleptBy] = useState<string | null>(null)
   const [logs, setLogs] = useState<LogEntry[]>([])
   const [timeRemaining, setTimeRemaining] = useState<string>('')
   const [isAnimating, setIsAnimating] = useState(false)
@@ -48,17 +48,23 @@ const WebsocketCat = () => {
 
   // Countdown timer
   useEffect(() => {
-    if (!isResting || !restEndTime) {
+    if (!isSleeping || !sleepEndTime) {
       setTimeRemaining('')
       return
     }
 
     const interval = setInterval(() => {
       const now = new Date()
-      const diff = restEndTime.getTime() - now.getTime()
+      const diff = sleepEndTime.getTime() - now.getTime()
 
       if (diff <= 0) {
+        // Sleep period ended - reset state
+        setIsSleeping(false)
+        setSleepEndTime(null)
+        setSleptBy(null)
         setTimeRemaining('')
+        // Explicitly set cat state to playing when sleep ends (fallback if backend event doesn't arrive)
+        setCatState('playing')
         return
       }
 
@@ -68,7 +74,7 @@ const WebsocketCat = () => {
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [isResting, restEndTime])
+  }, [isSleeping, sleepEndTime])
 
   // Auto-scroll terminal to bottom
   useEffect(() => {
@@ -139,17 +145,28 @@ const WebsocketCat = () => {
       setCatState(data.state)
     })
 
-    // Listen for REST activation
+    // Listen for Sleep activation
     socket.on('cat-resting', (data: { restUntil: string; userName: string }) => {
-      console.log('Cat resting:', data)
-      setIsResting(true)
-      setRestEndTime(new Date(data.restUntil))
-      setRestedBy(data.userName)
+      console.log('Cat sleeping:', data)
+      setIsSleeping(true)
+      setSleepEndTime(new Date(data.restUntil))
+      setSleptBy(data.userName)
     })
 
-    // Listen for REST denial
+    // Listen for Sleep denial
     socket.on('rest-denied', (data: { message: string }) => {
       alert(data.message)
+    })
+
+    // Listen for Sleep period ending
+    socket.on('cat-rest-ended', () => {
+      console.log('Cat sleep period ended')
+      setIsSleeping(false)
+      setSleepEndTime(null)
+      setSleptBy(null)
+      setTimeRemaining('')
+      // Explicitly set cat state to playing when sleep ends
+      setCatState('playing')
     })
 
     // Listen for initial logs
@@ -177,6 +194,7 @@ const WebsocketCat = () => {
       socket.off('cat-state-changed')
       socket.off('cat-resting')
       socket.off('rest-denied')
+      socket.off('cat-rest-ended')
       socket.off('initial-logs')
       socket.off('new-log')
     }
@@ -184,12 +202,12 @@ const WebsocketCat = () => {
 
   const handleReset = () => {
     if (!currentUser) {
-      alert('Morate biti ulogovani da biste aktivirali REST')
+      alert('You must be logged in to activate Sleep')
       return
     }
 
-    if (isResting) {
-      alert('REST je već aktivan!')
+    if (isSleeping) {
+      alert('Sleep is already active!')
       return
     }
 
@@ -200,25 +218,25 @@ const WebsocketCat = () => {
     })
   }
 
-  const getRestButtonText = (): string => {
-    if (!isResting) {
-      return 'REST (1 min)'
+  const getSleepButtonText = (): string => {
+    if (!isSleeping) {
+      return 'Put cat to sleep (1 min)'
     }
 
-    if (currentUser?.nickname === restedBy) {
-      return `REST - Ti si aktivirao${timeRemaining ? ` (${timeRemaining})` : ''}`
+    if (currentUser?.nickname === sleptBy) {
+      return `Sleeping ${timeRemaining ? ` (${timeRemaining})` : ''}`
     }
 
-    return `REST - Aktivirao ${restedBy}${timeRemaining ? ` (${timeRemaining})` : ''}`
+    return `Sleep - Activated by ${sleptBy}${timeRemaining ? ` (${timeRemaining})` : ''}`
   }
 
   return (
     <section className="w-full bg-transparent py-6 px-8 md:px-12 lg:px-16 relative z-10">
       <div className="max-w-6xl mx-auto relative">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Lijevi dio - Slika mačke i Reset dugme */}
+          {/* Left side - Cat image and Sleep button */}
           <div className="flex flex-col items-center relative">
-            {/* Container za animaciju - fiksna visina */}
+            {/* Container for animation - fixed height */}
             <div className="w-full max-w-xs relative cat-container">
               {/* Old image - exiting */}
               {showOldImage && (
@@ -239,19 +257,19 @@ const WebsocketCat = () => {
                 rounded
               />
             </div>
-            {/* Dugme ispod, fiksna pozicija */}
+            {/* Button below, fixed position */}
             <Button 
               onClick={handleReset} 
               variant="primary" 
               size="lg" 
               className="w-full max-w-xs mt-6"
-              disabled={isResting}
+              disabled={isSleeping}
             >
-              {getRestButtonText()}
+              {getSleepButtonText()}
             </Button>
           </div>
 
-          {/* Desni dio - Terminal */}
+          {/* Right side - Terminal */}
           <div className="w-full">
             <div className="terminal-container">
               <div className="terminal-header">
@@ -267,7 +285,7 @@ const WebsocketCat = () => {
                   {logs.length === 0 ? (
                     <div className="terminal-line">
                       <span className="terminal-prompt">$</span>
-                      <span className="terminal-text">Čekam poruke...</span>
+                      <span className="terminal-text">Waiting for messages...</span>
                     </div>
                   ) : (
                     logs.map((log) => (
