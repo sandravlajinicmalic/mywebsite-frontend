@@ -235,7 +235,7 @@ const WebsocketCat = () => {
       <div className="max-w-6xl mx-auto relative">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Left side - Cat image and Sleep button */}
-          <div className="flex flex-col items-center relative">
+          <div className="flex flex-col items-center relative" style={{ minHeight: '400px', justifyContent: 'space-between' }}>
             {/* Container for animation - fixed height */}
             <div className="w-full max-w-xs relative cat-container">
               {/* Old image - exiting */}
@@ -257,12 +257,12 @@ const WebsocketCat = () => {
                 rounded
               />
             </div>
-            {/* Button below, fixed position */}
+            {/* Button at bottom, aligned with terminal */}
             <Button 
               onClick={handleReset} 
               variant="primary" 
               size="lg" 
-              className="w-full max-w-xs mt-6"
+              className="w-full max-w-xs"
               disabled={isSleeping}
             >
               {getSleepButtonText()}
