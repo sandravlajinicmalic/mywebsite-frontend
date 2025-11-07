@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { Text } from '../atoms'
 
 export interface ModalProps {
@@ -18,6 +18,8 @@ const Modal = ({
   size = 'md',
   showCloseButton = true 
 }: ModalProps) => {
+  const [isAnimating, setIsAnimating] = useState(false)
+
   // Zatvori modal na ESC tipku
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -30,6 +32,11 @@ const Modal = ({
       document.addEventListener('keydown', handleEscape)
       // Spriječi scroll na body kada je modal otvoren
       document.body.style.overflow = 'hidden'
+      // Pokreni animaciju nakon kratke pauze
+      setTimeout(() => setIsAnimating(true), 10)
+    } else {
+      setIsAnimating(false)
+      document.body.style.overflow = 'unset'
     }
 
     return () => {
@@ -53,11 +60,19 @@ const Modal = ({
       onClick={onClose}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black bg-opacity-50 transition-opacity" />
+      <div 
+        className={`absolute inset-0 bg-black transition-opacity duration-300 ${
+          isAnimating ? 'bg-opacity-50 opacity-100' : 'bg-opacity-0 opacity-0'
+        }`}
+      />
       
       {/* Modal Content */}
       <div 
-        className={`relative bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full ${sizes[size]} max-h-[90vh] overflow-y-auto`}
+        className={`relative bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full ${sizes[size]} max-h-[90vh] overflow-y-auto transition-all duration-300 ${
+          isAnimating 
+            ? 'opacity-100 scale-100 translate-y-0' 
+            : 'opacity-0 scale-95 translate-y-4'
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
