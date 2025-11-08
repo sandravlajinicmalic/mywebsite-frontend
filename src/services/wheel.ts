@@ -37,7 +37,7 @@ export const wheelService = {
     } catch (error: unknown) {
       if (error && typeof error === 'object' && 'response' in error) {
         const axiosError = error as { response?: { data?: { error?: string; cooldownSeconds?: number } } }
-        const errorMessage = axiosError.response?.data?.error || 'Došlo je do greške prilikom spina'
+        const errorMessage = axiosError.response?.data?.error || 'An error occurred while spinning'
         const cooldownSeconds = axiosError.response?.data?.cooldownSeconds || 0
         // Create error with cooldownSeconds attached
         const customError: any = new Error(errorMessage)
@@ -45,7 +45,7 @@ export const wheelService = {
         customError.cooldownSeconds = cooldownSeconds
         throw customError
       }
-      throw new Error('Došlo je do greške prilikom spina. Pokušajte ponovo.')
+      throw new Error('An error occurred while spinning. Please try again.')
     }
   },
 

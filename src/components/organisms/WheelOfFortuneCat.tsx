@@ -5,6 +5,7 @@ import { Trophy } from 'lucide-react'
 import Modal from '../molecules/Modal'
 import { wheelService } from '../../services'
 import { authService } from '../../services'
+import { useI18n } from '../../contexts/i18n'
 
 const WHEEL_ITEMS = [
   'NewIcon',
@@ -18,6 +19,7 @@ const WHEEL_ITEMS = [
 ]
 
 const WheelOfFortuneCat = () => {
+  const { t } = useI18n()
   const [rotation, setRotation] = useState(0)
   const [isSpinning, setIsSpinning] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -90,7 +92,7 @@ const WheelOfFortuneCat = () => {
 
     const user = authService.getCurrentUser()
     if (!user) {
-      alert('Morate biti prijavljeni da biste zavrteli točak')
+      alert(t('wheel.mustBeLoggedIn'))
       return
     }
 

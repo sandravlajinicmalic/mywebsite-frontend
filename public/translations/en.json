@@ -29,6 +29,24 @@
   "aboutProject.tech.react": "React with TypeScript for type safety",
   "aboutProject.tech.vite": "Vite for fast development environment",
   "aboutProject.tech.tailwind": "Tailwind CSS for styling",
-  "aboutProject.tech.router": "React Router for navigation"
+  "aboutProject.tech.router": "React Router for navigation",
+  "chat.welcome": "Hello! 😸 I'm an AI chatbot that only talks about cats!",
+  "chat.clearMessage": "Ask me any question about cats, their behavior, health, grooming or anything related to cats.",
+  "chat.placeholder": "Ask a question about cats...",
+  "chat.sending": "Sending...",
+  "chat.send": "Send",
+  "chat.clear": "Clear",
+  "chat.catAlt": "Cat",
+  "header.rewardHistoryAriaLabel": "Show reward history",
+  "header.rewardHistoryTitle": "Reward History",
+  "header.loading": "Loading...",
+  "header.noRewards": "You haven't won any rewards yet. Spin the wheel to win a reward!",
+  "wheel.mustBeLoggedIn": "You must be logged in to spin the wheel",
+  "cat.sleep.mustBeLoggedIn": "You must be logged in to activate Sleep",
+  "cat.sleep.alreadyActive": "Sleep is already active!",
+  "cat.sleep.putToSleep": "Put cat to sleep (1 min)",
+  "cat.sleep.sleeping": "Sleeping",
+  "cat.sleep.activatedBy": "Sleep - Activated by",
+  "cat.websocketAlt": "Websocket Cat"
 }
 

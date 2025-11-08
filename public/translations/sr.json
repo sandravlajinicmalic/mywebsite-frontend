@@ -29,6 +29,24 @@
   "aboutProject.tech.react": "React sa TypeScript-om za type safety",
   "aboutProject.tech.vite": "Vite za brzu razvojnu okolinu",
   "aboutProject.tech.tailwind": "Tailwind CSS za stilizaciju",
-  "aboutProject.tech.router": "React Router za navigaciju"
+  "aboutProject.tech.router": "React Router za navigaciju",
+  "chat.welcome": "Zdravo! 😸 Ja sam AI chatbot koji razgovara samo o mačkama!",
+  "chat.clearMessage": "Postavi mi bilo koje pitanje o mačkama, njihovom ponašanju, zdravlju, negi ili bilo čemu što se tiče mačaka.",
+  "chat.placeholder": "Postavi pitanje o mačkama...",
+  "chat.sending": "Šalje...",
+  "chat.send": "Pošalji",
+  "chat.clear": "Obriši",
+  "chat.catAlt": "Mačka",
+  "header.rewardHistoryAriaLabel": "Prikaži istoriju nagrada",
+  "header.rewardHistoryTitle": "Istorija nagrada",
+  "header.loading": "Učitavanje...",
+  "header.noRewards": "Još niste osvojili nijednu nagradu. Zavrtite točak da biste osvojili nagradu!",
+  "wheel.mustBeLoggedIn": "Morate biti prijavljeni da biste zavrteli točak",
+  "cat.sleep.mustBeLoggedIn": "Morate biti prijavljeni da biste aktivirali Sleep",
+  "cat.sleep.alreadyActive": "Sleep je već aktivan!",
+  "cat.sleep.putToSleep": "Stavi mačku da spava (1 min)",
+  "cat.sleep.sleeping": "Spava",
+  "cat.sleep.activatedBy": "Spava - Aktivirao/la",
+  "cat.websocketAlt": "Websocket Mačka"
 }
 

@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect } from 'react'
 import { Button, Input, Text, Image } from '../atoms'
 import { chatService, type ChatMessage } from '../../services/chat'
+import { useI18n } from '../../contexts/i18n'
 
 const ChatBot = () => {
+  const { t } = useI18n()
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
-      content: 'Zdravo! 😸 Ja sam AI chatbot koji razgovara samo o mačkama!',
+      content: t('chat.welcome'),
       timestamp: new Date()
     }
   ])
@@ -65,7 +67,7 @@ const ChatBot = () => {
       console.error('[CHATBOT] Error details:', error)
       const errorMessage: ChatMessage = {
         role: 'assistant',
-        content: 'Izvinjavam se, došlo je do greške. Pokušaj ponovo! 😸',
+        content: 'Sorry, an error occurred. Please try again! 😸',
         timestamp: new Date()
       }
       setMessages(prev => [...prev, errorMessage])
@@ -81,7 +83,7 @@ const ChatBot = () => {
       setMessages([
         {
           role: 'assistant',
-          content: 'Postavi mi bilo koje pitanje o mačkama, njihovom ponašanju, zdravlju, negi ili bilo čemu što se tiče mačaka.',
+          content: t('chat.clearMessage'),
           timestamp: new Date()
         }
       ])
@@ -110,7 +112,7 @@ const ChatBot = () => {
         <div className="flex gap-2 max-w-2xl mx-auto w-full">
           <Input
             type="text"
-            placeholder="Postavi pitanje o mačkama..."
+            placeholder={t('chat.placeholder')}
             value={inputValue}
             onChange={handleInputChange}
             onKeyPress={handleKeyPress}
@@ -122,7 +124,7 @@ const ChatBot = () => {
             disabled={!inputValue.trim() || isLoading}
             size="md"
           >
-            {isLoading ? 'Šalje...' : 'Pošalji'}
+            {isLoading ? t('chat.sending') : t('chat.send')}
           </Button>
         </div>
       </div>
@@ -207,7 +209,7 @@ const ChatBot = () => {
                 </div>
               )}
             </div>
-            {/* Dugme Obriši na dnu - fiksirano unutar scroll kontejnera */}
+            {/* Clear button at the bottom - fixed within scroll container */}
             <div className="sticky bottom-0 pt-4 pb-4 flex justify-end z-10 mt-auto">
               <Button
                 variant="outline"
@@ -215,7 +217,7 @@ const ChatBot = () => {
                 onClick={handleClear}
                 className="bg-black hover:bg-gray-800 text-white border-2 border-pink-500 shadow-lg"
               >
-                Obriši
+                {t('chat.clear')}
               </Button>
             </div>
           </div>
@@ -225,7 +227,7 @@ const ChatBot = () => {
         <div className="flex-shrink-0 ml-8 mt-40">
           <Image
             src="/images/question.svg"
-            alt="Mačka"
+            alt={t('chat.catAlt')}
             className="w-80 h-80"
             objectFit="contain"
           />

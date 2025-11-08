@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Button, Image } from '../atoms'
 import getSocket from '../../services/socket'
 import { authService } from '../../services/auth'
+import { useI18n } from '../../contexts/i18n'
 
 type CatState = 'playing' | 'zen' | 'sleeping' | 'happy' | 'tired' | 'angry'
 
@@ -13,6 +14,7 @@ interface LogEntry {
 }
 
 const WebsocketCat = () => {
+  const { t } = useI18n()
   const [catState, setCatState] = useState<CatState>('playing')
   const [isSleeping, setIsSleeping] = useState(false)
   const [sleepEndTime, setSleepEndTime] = useState<Date | null>(null)
@@ -202,12 +204,12 @@ const WebsocketCat = () => {
 
   const handleReset = () => {
     if (!currentUser) {
-      alert('You must be logged in to activate Sleep')
+      alert(t('cat.sleep.mustBeLoggedIn'))
       return
     }
 
     if (isSleeping) {
-      alert('Sleep is already active!')
+      alert(t('cat.sleep.alreadyActive'))
       return
     }
 
@@ -220,14 +222,14 @@ const WebsocketCat = () => {
 
   const getSleepButtonText = (): string => {
     if (!isSleeping) {
-      return 'Put cat to sleep (1 min)'
+      return t('cat.sleep.putToSleep')
     }
 
     if (currentUser?.nickname === sleptBy) {
-      return `Sleeping ${timeRemaining ? ` (${timeRemaining})` : ''}`
+      return `${t('cat.sleep.sleeping')}${timeRemaining ? ` (${timeRemaining})` : ''}`
     }
 
-    return `Sleep - Activated by ${sleptBy}${timeRemaining ? ` (${timeRemaining})` : ''}`
+    return `${t('cat.sleep.activatedBy')} ${sleptBy}${timeRemaining ? ` (${timeRemaining})` : ''}`
   }
 
   return (
@@ -243,7 +245,7 @@ const WebsocketCat = () => {
                 <Image
                   key={`old-${animationKey}`}
                   src={getCatImage(displayedState)}
-                  alt="Websocket Cat"
+                  alt={t('cat.websocketAlt')}
                   className="w-full h-auto rounded-lg cat-image cat-exiting"
                   rounded
                 />
@@ -252,7 +254,7 @@ const WebsocketCat = () => {
               <Image
                 key={`new-${animationKey}`}
                 src={getCatImage(isAnimating ? catState : displayedState)}
-                alt="Websocket Cat"
+                alt={t('cat.websocketAlt')}
                 className={`w-full h-auto rounded-lg cat-image ${isAnimating ? 'cat-entering animating' : 'cat-entering'}`}
                 rounded
               />

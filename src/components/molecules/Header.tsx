@@ -97,7 +97,7 @@ const Header = () => {
                 <button
                   onClick={handleTrophyClick}
                   className="cursor-pointer hover:scale-110 transition-transform"
-                  aria-label="Prikaži istoriju nagrada"
+                  aria-label={t('header.rewardHistoryAriaLabel')}
                 >
                   <Trophy 
                     className="w-5 h-5 text-yellow-500 dark:text-yellow-400" 
@@ -116,19 +116,19 @@ const Header = () => {
       <Modal
         isOpen={isHistoryModalOpen}
         onClose={() => setIsHistoryModalOpen(false)}
-        title="Istorija nagrada"
+        title={t('header.rewardHistoryTitle')}
         size="md"
       >
         <div className="py-4">
           {isLoadingHistory ? (
             <div className="flex justify-center items-center py-8">
-              <Text className="text-gray-600 dark:text-gray-400">Učitavanje...</Text>
+              <Text className="text-gray-600 dark:text-gray-400">{t('header.loading')}</Text>
             </div>
           ) : spinHistory.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-8">
               <Trophy className="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4" />
               <Text className="text-gray-600 dark:text-gray-400 text-center">
-                Još niste osvojili nijednu nagradu. Zavrtite točak da biste osvojili nagradu!
+                {t('header.noRewards')}
               </Text>
             </div>
           ) : (

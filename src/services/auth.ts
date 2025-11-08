@@ -46,10 +46,10 @@ export const authService = {
       // Extract error message from response
       if (error && typeof error === 'object' && 'response' in error) {
         const axiosError = error as { response?: { data?: { error?: string } } }
-        const errorMessage = axiosError.response?.data?.error || 'Došlo je do greške prilikom prijave'
+        const errorMessage = axiosError.response?.data?.error || 'An error occurred during login'
         throw new Error(errorMessage)
       }
-      throw new Error('Došlo je do greške prilikom prijave. Pokušajte ponovo.')
+      throw new Error('An error occurred during login. Please try again.')
     }
   },
 
