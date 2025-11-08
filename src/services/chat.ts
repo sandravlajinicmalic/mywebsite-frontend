@@ -12,11 +12,12 @@ export interface ChatResponse {
 }
 
 export const chatService = {
-  async sendMessage(message: string, sessionId?: string): Promise<ChatResponse> {
+  async sendMessage(message: string, sessionId?: string, language?: string): Promise<ChatResponse> {
     try {
       const response = await api.post<ChatResponse>('/chat/message', {
         message,
-        sessionId: sessionId || 'default'
+        sessionId: sessionId || 'default',
+        language: language || 'en'
       })
       return response.data
     } catch (error) {

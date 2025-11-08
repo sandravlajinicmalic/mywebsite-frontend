@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode, useEffect, useState, useRef } from 'react'
 import { Text } from '../atoms'
 
 export interface ModalProps {
@@ -19,8 +19,9 @@ const Modal = ({
   showCloseButton = true 
 }: ModalProps) => {
   const [isAnimating, setIsAnimating] = useState(false)
+  const scrollYRef = useRef<number>(0)
 
-  // Zatvori modal na ESC tipku
+  // Zatvori modal na ESC tipku i spreči scroll
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -28,20 +29,52 @@ const Modal = ({
       }
     }
 
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscape)
-      // Spriječi scroll na body kada je modal otvoren
-      document.body.style.overflow = 'hidden'
-      // Pokreni animaciju nakon kratke pauze
-      setTimeout(() => setIsAnimating(true), 10)
-    } else {
-      setIsAnimating(false)
-      document.body.style.overflow = 'unset'
+    const preventScroll = (e: Event) => {
+      e.preventDefault()
     }
 
-    return () => {
-      document.removeEventListener('keydown', handleEscape)
-      document.body.style.overflow = 'unset'
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape)
+      
+      // Sačuvaj scroll poziciju
+      scrollYRef.current = window.scrollY
+      
+      // Blokiraj scroll na html i body
+      document.documentElement.style.overflow = 'hidden'
+      document.documentElement.style.position = 'fixed'
+      document.documentElement.style.width = '100%'
+      document.documentElement.style.top = `-${scrollYRef.current}px`
+      
+      document.body.style.overflow = 'hidden'
+      document.body.style.position = 'fixed'
+      document.body.style.width = '100%'
+      
+      // Spreči scroll event direktno
+      document.addEventListener('wheel', preventScroll, { passive: false })
+      document.addEventListener('touchmove', preventScroll, { passive: false })
+      
+      // Pokreni animaciju nakon kratke pauze
+      setTimeout(() => setIsAnimating(true), 10)
+      
+      return () => {
+        document.removeEventListener('keydown', handleEscape)
+        document.removeEventListener('wheel', preventScroll)
+        document.removeEventListener('touchmove', preventScroll)
+        
+        // Vrati scroll poziciju
+        document.documentElement.style.overflow = ''
+        document.documentElement.style.position = ''
+        document.documentElement.style.width = ''
+        document.documentElement.style.top = ''
+        
+        document.body.style.overflow = ''
+        document.body.style.position = ''
+        document.body.style.width = ''
+        
+        window.scrollTo(0, scrollYRef.current)
+      }
+    } else {
+      setIsAnimating(false)
     }
   }, [isOpen, onClose])
 
@@ -64,11 +97,13 @@ const Modal = ({
         className={`absolute inset-0 bg-black transition-opacity duration-300 ${
           isAnimating ? 'bg-opacity-50 opacity-100' : 'bg-opacity-0 opacity-0'
         }`}
+        onWheel={(e) => e.preventDefault()}
+        onTouchMove={(e) => e.preventDefault()}
       />
       
       {/* Modal Content */}
       <div 
-        className={`relative bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full ${sizes[size]} max-h-[90vh] overflow-y-auto transition-all duration-300 ${
+        className={`relative bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full ${sizes[size]} max-h-[90vh] flex flex-col transition-all duration-300 ${
           isAnimating 
             ? 'opacity-100 scale-100 translate-y-0' 
             : 'opacity-0 scale-95 translate-y-4'
@@ -108,7 +143,7 @@ const Modal = ({
         )}
 
         {/* Body */}
-        <div className="p-6">
+        <div className="p-6 overflow-y-auto flex-1" style={{ scrollbarGutter: 'stable' }}>
           {children}
         </div>
       </div>

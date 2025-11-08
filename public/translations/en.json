@@ -47,6 +47,9 @@
   "cat.sleep.putToSleep": "Put cat to sleep (1 min)",
   "cat.sleep.sleeping": "Sleeping",
   "cat.sleep.activatedBy": "Sleep - Activated by",
-  "cat.websocketAlt": "Websocket Cat"
+  "cat.websocketAlt": "Websocket Cat",
+  "goToAbout.title": "About (or: How I Ended Up Making This Thing)",
+  "goToAbout.subtitle": "A mix of design, development, and just enough cat-inspired chaos to make it fun.",
+  "goToAbout.button": "Scratch Here to Learn More"
 }
 

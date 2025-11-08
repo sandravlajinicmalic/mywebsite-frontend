@@ -47,6 +47,9 @@
   "cat.sleep.putToSleep": "Stavi mačku da spava (1 min)",
   "cat.sleep.sleeping": "Spava",
   "cat.sleep.activatedBy": "Spava - Aktivirao/la",
-  "cat.websocketAlt": "Websocket Mačka"
+  "cat.websocketAlt": "Websocket Mačka",
+  "goToAbout.title": "O meni (ili: Kako je doslo do toga da napravim ovaj projekat)",
+  "goToAbout.subtitle": "Mešavina dizajna, razvoja i dovoljno haosa inspirisanog mačkama da bude zabavno.",
+  "goToAbout.button": "Zagebi ovde da saznaš više"
 }
 

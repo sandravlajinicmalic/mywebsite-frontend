@@ -4,14 +4,8 @@ import { chatService, type ChatMessage } from '../../services/chat'
 import { useI18n } from '../../contexts/i18n'
 
 const ChatBot = () => {
-  const { t } = useI18n()
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      role: 'assistant',
-      content: t('chat.welcome'),
-      timestamp: new Date()
-    }
-  ])
+  const { t, language } = useI18n()
+  const [messages, setMessages] = useState<ChatMessage[]>([])
   const [inputValue, setInputValue] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
@@ -24,6 +18,21 @@ const ChatBot = () => {
       })
     }
   }
+
+  // Initialize welcome message after translations are loaded
+  useEffect(() => {
+    const welcomeText = t('chat.welcome')
+    // Only set initial message if translation is loaded (not just the key)
+    if (messages.length === 0 && welcomeText !== 'chat.welcome') {
+      setMessages([
+        {
+          role: 'assistant',
+          content: welcomeText,
+          timestamp: new Date()
+        }
+      ])
+    }
+  }, [t, messages.length])
 
   useEffect(() => {
     scrollToBottom()
@@ -51,7 +60,7 @@ const ChatBot = () => {
 
     try {
       console.log('[CHATBOT] Calling chatService.sendMessage...')
-      const response = await chatService.sendMessage(userMessage.content)
+      const response = await chatService.sendMessage(userMessage.content, undefined, language)
       console.log('[CHATBOT] Received response:', response)
       
       const assistantMessage: ChatMessage = {

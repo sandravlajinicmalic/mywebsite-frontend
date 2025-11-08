@@ -42,11 +42,17 @@ const Header = () => {
       const refreshInterval = setInterval(async () => {
         try {
           const history = await wheelService.getHistory()
-          setSpinHistory(history)
+          // Only update if history actually changed to prevent unnecessary re-renders
+          setSpinHistory(prevHistory => {
+            if (JSON.stringify(prevHistory) !== JSON.stringify(history)) {
+              return history
+            }
+            return prevHistory
+          })
         } catch (error) {
           console.error('Error refreshing spin history:', error)
         }
-      }, 3000) // Refresh every 3 seconds while modal is open
+      }, 5000) // Refresh every 5 seconds while modal is open (reduced frequency)
 
       return () => clearInterval(refreshInterval)
     }
@@ -132,7 +138,7 @@ const Header = () => {
               </Text>
             </div>
           ) : (
-            <div className="space-y-3 max-h-[60vh] overflow-y-auto">
+            <div className="space-y-3" style={{ scrollbarGutter: 'stable' }}>
               {spinHistory.map((spin) => (
                 <div
                   key={spin.id}

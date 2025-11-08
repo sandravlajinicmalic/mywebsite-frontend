@@ -1,4 +1,4 @@
-import { WebsocketCat, SmartCat, WheelOfFortuneCat } from '../components/organisms'
+import { WebsocketCat, SmartCat, WheelOfFortuneCat, GoToAbout } from '../components/organisms'
 
 const Home = () => {
   
@@ -8,6 +8,7 @@ const Home = () => {
         <WebsocketCat />
         <SmartCat />
         <WheelOfFortuneCat />
+        <GoToAbout />
       </div>
     </div>
   )
