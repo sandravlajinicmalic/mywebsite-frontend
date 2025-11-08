@@ -23,13 +23,13 @@ const CurvedBackground = ({ flipped = false, inverted = false }: CurvedBackgroun
         
         {/* Left part - pink when inverted, transparent otherwise */}
         <path
-          d="M1000,0 C300,200 300,400 1000,540 C1400,650 1400,850 1000,1080 L0,1080 L0,0 Z"
+          d="M1000,0 C-50,170 -150,350 1000,395 C2300,415 2500,410 1000,555 C450,650 380,790 1000,850 C1650,890 1750,990 1000,1070 C250,1080 200,1080 1000,1080 L0,1080 L0,0 Z"
           fill={inverted ? "url(#pinkGradient)" : "transparent"}
         />
         
         {/* Right part - black when inverted, pink otherwise */}
         <path
-          d="M1000,0 C300,200 300,400 1000,540 C1400,650 1400,850 1000,1080 L1920,1080 L1920,0 Z"
+          d="M1000,0 C-50,170 -150,350 1000,395 C2300,415 2500,410 1000,555 C450,650 380,790 1000,850 C1650,890 1750,990 1000,1070 C250,1080 200,1080 1000,1080 L1920,1080 L1920,0 Z"
           fill={inverted ? "#000000" : "url(#pinkGradient)"}
         />
       </svg>
