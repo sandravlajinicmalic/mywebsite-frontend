@@ -4,4 +4,6 @@ export { chatService } from './chat'
 export type { ChatMessage, ChatResponse } from './chat'
 export { wheelService } from './wheel'
 export type { WheelSpin, SpinResponse, CanSpinResponse, HistoryResponse } from './wheel'
+export { contactService } from './contact'
+export type { ContactRequest, ContactResponse } from './contact'
 
