@@ -17,6 +17,7 @@ const Header = () => {
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false)
   const [spinHistory, setSpinHistory] = useState<WheelSpin[]>([])
   const [isLoadingHistory, setIsLoadingHistory] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
 
   const handleTrophyClick = async () => {
     if (!user) return
@@ -35,6 +36,16 @@ const Header = () => {
       setIsLoadingHistory(false)
     }
   }
+
+  // Detect scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   // Refresh history when modal is open (in case new spin happened)
   useEffect(() => {
@@ -69,6 +80,21 @@ const Header = () => {
     }).format(date)
   }
 
+  // Shadow styles for scrolled state with smooth transition
+  const textShadowStyle = {
+    textShadow: isScrolled 
+      ? '0 0 3px rgba(0,0,0,1), 0 0 6px rgba(0,0,0,0.95), 0 0 10px rgba(0,0,0,0.9), 0 0 14px rgba(0,0,0,0.85)'
+      : '0 0 0px rgba(0,0,0,0), 0 0 0px rgba(0,0,0,0), 0 0 0px rgba(0,0,0,0), 0 0 0px rgba(0,0,0,0)',
+    transition: 'text-shadow 0.4s ease-in-out'
+  }
+
+  const dropShadowStyle = {
+    filter: isScrolled
+      ? 'drop-shadow(0 0 3px rgba(0,0,0,1)) drop-shadow(0 0 6px rgba(0,0,0,0.95)) drop-shadow(0 0 10px rgba(0,0,0,0.9)) drop-shadow(0 0 14px rgba(0,0,0,0.85))'
+      : 'drop-shadow(0 0 0px rgba(0,0,0,0)) drop-shadow(0 0 0px rgba(0,0,0,0)) drop-shadow(0 0 0px rgba(0,0,0,0)) drop-shadow(0 0 0px rgba(0,0,0,0))',
+    transition: 'filter 0.4s ease-in-out'
+  }
+
   return (
     <header className="bg-transparent sticky top-0 z-50">
       <div className="container mx-auto px-4">
@@ -78,15 +104,21 @@ const Header = () => {
           <nav className="flex items-center gap-6">
             <Link 
               to={ROUTES.HOME}
-              className="text-base font-medium text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors underline-offset-4 uppercase cursor-pointer"
-              style={{ fontFamily: '"Barlow Semi Condensed", sans-serif' }}
+              className="text-base font-medium text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-all underline-offset-4 uppercase cursor-pointer"
+              style={{ 
+                fontFamily: '"Barlow Semi Condensed", sans-serif',
+                ...textShadowStyle
+              }}
             >
               {t('nav.home')}
             </Link>
             <Link 
               to={ROUTES.ABOUT}
-              className="text-base font-medium text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors underline-offset-4 uppercase cursor-pointer"
-              style={{ fontFamily: '"Barlow Semi Condensed", sans-serif' }}
+              className="text-base font-medium text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-all underline-offset-4 uppercase cursor-pointer"
+              style={{ 
+                fontFamily: '"Barlow Semi Condensed", sans-serif',
+                ...textShadowStyle
+              }}
             >
               {t('nav.about')}
             </Link>
@@ -94,15 +126,24 @@ const Header = () => {
             {/* User Info */}
             {user && (
               <>
-                <div className="h-4 w-px bg-gray-300 dark:bg-gray-600 mx-2"></div>
+                <div 
+                  className="h-4 w-px bg-gray-300 dark:bg-gray-600 mx-2 transition-all"
+                  style={dropShadowStyle}
+                ></div>
                 <div className="flex items-center gap-6 px-1">
-                <Text size="base" weight="medium" className="text-gray-900 dark:text-white">
+                <Text 
+                  size="base" 
+                  weight="medium" 
+                  className="text-gray-900 dark:text-white transition-all"
+                  style={textShadowStyle}
+                >
                   {userNickname}
                 </Text>
                 
                 <button
                   onClick={handleTrophyClick}
-                  className="cursor-pointer hover:scale-110 transition-transform"
+                  className="cursor-pointer hover:scale-110 transition-all"
+                  style={dropShadowStyle}
                   aria-label={t('header.rewardHistoryAriaLabel')}
                 >
                   <Trophy 
@@ -111,7 +152,9 @@ const Header = () => {
                   />
                 </button>
                 
-                <UserMenu userNickname={userNickname} userAvatar={userAvatar} />
+                <div style={dropShadowStyle}>
+                  <UserMenu userNickname={userNickname} userAvatar={userAvatar} />
+                </div>
                 </div>
               </>
             )}

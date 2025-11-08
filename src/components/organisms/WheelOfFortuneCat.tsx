@@ -359,13 +359,13 @@ const WheelOfFortuneCat = () => {
             </div>
           </div>
 
-          <div className="flex flex-col items-center justify-center text-center">
-            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <div className="flex flex-col items-center justify-center text-center self-center -mt-16">
+            <h2 className="text-5xl font-bold text-black mb-4" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.3), 0 0 8px rgba(0, 0, 0, 0.2)', lineHeight: '1.3' }}>
             Spin the Cat Wheel of Fortune and discover your destiny!
             </h2>
-            <p className="text-lg text-gray-700 dark:text-gray-300 max-w-md">
+            <p className="text-xl text-black max-w-md drop-shadow-sm pt-4 leading-relaxed">
               Spin the wheel, meow for luck, and see what fate (or your cat) has in store!
-              Remember: nine lives, but only one spin! Prizes may vary depending on the cat’s mood. (Good luck with that.)
+              Remember: nine lives, but only one spin! Prizes may vary depending on the cat's mood. (Good luck with that.)
             </p>
           </div>
         </div>

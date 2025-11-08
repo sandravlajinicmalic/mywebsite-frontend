@@ -15,10 +15,10 @@ const GoToAbout = () => {
     <section className="w-full bg-transparent pt-12 pb-20 px-4 relative z-10">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col items-center text-center">
-          <Text as="h2" size="3xl" weight="bold" className="mb-4 text-gray-900 dark:text-white">
+          <Text as="h2" size="3xl" weight="bold" className="mb-4 text-white" style={{ textShadow: '2px 2px 4px rgba(236, 72, 153, 0.8), 0 0 8px rgba(236, 72, 153, 0.5)' }}>
             {t('goToAbout.title')}
           </Text>
-          <Text size="lg" color="muted" className="mb-6 pb-16">
+          <Text size="lg" className="mb-6 pb-20 text-white">
             {t('goToAbout.subtitle')}
           </Text>
           <div className="relative flex flex-col items-center mt-4">
