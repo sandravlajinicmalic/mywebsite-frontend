@@ -233,7 +233,7 @@ const WebsocketCat = () => {
   }
 
   return (
-    <section className="w-full bg-transparent py-6 px-8 md:px-12 lg:px-16 relative z-10">
+    <section className="w-full bg-transparent pt-16 pb-6 px-8 md:px-12 lg:px-16 relative z-10">
       <div className="max-w-6xl mx-auto relative">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Left side - Cat image and Sleep button */}

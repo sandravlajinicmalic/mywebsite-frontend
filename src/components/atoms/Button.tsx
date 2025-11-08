@@ -25,13 +25,13 @@ const Button = ({
   className = '',
   ...props 
 }: ButtonProps) => {
-  const baseStyles = 'font-semibold rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2'
+  const baseStyles = 'font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2'
   
   const variants: Record<ButtonVariant, string> = {
-    primary: 'bg-indigo-600 hover:bg-indigo-700 text-white focus:ring-indigo-500',
-    secondary: 'bg-gray-200 hover:bg-gray-300 text-gray-900 focus:ring-gray-500',
-    outline: 'border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 focus:ring-indigo-500',
-    danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500',
+    primary: 'bg-[#06B6D4] hover:bg-[#0891B2] text-[#FFFFFF] focus:ring-[#06B6D4] shadow-[0_0_10px_#06B6D4]',
+    secondary: 'bg-[#374151] hover:bg-[#4b5563] text-[#FFFFFF] focus:ring-[#374151]',
+    outline: 'border-2 border-[#06B6D4] text-[#06B6D4] hover:bg-[#06B6D4] hover:text-[#FFFFFF] focus:ring-[#06B6D4]',
+    danger: 'bg-red-600 hover:bg-red-700 text-[#FFFFFF] focus:ring-red-500',
   }
   
   const sizes: Record<ButtonSize, string> = {

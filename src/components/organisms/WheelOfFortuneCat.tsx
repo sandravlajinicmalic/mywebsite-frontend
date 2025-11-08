@@ -171,14 +171,14 @@ const WheelOfFortuneCat = () => {
   }
 
   const colors = [
-    '#FF6B6B',
-    '#4ECDC4',
-    '#45B7D1',
-    '#FFA07A',
-    '#98D8C8',
-    '#F7DC6F',
-    '#BB8FCE',
-    '#85C1E2',
+    '#F5608E', // vibrantna ružičasta
+    '#64E3EB', // tirkizno-plava
+    '#6DB850', // zelena
+    '#FEE5A4', // svijetložuta / bež ton
+    '#C1A8E0', // svijetloljubičasta
+    '#6DE3CE', // mint-tirkizna
+    '#FE80A7', // svijetla roza
+    '#88D66F'  // svijetlozelena
   ]
 
   const wheelSize = 500

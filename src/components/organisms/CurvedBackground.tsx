@@ -1,8 +1,9 @@
 interface CurvedBackgroundProps {
   flipped?: boolean
+  inverted?: boolean
 }
 
-const CurvedBackground = ({ flipped = false }: CurvedBackgroundProps) => {
+const CurvedBackground = ({ flipped = false, inverted = false }: CurvedBackgroundProps) => {
   return (
     <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none w-full min-h-screen">
       <svg
@@ -20,16 +21,16 @@ const CurvedBackground = ({ flipped = false }: CurvedBackgroundProps) => {
           </linearGradient>
         </defs>
         
-        {/* Transparent left part */}
+        {/* Left part - pink when inverted, transparent otherwise */}
         <path
           d="M1000,0 C300,200 300,400 1000,540 C1400,650 1400,850 1000,1080 L0,1080 L0,0 Z"
-          fill="transparent"
+          fill={inverted ? "url(#pinkGradient)" : "transparent"}
         />
         
-        {/* Single vertical pink gradient curve - nejednaka S-krivulja */}
+        {/* Right part - black when inverted, pink otherwise */}
         <path
           d="M1000,0 C300,200 300,400 1000,540 C1400,650 1400,850 1000,1080 L1920,1080 L1920,0 Z"
-          fill="url(#pinkGradient)"
+          fill={inverted ? "#000000" : "url(#pinkGradient)"}
         />
       </svg>
     </div>
