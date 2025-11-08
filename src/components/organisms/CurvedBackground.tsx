@@ -1,8 +1,13 @@
-const CurvedBackground = () => {
+interface CurvedBackgroundProps {
+  flipped?: boolean
+}
+
+const CurvedBackground = ({ flipped = false }: CurvedBackgroundProps) => {
   return (
     <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none w-full min-h-screen">
       <svg
         className="absolute inset-0 w-full h-full min-h-screen"
+        style={flipped ? { transform: 'scaleY(-1)' } : undefined}
         preserveAspectRatio="none"
         viewBox="0 0 1920 1080"
         xmlns="http://www.w3.org/2000/svg"

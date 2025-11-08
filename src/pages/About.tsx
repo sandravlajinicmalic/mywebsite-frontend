@@ -5,8 +5,8 @@ const About = () => {
   return (
     <div className="min-h-screen relative">
       <div className="w-full relative z-10">
+      <AboutProject />
         <AboutMe />
-        <AboutProject />
         <ContactForm />
       </div>
     </div>

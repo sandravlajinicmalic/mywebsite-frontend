@@ -119,9 +119,8 @@ const AboutMe = () => {
     <section className="w-full bg-transparent py-12 px-4 relative z-10">
       <div className="max-w-6xl mx-auto">
 
-        
         {/* Career Timeline */}
-        <div className="mt-12">
+    
           <Text as="h1" size="3xl" weight="bold" className="mb-8 text-gray-900 dark:text-white">
             {t('aboutMe.career.title')}
           </Text>
@@ -164,7 +163,7 @@ const AboutMe = () => {
                 </div>
               ))}
             </div>
-          </div>
+  
         </div>
 
         {/* My Toolbox of Tricks */}

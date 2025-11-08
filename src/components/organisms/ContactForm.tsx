@@ -44,13 +44,10 @@ const ContactForm = () => {
     <section className="w-full bg-transparent py-12 px-4 relative z-10">
       <div className="max-w-6xl mx-auto">
         <Text as="h2" size="3xl" weight="bold" className="mb-4 text-gray-900 dark:text-white">
-          {t('contact.title')}
+          Let's Talk (or Meow)
         </Text>
-        <Text size="lg" color="muted" className="mb-4">
-          {t('contact.subtitle')}
-        </Text>
-        <Text size="base" color="muted" className="mb-6">
-          {t('contact.description')}
+        <Text size="lg" color="muted" className="mb-6">
+          Got questions, feedback, or just want to say hi? Drop a message below — I promise my SmartChat won't answer this one for me.
         </Text>
         
         <form onSubmit={handleSubmit} className="max-w-2xl">
