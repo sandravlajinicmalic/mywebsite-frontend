@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Text, Button } from '../atoms'
+import { Text, Button, Image } from '../atoms'
 import { useI18n } from '../../contexts/i18n'
 import { contactService } from '../../services/contact'
 import { authService } from '../../services/auth'
@@ -43,43 +43,70 @@ const ContactForm = () => {
   return (
     <section className="w-full bg-transparent py-12 px-4 relative z-10">
       <div className="max-w-6xl mx-auto">
-        <Text as="h2" size="3xl" weight="bold" className="mb-4 text-gray-900 dark:text-white">
-          Let's Talk (or Meow)
-        </Text>
-        <Text size="lg" color="muted" className="mb-6">
-          Got questions, feedback, or just want to say hi? Drop a message below — I promise my SmartChat won't answer this one for me.
-        </Text>
+        {/* Title and subtitle above */}
+        <div className="text-right mb-6">
+          <Text as="h2" size="3xl" weight="bold" className="mb-4 text-gray-900 dark:text-white">
+            Let's Talk (or Meow)
+          </Text>
+          <div className="w-1/2 ml-auto">
+            <Text size="lg" className="text-white">
+              Got questions, feedback, or just want to say hi? Drop a message below — I promise my SmartChat won't answer this one for me.
+            </Text>
+          </div>
+        </div>
         
-        <form onSubmit={handleSubmit} className="max-w-2xl">
-          <div className="mb-4">
-            <textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder={t('contact.messagePlaceholder') || 'Enter your message...'}
-              rows={6}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:border-indigo-500 focus:ring-indigo-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
-              disabled={isLoading}
+        {/* Image and Form in the same div */}
+        <div className="flex flex-col md:flex-row gap-8 items-center md:items-stretch">
+          {/* Image */}
+          <div className="w-full md:w-1/3 relative">
+            <Image
+              src="/images/education.png"
+              alt="Education"
+              className="absolute max-w-80 h-auto"
+              style={{ bottom: '60px', right: '0' }}
+              objectFit="contain"
             />
-            {error && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                {error}
-              </p>
-            )}
-            {success && (
-              <p className="mt-1 text-sm text-green-600 dark:text-green-400">
-                {t('contact.success') || 'Message sent successfully!'}
-              </p>
-            )}
           </div>
           
-          <Button
-            type="submit"
-            disabled={isLoading || !message.trim()}
-            className="w-full sm:w-auto"
-          >
-            {isLoading ? (t('contact.sending') || 'Sending...') : (t('contact.send') || 'Send')}
-          </Button>
-        </form>
+          {/* Form */}
+          <div className="w-full md:w-2/3 flex flex-col justify-end">
+            <form onSubmit={handleSubmit} className="w-full flex flex-col">
+              <div className="mb-4">
+                <textarea
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder={t('contact.messagePlaceholder') || 'Enter your message...'}
+                  rows={6}
+                  className="w-full px-4 py-2 border-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#ec4899] focus:ring-offset-2 bg-black text-white placeholder-gray-400"
+                  style={{ borderColor: '#ec4899' }}
+                  onFocus={(e) => e.target.style.borderColor = '#ec4899'}
+                  onBlur={(e) => e.target.style.borderColor = '#ec4899'}
+                  disabled={isLoading}
+                />
+                {error && (
+                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                    {error}
+                  </p>
+                )}
+                {success && (
+                  <p className="mt-1 text-sm text-green-600 dark:text-green-400">
+                    {t('contact.success') || 'Message sent successfully!'}
+                  </p>
+                )}
+              </div>
+              
+              <div className="flex justify-end">
+                <Button
+                  type="submit"
+                  disabled={isLoading || !message.trim()}
+                  className="min-w-32"
+                >
+                  {isLoading ? (t('contact.sending') || 'Sending...') : 'Meow to Me'}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
     </section>
   )

@@ -1,4 +1,4 @@
-import { Github, Linkedin } from 'lucide-react'
+import { Github, Linkedin, Mail } from 'lucide-react'
 import { Text } from '../atoms'
 import { APP_NAME } from '../../constants'
 
@@ -29,6 +29,13 @@ const Footer = () => {
               aria-label="LinkedIn"
             >
               <Linkedin size={24} />
+            </a>
+            <a
+              href="mailto:sandravlajinicmalic@gmail.com"
+              className="text-white hover:text-gray-400 transition-colors"
+              aria-label="Email"
+            >
+              <Mail size={24} />
             </a>
           </div>
         </div>

@@ -9,33 +9,19 @@ const AboutMe = () => {
       company: t('aboutMe.career.mania.company'),
       location: t('aboutMe.career.mania.location'),
       role: t('aboutMe.career.mania.role'),
-      descriptions: [
-        t('aboutMe.career.mania.description1'),
-        t('aboutMe.career.mania.description2'),
-        t('aboutMe.career.mania.description3')
-      ]
+      description: t('aboutMe.career.mania.description')
     },
     {
       company: t('aboutMe.career.bondex.company'),
       location: t('aboutMe.career.bondex.location'),
       role: t('aboutMe.career.bondex.role'),
-      descriptions: [
-        t('aboutMe.career.bondex.description1'),
-        t('aboutMe.career.bondex.description2'),
-        t('aboutMe.career.bondex.description3')
-      ]
+      description: t('aboutMe.career.bondex.description')
     },
     {
       company: t('aboutMe.career.endava.company'),
       location: t('aboutMe.career.endava.location'),
       role: t('aboutMe.career.endava.role'),
-      descriptions: [
-        t('aboutMe.career.endava.description1'),
-        t('aboutMe.career.endava.description2'),
-        t('aboutMe.career.endava.description3'),
-        t('aboutMe.career.endava.description4'),
-        t('aboutMe.career.endava.description5')
-      ]
+      description: t('aboutMe.career.endava.description')
     }
   ]
 
@@ -121,7 +107,7 @@ const AboutMe = () => {
 
         {/* Career Timeline */}
     
-          <Text as="h1" size="3xl" weight="bold" className="mb-8 text-gray-900 dark:text-white">
+          <Text as="h1" size="4xl" weight="bold" className="mb-8 text-gray-900 dark:text-white">
             {t('aboutMe.career.title')}
           </Text>
           <div className="relative">
@@ -139,26 +125,20 @@ const AboutMe = () => {
                   
                   {/* Career details */}
                   <div className="ml-8 flex-1">
-                    <div className="mb-2">
+                    <div className="mb-2 flex items-center gap-2">
                       <Text size="lg" weight="semibold" className="text-gray-900 dark:text-white">
                         {item.company}
                       </Text>
-                      <Text size="sm" color="muted" className="mt-1">
+                      <Text size="lg" color="muted">
                         {item.location}
                       </Text>
                     </div>
                     <Text size="base" weight="semibold" className="text-blue-600 dark:text-blue-400 mb-3">
                       {item.role}
                     </Text>
-                    <ul className="list-disc list-inside space-y-1">
-                      {item.descriptions.map((desc, descIndex) => (
-                        <li key={descIndex}>
-                          <Text size="sm" className="text-gray-700 dark:text-gray-300">
-                            {desc}
-                          </Text>
-                        </li>
-                      ))}
-                    </ul>
+                    <Text size="sm" className="text-gray-700 dark:text-gray-300 whitespace-pre-line">
+                      {item.description}
+                    </Text>
                   </div>
                 </div>
               ))}
