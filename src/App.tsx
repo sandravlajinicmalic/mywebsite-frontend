@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { Login, Home, About } from './pages'
 import { Header, Footer } from './components/molecules'
-import { CurvedBackground } from './components/organisms'
+import { CurvedBackground, AboutCurvedBackground } from './components/organisms'
 import ProtectedRoute from './components/ProtectedRoute'
 import { ROUTES } from './constants'
 import { authService } from './services/auth'
@@ -42,7 +42,7 @@ function App() {
             element={
               <ProtectedRoute>
                 <div className="flex flex-col min-h-screen relative">
-                  <CurvedBackground />
+                  <AboutCurvedBackground />
                   <Header />
                   <main className="flex-grow relative z-10">
                     <About />
