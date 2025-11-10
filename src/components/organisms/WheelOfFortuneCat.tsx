@@ -1,22 +1,32 @@
 import { useState, useRef, useEffect } from 'react'
 import { Text, Image } from '../atoms'
 import { Button } from '../atoms'
-import { Trophy } from 'lucide-react'
 import Modal from '../molecules/Modal'
 import { wheelService } from '../../services'
 import { authService } from '../../services'
 import { useI18n } from '../../contexts/i18n'
 
 const WHEEL_ITEMS = [
-  'NewIcon',
-  'fancy nickname',
-  'klupko',
-  'cursor',
-  'titula',
-  'tema',
-  'zavrti ponovo',
-  'totalni promasaj'
+  'New Me, Who Dis?',
+  'Fancy Schmancy Nickname',
+  'Chase the Yarn!',
+  'Paw-some Cursor',
+  'Royal Meowjesty',
+  'Color Catastrophe',
+  'Spin Again, Brave Soul',
+  'Total Cat-astrophe'
 ]
+
+const PRIZE_DESCRIPTIONS: Record<string, string> = {
+  'New Me, Who Dis?': 'Your old icon is gone. A new identity has appeared. Embrace the chaos, mystery, and possibly worse hair.',
+  'Fancy Schmancy Nickname': 'Your nickname just got a glow-up. Prepare to outshine everyone — it\'s giving ✨main character energy✨.',
+  'Chase the Yarn!': 'A wild yarn ball appears! Push it, chase it, or let it roll into existential questions about your life choices.',
+  'Paw-some Cursor': 'Your cursor is now a cat paw. Warning: excessive cuteness may decrease productivity by 73%.',
+  'Royal Meowjesty': 'You\'ve been knighted by the Cat Kingdom. Please use your power responsibly… or dramatically.',
+  'Color Catastrophe': 'Everything pink is now blue, everything blue is now pink. It\'s fashion. It\'s chaos. It\'s art.',
+  'Spin Again, Brave Soul': 'Fortune says: "Not today." But you get another chance — because persistence (and a bit of luck) never hurt anyone.',
+  'Total Cat-astrophe': 'Congratulations! You\'ve achieved absolutely nothing. That\'s still a kind of win, right? 😹'
+}
 
 const WheelOfFortuneCat = () => {
   const { t } = useI18n()
@@ -24,9 +34,9 @@ const WheelOfFortuneCat = () => {
   const [isSpinning, setIsSpinning] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [winningItem, setWinningItem] = useState<string | null>(null)
-  const [trophyAnimated, setTrophyAnimated] = useState(false)
   const [canSpin, setCanSpin] = useState(true)
   const [cooldownSeconds, setCooldownSeconds] = useState(0)
+  const [confetti, setConfetti] = useState<Array<{ id: number; color: string; left: number; delay: number; duration: number; horizontal: number; vertical: number }>>([])
   const wheelRef = useRef<HTMLDivElement>(null)
   const lastSpinTimeRef = useRef<number | null>(null)
 
@@ -86,6 +96,13 @@ const WheelOfFortuneCat = () => {
 
     return () => clearInterval(interval)
   }, [])
+
+  // Clear confetti when modal closes
+  useEffect(() => {
+    if (!isModalOpen) {
+      setConfetti([])
+    }
+  }, [isModalOpen])
 
   const spinWheel = async () => {
     if (isSpinning || !canSpin) return
@@ -162,23 +179,44 @@ const WheelOfFortuneCat = () => {
         setCanSpin(false)
       }
       
-      setTrophyAnimated(false)
       setTimeout(() => {
         setIsModalOpen(true)
-        setTimeout(() => setTrophyAnimated(true), 100)
+        // Create confetti explosion when modal opens
+        const confettiCount = 50
+        const newConfetti = Array.from({ length: confettiCount }, (_, i) => {
+          // Random angle for explosion in all directions (0 to 360 degrees)
+          const angle = (Math.PI * 2 * i) / confettiCount + Math.random() * 0.5
+          // Distance for explosion (100-200px)
+          const distance = 100 + Math.random() * 100
+          return {
+            id: i,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            left: 50, // Start from center (50%)
+            delay: Math.random() * 0.2, // Shorter delay for explosion effect
+            duration: 3 + Math.random() * 2, // 3-5 seconds (slower)
+            horizontal: Math.cos(angle) * distance, // X direction based on angle
+            vertical: Math.sin(angle) * distance // Y direction based on angle
+          }
+        })
+        setConfetti(newConfetti)
+        
+        // Clear confetti after animation
+        setTimeout(() => {
+          setConfetti([])
+        }, 6000)
       }, 1000)
     }, 4000)
   }
 
   const colors = [
-    '#F5608E', // vibrantna ružičasta
-    '#64E3EB', // tirkizno-plava
-    '#6DB850', // zelena
-    '#FEE5A4', // svijetložuta / bež ton
-    '#C1A8E0', // svijetloljubičasta
-    '#6DE3CE', // mint-tirkizna
-    '#FE80A7', // svijetla roza
-    '#88D66F'  // svijetlozelena
+'#F76C9B', // lively pink – playful and energetic (for "New Me, Who Dis?")
+'#6EC1E4', // bright pastel blue – cheerful, eye-catching
+'#63D9A0', // minty green – fresh, optimistic
+'#F8D44C', // warm yellow – bright and positive
+'#FFA85C', // peachy orange – fun and inviting
+'#B488E4', // light purple – elegant, royal tone
+'#5ED3C3', // aqua teal – calm but vivid
+'#F7A7A3'  // soft coral red – warm and expressive
   ]
 
   const wheelSize = 500
@@ -292,10 +330,54 @@ const WheelOfFortuneCat = () => {
                   pathData += 'Z'
                   
                   const textAngle = (index * segmentAngle + segmentAngle / 2 - 90) * (Math.PI / 180)
-                  const textRadius = getPotatoRadius(textAngle) * 0.65
+                  const textRadius = getPotatoRadius(textAngle) * 0.60
                   const textX = centerX + textRadius * Math.cos(textAngle)
                   const textY = centerY + textRadius * Math.sin(textAngle)
                   const textRotation = index * segmentAngle + segmentAngle / 2 + 90
+                  
+                  // Calculate approximate text width based on segment angle
+                  const segmentArcLength = (getPotatoRadius(textAngle) * segmentAngle * Math.PI / 180) * 0.80
+                  // Calculate max characters per line - make it smaller to force line breaks
+                  const maxCharsPerLine = Math.floor(segmentArcLength / 9)
+                  
+                  // Split text into lines that fit the segment width (max 2 lines)
+                  const words = item.split(' ')
+                  const lines: string[] = []
+                  
+                  // If text has more than 2 words or is longer than threshold, split into 2 lines
+                  const shouldSplit = words.length > 2 || item.length > maxCharsPerLine
+                  
+                  if (!shouldSplit) {
+                    // Short text - use one line
+                    lines.push(item)
+                  } else {
+                    // Split into 2 lines - find the best split point
+                    const totalLength = item.length
+                    const targetSplit = Math.floor(totalLength / 2)
+                    
+                    // Find the space closest to the middle
+                    let bestSplitIndex = -1
+                    let bestDistance = Infinity
+                    
+                    for (let i = 0; i < words.length - 1; i++) {
+                      const line1Length = words.slice(0, i + 1).join(' ').length
+                      const distance = Math.abs(line1Length - targetSplit)
+                      if (distance < bestDistance) {
+                        bestDistance = distance
+                        bestSplitIndex = i
+                      }
+                    }
+                    
+                    if (bestSplitIndex >= 0 && bestSplitIndex < words.length - 1) {
+                      lines.push(words.slice(0, bestSplitIndex + 1).join(' '))
+                      lines.push(words.slice(bestSplitIndex + 1).join(' '))
+                    } else {
+                      // Fallback: split in the middle of word count
+                      const midPoint = Math.max(1, Math.floor(words.length / 2))
+                      lines.push(words.slice(0, midPoint).join(' '))
+                      lines.push(words.slice(midPoint).join(' '))
+                    }
+                  }
                   
                   return (
                     <g key={index}>
@@ -308,21 +390,23 @@ const WheelOfFortuneCat = () => {
                           x="0"
                           y="0"
                           textAnchor="middle"
-                          dominantBaseline="middle"
+                          dominantBaseline="central"
                           className="fill-white font-bold pointer-events-none select-none"
                           style={{
-                            fontSize: '18px',
+                            fontSize: '16px',
                             fontWeight: 'bold',
+                            letterSpacing: '0.2px',
                           }}
                         >
-                          {item.split(' ').map((word, i) => (
+                          {lines.map((line, i) => (
                             <tspan
                               key={i}
                               x="0"
-                              dy={i === 0 ? '-0.3em' : '1em'}
+                              dy={i === 0 ? '0' : '1em'}
                               textAnchor="middle"
+                              dominantBaseline="central"
                             >
-                              {word}
+                              {line}
                             </tspan>
                           ))}
                         </text>
@@ -374,43 +458,79 @@ const WheelOfFortuneCat = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        title={
+          <Text as="h3" size="2xl" weight="bold" className="text-white">
+            Behold! The Wheel Has Spoken!
+          </Text>
+        }
+        footer={
+          <Text size="sm" weight="normal" className="text-white text-center italic">
+            Don't blame the wheel. Blame the cat that coded it.
+          </Text>
+        }
         size="md"
       >
-        <div className="flex flex-col items-center justify-center py-6">
-          <div className="mb-6">
-            <Trophy 
-              className={`w-20 h-20 text-yellow-400 transition-all duration-500 hover:scale-110 ${
-                trophyAnimated 
-                  ? 'scale-100 rotate-0 opacity-100' 
-                  : 'scale-0 rotate-180 opacity-0'
-              }`}
-              strokeWidth={2}
-            />
-          </div>
-          <Text 
-            as="h3" 
-            size="2xl" 
-            weight="bold" 
-            className="mb-4 text-center text-white"
-          >
-            Rezultat
-          </Text>
-          <Text 
-            size="xl" 
-            weight="semibold" 
-            className="text-center text-white mb-6"
-          >
-            {winningItem}
-          </Text>
-          <Button
-            onClick={() => setIsModalOpen(false)}
-            variant="primary"
-            size="md"
-          >
-            Zatvori
-          </Button>
+        <div className="flex flex-col items-center justify-center py-6 px-4 relative overflow-hidden">
+          {winningItem && (
+            <>
+              <div className="relative w-full flex justify-center mb-8">
+                {confetti.map((conf) => (
+                  <div
+                    key={conf.id}
+                    className="confetti-piece"
+                    style={{
+                      position: 'absolute',
+                      left: `${conf.left}%`,
+                      top: '50%',
+                      width: '10px',
+                      height: '10px',
+                      backgroundColor: conf.color,
+                      borderRadius: '50%',
+                      animationDelay: `${conf.delay}s`,
+                      animationDuration: `${conf.duration}s`,
+                      '--horizontal': `${conf.horizontal}px`,
+                      '--vertical': `${conf.vertical}px`,
+                      pointerEvents: 'none',
+                      zIndex: 10,
+                      transform: 'translate(-50%, -50%)'
+                    } as React.CSSProperties}
+                  />
+                ))}
+                <Text 
+                  as="h3" 
+                  size="2xl" 
+                  weight="bold" 
+                  className="text-center text-white relative z-20 pb-2"
+                >
+                  "{winningItem}"
+                </Text>
+              </div>
+              <Text 
+                size="lg" 
+                weight="normal" 
+                className="text-center text-white mb-6 max-w-md leading-relaxed"
+              >
+                {PRIZE_DESCRIPTIONS[winningItem] || winningItem}
+              </Text>
+            </>
+          )}
         </div>
       </Modal>
+      <style>{`
+        @keyframes confettiExplosion {
+          0% {
+            transform: translate(-50%, -50%) translateX(0) translateY(0) rotate(0deg) scale(1);
+            opacity: 1;
+          }
+          100% {
+            transform: translate(-50%, -50%) translateX(var(--horizontal, 0px)) translateY(var(--vertical, 0px)) rotate(720deg) scale(0.5);
+            opacity: 0;
+          }
+        }
+        .confetti-piece {
+          animation: confettiExplosion ease-out forwards;
+        }
+      `}</style>
     </section>
   )
 }
