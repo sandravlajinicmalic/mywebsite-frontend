@@ -379,7 +379,7 @@ const WheelOfFortuneCat = () => {
         <div className="flex flex-col items-center justify-center py-6">
           <div className="mb-6">
             <Trophy 
-              className={`w-20 h-20 text-yellow-500 dark:text-yellow-400 transition-all duration-500 hover:scale-110 ${
+              className={`w-20 h-20 text-yellow-400 transition-all duration-500 hover:scale-110 ${
                 trophyAnimated 
                   ? 'scale-100 rotate-0 opacity-100' 
                   : 'scale-0 rotate-180 opacity-0'
@@ -391,14 +391,14 @@ const WheelOfFortuneCat = () => {
             as="h3" 
             size="2xl" 
             weight="bold" 
-            className="mb-4 text-center text-gray-900 dark:text-white"
+            className="mb-4 text-center text-white"
           >
             Rezultat
           </Text>
           <Text 
             size="xl" 
             weight="semibold" 
-            className="text-center text-indigo-600 dark:text-indigo-400 mb-6"
+            className="text-center text-white mb-6"
           >
             {winningItem}
           </Text>

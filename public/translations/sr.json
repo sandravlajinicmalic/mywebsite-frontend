@@ -2,6 +2,7 @@
   "nav.home": "Početna",
   "nav.about": "O meni",
   "nav.logout": "Odjavi se",
+  "nav.deleteProfile": "Obriši profil",
   "nav.language": "Jezik",
   "nav.language.sr": "Српски",
   "nav.language.en": "English",

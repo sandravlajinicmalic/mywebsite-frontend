@@ -103,25 +103,26 @@ const Modal = ({
       
       {/* Modal Content */}
       <div 
-        className={`relative bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full ${sizes[size]} max-h-[90vh] flex flex-col transition-all duration-300 ${
+        className={`relative bg-black rounded-lg w-full ${sizes[size]} max-h-[90vh] flex flex-col transition-all duration-300 ${
           isAnimating 
             ? 'opacity-100 scale-100 translate-y-0' 
             : 'opacity-0 scale-95 translate-y-4'
         }`}
+        style={{ boxShadow: '0 0 30px rgba(244, 114, 182, 0.5), 0 0 60px rgba(244, 114, 182, 0.3)' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between p-6 border-b border-[#f472b6]">
             {title && (
-              <Text as="h3" size="2xl" weight="bold" className="text-gray-900 dark:text-white">
+              <Text as="h3" size="2xl" weight="bold" className="text-white">
                 {title}
               </Text>
             )}
             {showCloseButton && (
               <button
                 onClick={onClose}
-                className="ml-auto text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                className="ml-auto text-white hover:text-[#f472b6] transition-colors"
                 aria-label="Zatvori modal"
               >
                 <svg 

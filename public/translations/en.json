@@ -2,6 +2,7 @@
   "nav.home": "Home",
   "nav.about": "About",
   "nav.logout": "Logout",
+  "nav.deleteProfile": "Delete Profile",
   "nav.language": "Language",
   "nav.language.sr": "Српски",
   "nav.language.en": "English",
