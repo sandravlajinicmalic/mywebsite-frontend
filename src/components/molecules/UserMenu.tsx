@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { LogOut, Globe, Trash2 } from 'lucide-react'
+import { LogOut, Globe, Trash2, Cat } from 'lucide-react'
 import { Text } from '../atoms'
 import { useI18n } from '../../contexts/i18n'
 import { authService } from '../../services/auth'
@@ -94,9 +94,12 @@ const UserMenu = ({ userNickname, userAvatar }: UserMenuProps) => {
         >
           {/* User Info */}
           <div className="px-4 border-b py-4" style={{ borderColor: 'rgba(244, 114, 182, 0.5)' }}>
-            <Text size="sm" weight="medium" className="text-white">
-              {userNickname}
-            </Text>
+            <div className="flex items-center gap-2">
+              <Cat className="w-5 h-5 text-white" />
+              <Text size="sm" weight="medium" className="text-white">
+                {userNickname}
+              </Text>
+            </div>
           </div>
 
           {/* Language Selector */}
