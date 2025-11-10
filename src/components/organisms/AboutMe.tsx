@@ -152,10 +152,10 @@ const AboutMe = () => {
 
           {/* My Toolbox of Tricks */}
           <div>
-            <Text as="h2" size="4xl" weight="bold" className="mb-4 text-center text-gray-900 dark:text-white">
+            <Text as="h2" size="4xl" weight="bold" className="mb-4 text-center text-white dark:text-white" style={{ textShadow: '2px 2px 4px rgba(236, 72, 153, 0.8), 0 0 8px rgba(236, 72, 153, 0.5)' }}>
               {t('aboutMe.tools.title')}
             </Text>
-            <Text size="lg" color="muted" className="mb-12 text-center">
+            <Text size="lg" className="mb-12 text-center text-white dark:text-white">
               {t('aboutMe.tools.subtitle')}
             </Text>
             
@@ -172,7 +172,7 @@ const AboutMe = () => {
                     {category.techs.map((tech) => {
                       const iconUrl = getIconUrl(tech);
                       return (
-                        <span key={tech} className="inline-flex items-center gap-2 px-4 py-2 bg-black rounded-lg text-sm text-white">
+                        <span key={tech} className="inline-flex items-center gap-2 px-4 py-2 bg-black rounded-lg text-sm text-white border" style={{ borderColor: 'rgba(236, 72, 153, 0.5)' }}>
                           <img
                             src={iconUrl}
                             alt={tech}

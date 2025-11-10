@@ -91,33 +91,34 @@ const AboutProject = () => {
         <div className="mb-12 flex flex-col md:flex-row gap-8 pb-12">
           {/* How It All Started */}
           <div className="flex-1">
-            <Text as="h3" size="4xl" weight="bold" className="mb-4 text-gray-900 dark:text-white">
+            <Text as="h3" size="4xl" weight="bold" className="mb-4 text-gray-900 dark:text-white" style={{ textShadow: '2px 2px 4px rgba(236, 72, 153, 0.8), 0 0 8px rgba(236, 72, 153, 0.5)' }}>
               {t('aboutProject.howItStarted.title')}
             </Text>
-            <Text size="lg" color="muted" className="mb-4 leading-relaxed">
+            <Text size="lg" className="mb-4 leading-relaxed text-white dark:text-white max-w-sm">
               {t('aboutProject.howItStarted.paragraph1')}
             </Text>
-            <Text size="lg" color="muted" className="mb-4 leading-relaxed">
+            <Text size="lg" className="mb-4 leading-relaxed text-white dark:text-white max-w-sm">
               {t('aboutProject.howItStarted.paragraph2')}
             </Text>
-            <div className="mt-4 flex gap-4">
+            <div className="mt-4 relative">
               <img
                 src="/images/thinking1.png"
                 alt="Thinking cat"
-                className="w-1/4 max-w-xs h-auto object-contain"
+                className="absolute w-1/4 max-w-xs h-auto object-contain"
+                style={{ top: '50px', left: '100px' }}
               />
             </div>
           </div>
 
           {/* Tech Stack */}
           <div className="flex-1">
-            <Text as="h3" size="4xl" weight="bold" className="mb-4 text-gray-900 dark:text-white">
+            <Text as="h3" size="4xl" weight="bold" className="mb-4 text-black dark:text-black !font-bold" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.3)' }}>
               {t('aboutProject.techStack.title')}
             </Text>
-            <Text size="lg" color="muted" className="mb-6 leading-relaxed">
+            <Text size="lg" className="mb-6 leading-relaxed text-black dark:text-black">
               {t('aboutProject.techStack.description')}
             </Text>
-            <Text size="base" weight="semibold" className="mb-4 text-gray-900 dark:text-white">
+            <Text size="base" weight="semibold" className="mb-4 text-black dark:text-black">
               {t('aboutProject.techStack.subtitle')}
             </Text>
             <div className="flex flex-wrap gap-3 mb-4">
@@ -142,15 +143,15 @@ const AboutProject = () => {
         {/* Key Features */}
         <div className="pb-20 flex flex-col md:flex-row gap-8 items-center">
           {/* Features List - Left Side */}
-          <div className="flex-1 text-right">
-            <Text as="h3" size="4xl" weight="bold" className="mb-4 text-gray-900 dark:text-white">
+          <div className="flex-[1.2] text-right">
+            <Text as="h3" size="4xl" weight="bold" className="mb-4 text-gray-900 dark:text-white" style={{ textShadow: '2px 2px 4px rgba(236, 72, 153, 0.8), 0 0 8px rgba(236, 72, 153, 0.5)' }}>
               {t('aboutProject.features.title')}
             </Text>
             <ul className="space-y-1">
               {keyFeatures.map((feature, index) => (
                 <li key={index} className="flex flex-col items-end">
                   <Text as="h4" size="lg" className="text-gray-900 dark:text-white">
-                    {feature.title} <span className="text-base font-normal italic text-gray-500 dark:text-gray-400">– {feature.description}</span>
+                    {feature.title} <span className="text-base font-normal italic text-gray-500 dark:text-gray-400 font-sans">– {feature.description}</span>
                   </Text>
                 </li>
               ))}
@@ -162,17 +163,17 @@ const AboutProject = () => {
             <img
               src="/images/reading.png"
               alt="Reading cat"
-              className="w-auto max-w-xs h-auto object-contain"
+              className="w-auto max-w-[260px] h-auto object-contain"
             />
           </div>
         </div>
 
         {/* Documentation & Links */}
         <div className="mb-12 text-center">
-          <Text as="h3" size="4xl" weight="bold" className="mb-4 text-gray-900 dark:text-white">
+          <Text as="h3" size="4xl" weight="bold" className="mb-4 text-white dark:text-white" style={{ textShadow: '2px 2px 4px rgba(236, 72, 153, 0.8), 0 0 8px rgba(236, 72, 153, 0.5)' }}>
             {t('aboutProject.docs.title')}
           </Text>
-          <Text size="lg" color="muted" className="mb-6 leading-relaxed">
+          <Text size="lg" className="mb-6 leading-relaxed text-white dark:text-white">
             {t('aboutProject.docs.subtitle')}
           </Text>
           <ul className="space-y-1 flex flex-col items-center">
@@ -182,11 +183,9 @@ const AboutProject = () => {
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline transition-colors"
+                  className="inline-flex items-center gap-2 text-lg text-[#06B6D4] hover:text-[#0891B2] hover:underline transition-colors"
                 >
-                  <Text size="lg" className="text-blue-600 dark:text-blue-400">
-                    {link.label}
-                  </Text>
+                  {link.label}
                 </a>
               </li>
             ))}

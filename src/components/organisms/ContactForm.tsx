@@ -45,11 +45,11 @@ const ContactForm = () => {
       <div className="max-w-6xl mx-auto">
         {/* Title and subtitle above */}
         <div className="text-right mb-6">
-          <Text as="h2" size="3xl" weight="bold" className="mb-4 text-gray-900 dark:text-white">
+          <Text as="h2" size="4xl" weight="bold" className="mb-4 text-black dark:text-black !font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
             Let's Talk (or Meow)
           </Text>
-          <div className="w-1/2 ml-auto">
-            <Text size="lg" className="text-white">
+          <div className="w-1/2 ml-auto pb-4">
+            <Text size="lg" className="text-black dark:text-black">
               Got questions, feedback, or just want to say hi? Drop a message below — I promise my SmartChat won't answer this one for me.
             </Text>
           </div>
