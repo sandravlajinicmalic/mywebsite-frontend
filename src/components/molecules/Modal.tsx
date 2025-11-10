@@ -4,10 +4,12 @@ import { Text } from '../atoms'
 export interface ModalProps {
   isOpen: boolean
   onClose: () => void
-  title?: string
+  title?: string | ReactNode
   children: ReactNode
+  footer?: ReactNode
   size?: 'sm' | 'md' | 'lg' | 'xl'
   showCloseButton?: boolean
+  disableBodyScroll?: boolean
 }
 
 const Modal = ({ 
@@ -15,8 +17,10 @@ const Modal = ({
   onClose, 
   title, 
   children, 
+  footer,
   size = 'md',
-  showCloseButton = true 
+  showCloseButton = true,
+  disableBodyScroll = false
 }: ModalProps) => {
   const [isAnimating, setIsAnimating] = useState(false)
   const scrollYRef = useRef<number>(0)
@@ -108,16 +112,22 @@ const Modal = ({
             ? 'opacity-100 scale-100 translate-y-0' 
             : 'opacity-0 scale-95 translate-y-4'
         }`}
-        style={{ boxShadow: '0 0 30px rgba(244, 114, 182, 0.5), 0 0 60px rgba(244, 114, 182, 0.3)' }}
+        style={{ boxShadow: '0 0 15px rgba(244, 114, 182, 0.3), 0 0 30px rgba(244, 114, 182, 0.2)' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div className="flex items-center justify-between p-6 border-b border-[#f472b6]">
+          <div className="flex items-center justify-between p-6 border-b" style={{ borderColor: 'rgba(244, 114, 182, 0.5)' }}>
             {title && (
-              <Text as="h3" size="2xl" weight="bold" className="text-white">
-                {title}
-              </Text>
+              typeof title === 'string' ? (
+                <Text as="h3" size="2xl" weight="bold" className="text-white">
+                  {title}
+                </Text>
+              ) : (
+                <div className="text-white">
+                  {title}
+                </div>
+              )
             )}
             {showCloseButton && (
               <button
@@ -144,9 +154,16 @@ const Modal = ({
         )}
 
         {/* Body */}
-        <div className="p-6 overflow-y-auto flex-1" style={{ scrollbarGutter: 'stable' }}>
+        <div className={`${disableBodyScroll ? '' : 'p-6'} flex-1 ${disableBodyScroll ? '' : 'overflow-y-auto'}`} style={{ scrollbarGutter: 'stable' }}>
           {children}
         </div>
+
+        {/* Footer */}
+        {footer && (
+          <div className="flex items-center justify-center p-6 border-t" style={{ borderColor: 'rgba(244, 114, 182, 0.5)' }}>
+            {footer}
+          </div>
+        )}
       </div>
     </div>
   )

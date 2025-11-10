@@ -189,50 +189,85 @@ const Header = () => {
       <Modal
         isOpen={isHistoryModalOpen}
         onClose={() => setIsHistoryModalOpen(false)}
-        title={t('header.rewardHistoryTitle')}
+        title={
+          <div className="flex items-center gap-3">
+            <Trophy className="w-6 h-6 text-white" />
+            <Text as="h3" size="2xl" weight="bold" className="text-white">
+              {t('header.rewardHistoryTitle')}
+            </Text>
+          </div>
+        }
+        footer={
+          <Text size="sm" weight="normal" className="text-white text-center italic">
+            No cats were bribed in the making of these rewards.
+          </Text>
+        }
         size="md"
+        disableBodyScroll={true}
       >
-        <div className="py-4">
-          {isLoadingHistory ? (
-            <div className="flex justify-center items-center py-8">
-              <Text className="text-white">{t('header.loading')}</Text>
-            </div>
-          ) : spinHistory.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-8">
-              <Trophy className="w-16 h-16 text-[#f472b6] mb-4" />
-              <Text className="text-white text-center">
-                {t('header.noRewards')}
-              </Text>
-            </div>
-          ) : (
-            <div className="space-y-3" style={{ scrollbarGutter: 'stable' }}>
-              {spinHistory.map((spin) => (
-                <div
-                  key={spin.id}
-                  className="flex items-center justify-between p-4 bg-gray-900 rounded-lg border border-[#f472b6]"
+        {isLoadingHistory ? (
+          <div className="flex justify-center items-center py-8 m-6">
+            <Text className="text-white">{t('header.loading')}</Text>
+          </div>
+        ) : spinHistory.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-8 m-6">
+            <Trophy className="w-16 h-16 text-[#f472b6] mb-4" />
+            <Text className="text-white text-center">
+              {t('header.noRewards')}
+            </Text>
+          </div>
+        ) : (
+          <div 
+            className={`space-y-3 my-6 ml-6 mr-[5px] ${spinHistory.length > 5 ? 'overflow-y-scroll max-h-[200px] min-h-0 custom-scrollbar' : ''}`}
+            style={{ 
+              scrollbarGutter: 'stable', 
+              maxHeight: spinHistory.length > 5 ? '200px' : 'none',
+              overflowY: spinHistory.length > 5 ? 'scroll' : 'visible',
+              display: 'block'
+            }}
+          >
+            {spinHistory.map((spin) => (
+              <div
+                key={spin.id}
+                className="flex items-center justify-between gap-4 mr-6"
+              >
+                <Text 
+                  size="lg" 
+                  weight="semibold" 
+                  className="text-white"
                 >
-                  <div className="flex-1">
-                    <Text 
-                      size="lg" 
-                      weight="semibold" 
-                      className="text-white mb-1"
-                    >
-                      {spin.reward}
-                    </Text>
-                    <Text 
-                      size="sm" 
-                      className="text-gray-300"
-                    >
-                      {formatDate(spin.created_at)}
-                    </Text>
-                  </div>
-                  <Trophy className="w-6 h-6 text-yellow-400 ml-4" />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+                  {spin.reward}
+                </Text>
+                <Text 
+                  size="sm" 
+                  className="text-gray-300"
+                >
+                  {formatDate(spin.created_at)}
+                </Text>
+              </div>
+            ))}
+          </div>
+        )}
       </Modal>
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #9ca3af;
+          border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #6b7280;
+        }
+        .custom-scrollbar {
+          scrollbar-width: thin;
+          scrollbar-color: #9ca3af transparent;
+        }
+      `}</style>
     </header>
   )
 }
