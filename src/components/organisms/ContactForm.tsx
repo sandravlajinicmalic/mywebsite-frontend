@@ -89,7 +89,7 @@ const ContactForm = () => {
                   </p>
                 )}
                 {success && (
-                  <p className="mt-1 text-sm text-green-600 dark:text-green-400">
+                  <p className="mt-1 text-sm text-black dark:text-black">
                     {t('contact.success') || 'Message sent successfully!'}
                   </p>
                 )}

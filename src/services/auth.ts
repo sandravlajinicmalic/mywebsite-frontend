@@ -23,6 +23,15 @@ export interface LoginRequest {
   nickname: string
 }
 
+export interface ValidationErrors {
+  email?: string
+  nickname?: string
+}
+
+export interface LoginError extends Error {
+  errors?: ValidationErrors
+}
+
 // Auth service
 export const authService = {
   /**
@@ -43,10 +52,27 @@ export const authService = {
       
       return response.data
     } catch (error: unknown) {
-      // Extract error message from response
+      // Extract error message and validation errors from response
       if (error && typeof error === 'object' && 'response' in error) {
-        const axiosError = error as { response?: { data?: { error?: string } } }
-        const errorMessage = axiosError.response?.data?.error || 'An error occurred during login'
+        const axiosError = error as { 
+          response?: { 
+            data?: { 
+              error?: string
+              errors?: ValidationErrors
+            } 
+          } 
+        }
+        const errorData = axiosError.response?.data
+        const validationErrors = errorData?.errors
+        
+        // Ako ima specifičnih grešaka za polja, baci error sa errors objektom
+        if (validationErrors) {
+          const loginError = new Error(errorData?.error || 'Validation failed') as LoginError
+          loginError.errors = validationErrors
+          throw loginError
+        }
+        
+        const errorMessage = errorData?.error || 'An error occurred during login'
         throw new Error(errorMessage)
       }
       throw new Error('An error occurred during login. Please try again.')

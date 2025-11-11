@@ -25,11 +25,11 @@ const Input = ({
   className = '',
   ...props 
 }: InputProps) => {
-  const baseStyles = 'w-full px-4 py-2 border rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2'
+  const baseStyles = 'w-full px-4 py-2 border rounded-lg transition-colors duration-200 focus:outline-none focus:ring-1 focus:ring-offset-0 text-white bg-black placeholder:text-gray-400'
   
-  const normalStyles = 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500'
-  const errorStyles = 'border-red-500 focus:border-red-500 focus:ring-red-500'
-  const disabledStyles = disabled ? 'bg-gray-100 cursor-not-allowed opacity-50' : 'bg-white'
+  const normalStyles = 'border-pink-500/30 focus:border-pink-500/50 focus:ring-pink-500 focus:ring-offset-pink-500/50'
+  const errorStyles = 'border-pink-500/30 focus:border-pink-500/50 focus:ring-pink-500 focus:ring-offset-pink-500/50'
+  const disabledStyles = disabled ? 'bg-gray-900 cursor-not-allowed opacity-50' : ''
   
   const inputClasses = `${baseStyles} ${error ? errorStyles : normalStyles} ${disabledStyles} ${className}`
   
@@ -50,7 +50,7 @@ const Input = ({
         {...props}
       />
       {error && (
-        <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+        <p className="mt-1 text-sm text-white">
           {error}
         </p>
       )}
