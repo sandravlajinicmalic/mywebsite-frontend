@@ -122,7 +122,7 @@ const AboutMe = () => {
                 >
                   {/* Vertical road path in S shape - first curve starts from right side, wide amplitudes */}
                   <path
-                    d="M 1100 0 Q 50 100, 600 200 S 1150 350, 600 500 S 50 650, 600 700"
+                    d="M 1100 0 Q 50 100, 600 200 S 1150 350, 600 500 S 300 750, 600 850"
                     stroke="#EC4899"
                     strokeWidth="60"
                     fill="none"
@@ -131,7 +131,7 @@ const AboutMe = () => {
                   />
                   {/* White center line */}
                   <path
-                    d="M 1100 0 Q 50 100, 600 200 S 1150 350, 600 500 S 50 650, 600 700"
+                    d="M 1100 0 Q 50 100, 600 200 S 1150 350, 600 500 S 300 750, 600 850"
                     stroke="white"
                     strokeWidth="3"
                     fill="none"
@@ -141,30 +141,15 @@ const AboutMe = () => {
                 </svg>
               </div>
               
-              {/* Content positioned on the right side, aligned with curves */}
-              <div className="relative w-full mr-0">
+              {/* Content positioned one below another */}
+              <div className="relative w-full flex flex-col items-center gap-8 mt-8">
                 {careerPath.map((item, index) => {
-                  // Absolute positioning in px for each text block - adjust as needed
-                  // MANIA (0), Bondex (1), Endava (2)
-                  const positions = [
-                    { top: '-20px', right: 'calc(50% - 450px)', left: 'auto' }, // MANIA - right side
-                    { top: '200px', left: 'calc(50% - 500px)', right: 'auto' }, // Bondex - left side
-                    { top: '300px', right: 'calc(50% - 400px)', left: 'auto' }  // Endava - right side
-                  ];
-                  const pos = positions[index];
-                  const isRight = index % 2 === 0;
-                  
                   return (
                     <div 
                       key={index} 
-                      className={`absolute ${isRight ? 'text-left' : 'text-right'} w-[30%] max-w-sm`}
-                      style={{
-                        top: pos.top,
-                        left: pos.left,
-                        right: pos.right
-                      }}
+                      className="w-full max-w-md"
                     >
-                      <div className="pb-8">
+                      <div className="bg-black rounded-lg p-4">
                         <div className="mb-2 flex flex-col">
                           <Text size="lg" weight="semibold" className="text-white">
                             {item.company}
