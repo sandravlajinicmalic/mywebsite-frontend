@@ -134,5 +134,30 @@ export const authService = {
     localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
     localStorage.removeItem(STORAGE_KEYS.USER)
   },
+
+  /**
+   * Delete user account
+   */
+  async deleteAccount(): Promise<void> {
+    try {
+      await api.delete('/auth/delete')
+      
+      // Clear storage after successful deletion
+      this.logout()
+    } catch (error: unknown) {
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { 
+          response?: { 
+            data?: { 
+              error?: string
+            } 
+          } 
+        }
+        const errorMessage = axiosError.response?.data?.error || 'Failed to delete account'
+        throw new Error(errorMessage)
+      }
+      throw new Error('Failed to delete account. Please try again.')
+    }
+  },
 }
 

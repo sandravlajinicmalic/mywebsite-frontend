@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { LogOut, Globe, Trash2, Cat } from 'lucide-react'
-import { Text } from '../atoms'
+import { Text, Button } from '../atoms'
+import { Modal } from './'
 import { useI18n } from '../../contexts/i18n'
 import { authService } from '../../services/auth'
 import { useNavigate } from 'react-router-dom'
@@ -14,6 +15,8 @@ interface UserMenuProps {
 const UserMenu = ({ userNickname, userAvatar }: UserMenuProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const { t, language, setLanguage } = useI18n()
   const navigate = useNavigate()
@@ -52,9 +55,37 @@ const UserMenu = ({ userNickname, userAvatar }: UserMenuProps) => {
   }
 
   const handleDeleteProfile = () => {
-    // TODO: Implement delete profile functionality
-    console.log('Delete profile clicked')
+    setIsDeleteModalOpen(true)
     setIsOpen(false)
+  }
+
+  const handleDeleteConfirm = async () => {
+    setIsDeleting(true)
+    try {
+      await authService.deleteAccount()
+      // Close modal first
+      setIsDeleteModalOpen(false)
+      setIsDeleting(false)
+      // Navigate to login after successful deletion
+      navigate(ROUTES.LOGIN, { replace: true })
+      // Force page reload to ensure clean state
+      setTimeout(() => {
+        window.location.reload()
+      }, 100)
+    } catch (error) {
+      console.error('Error deleting account:', error)
+      setIsDeleting(false)
+      alert(
+        error instanceof Error 
+          ? error.message 
+          : (t('nav.deleteProfile.error') || 'Failed to delete account. Please try again.')
+      )
+    }
+  }
+
+  const handleDeleteCancel = () => {
+    setIsDeleteModalOpen(false)
+    setIsDeleting(false)
   }
 
   const handleLanguageChange = (lang: 'sr' | 'en') => {
@@ -157,6 +188,43 @@ const UserMenu = ({ userNickname, userAvatar }: UserMenuProps) => {
           </div>
         </div>
       )}
+
+      {/* Delete Account Modal */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={handleDeleteCancel}
+        title="Danger Zone Ahead!"
+        size="md"
+        footer={
+          <div className="flex gap-3 w-full">
+            <Button
+              variant="outline"
+              onClick={handleDeleteConfirm}
+              className="flex-1 bg-black"
+              disabled={isDeleting}
+            >
+              {isDeleting ? 'Deleting...' : 'Delete Anyway'}
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleDeleteCancel}
+              className="flex-1"
+              disabled={isDeleting}
+            >
+              Never Mind
+            </Button>
+          </div>
+        }
+      >
+        <div className="space-y-4 text-center">
+          <Text size="base" className="text-white">
+            This action can't be undone — unless you know time travel (in which case, cool).
+          </Text>
+          <Text size="base" className="text-white">
+            Proceed with caution… and regret later.
+          </Text>
+        </div>
+      </Modal>
     </div>
   )
 }

@@ -42,7 +42,7 @@ const STORAGE_KEY = 'app_language'
 export const I18nProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem(STORAGE_KEY) as Language
-    return saved && (saved === 'sr' || saved === 'en') ? saved : 'sr'
+    return saved && (saved === 'sr' || saved === 'en') ? saved : 'en'
   })
   const [translations, setTranslations] = useState<Record<string, string>>({})
   const [isLoading, setIsLoading] = useState(true)
