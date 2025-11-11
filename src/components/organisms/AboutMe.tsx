@@ -1,4 +1,4 @@
-import { Text } from '../atoms'
+import { Text, Image } from '../atoms'
 import { useI18n } from '../../contexts/i18n'
 
 const AboutMe = () => {
@@ -107,7 +107,7 @@ const AboutMe = () => {
         <div className="flex flex-col gap-8">
           {/* Career Timeline */}
           <div className='mb-16'>
-            <Text as="h1" size="4xl" weight="bold" className="mb-8 text-gray-900 dark:text-white">
+            <Text as="h1" size="4xl" weight="bold" className="mb-8 text-gray-900 dark:text-white" style={{ textShadow: '2px 2px 4px rgba(236, 72, 153, 0.8), 0 0 8px rgba(236, 72, 153, 0.5)' }}>
               {t('aboutMe.career.title')}
             </Text>
             <div className="relative flex h-screen justify-center">
@@ -141,33 +141,76 @@ const AboutMe = () => {
                 </svg>
               </div>
               
-              {/* Content positioned one below another */}
-              <div className="relative w-full flex flex-col items-center gap-8 mt-8">
-                {careerPath.map((item, index) => {
-                  return (
-                    <div 
-                      key={index} 
-                      className="w-full max-w-md"
-                    >
-                      <div className="bg-black rounded-lg p-4">
-                        <div className="mb-2 flex flex-col">
-                          <Text size="lg" weight="semibold" className="text-white">
-                            {item.company}
-                          </Text>
-                          <Text size="sm" className="text-white">
-                            {item.location}
-                          </Text>
-                        </div>
-                        <Text size="base" weight="semibold" className="text-white mb-3">
-                          {item.role}
-                        </Text>
-                        <Text size="base" className="text-white whitespace-pre-line">
-                          {item.description}
-                        </Text>
-                      </div>
+              {/* Content positioned one below another, centered */}
+              <div className="relative w-full flex flex-col items-center justify-start gap-6 h-full -mt-10 px-8">
+                {/* MANIA Marketing Agency */}
+                <div className="w-[350px] self-end -mt-4">
+                  <div className="text-right">
+                    <div className="mb-2 flex flex-col items-end">
+                      <Text size="2xl" weight="semibold" className="!text-black uppercase">
+                        {careerPath[0].company}
+                      </Text>
+                      <Text size="lg" className="!text-black">
+                        {careerPath[0].location}
+                      </Text>
                     </div>
-                  );
-                })}
+                    <Text size="xl" weight="semibold" className="!text-black mb-3">
+                      {careerPath[0].role}
+                    </Text>
+                    <Text size="lg" className="!text-black whitespace-pre-line">
+                      {careerPath[0].description}
+                    </Text>
+                  </div>
+                </div>
+
+                {/* Bondex B.V. */}
+                <div className="w-[600px] self-start ml-12 -mt-16">
+                  <div className="text-left">
+                    <div className="mb-2 flex flex-col items-start">
+                      <Text size="2xl" weight="semibold" className="!text-black uppercase">
+                        {careerPath[1].company}
+                      </Text>
+                      <Text size="lg" className="!text-black">
+                        {careerPath[1].location}
+                      </Text>
+                    </div>
+                    <Text size="xl" weight="semibold" className="!text-black mb-3">
+                      {careerPath[1].role}
+                    </Text>
+                    <Text size="lg" className="!text-black whitespace-pre-line">
+                      {careerPath[1].description}
+                    </Text>
+                  </div>
+                </div>
+
+                {/* Endava */}
+                <div className="w-[700px] self-end">
+                  <div className="text-right">
+                    <div className="mb-2 flex flex-col items-end">
+                      <Text size="2xl" weight="semibold" className="!text-black uppercase">
+                        {careerPath[2].company}
+                      </Text>
+                      <Text size="lg" className="!text-black">
+                        {careerPath[2].location}
+                      </Text>
+                    </div>
+                    <Text size="xl" weight="semibold" className="!text-black mb-3">
+                      {careerPath[2].role}
+                    </Text>
+                    <Text size="lg" className="!text-black whitespace-pre-line">
+                      {careerPath[2].description}
+                    </Text>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Thinking cat image - absolute positioned bottom right */}
+              <div className="absolute -bottom-24 right-36">
+                <Image 
+                  src="/images/thinking2.png" 
+                  alt="Thinking cat" 
+                  className="w-52 h-52"
+                />
               </div>
             </div>
           </div>
