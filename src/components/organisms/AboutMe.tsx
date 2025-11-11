@@ -110,42 +110,79 @@ const AboutMe = () => {
             <Text as="h1" size="4xl" weight="bold" className="mb-8 text-gray-900 dark:text-white">
               {t('aboutMe.career.title')}
             </Text>
-            <div className="relative">
-              {/* Timeline line - continuous through all items */}
-              <div className="absolute left-[16.666%] top-0 bottom-0 w-0.5 bg-gray-300 dark:bg-gray-600"></div>
+            <div className="relative flex h-screen justify-center">
+              {/* Curved Road Path - full width, first curve starts from right side */}
+              <div className="absolute left-0 right-0 w-full -top-32">
+                <svg 
+                  width="100%" 
+                  height="100vh" 
+                  viewBox="0 0 1200 700" 
+                  preserveAspectRatio="none"
+                  className="overflow-visible"
+                >
+                  {/* Vertical road path in S shape - first curve starts from right side, wide amplitudes */}
+                  <path
+                    d="M 1100 0 Q 50 100, 600 200 S 1150 350, 600 500 S 50 650, 600 700"
+                    stroke="#EC4899"
+                    strokeWidth="60"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  {/* White center line */}
+                  <path
+                    d="M 1100 0 Q 50 100, 600 200 S 1150 350, 600 500 S 50 650, 600 700"
+                    stroke="white"
+                    strokeWidth="3"
+                    fill="none"
+                    strokeDasharray="10, 8"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </div>
               
-              <div className="space-y-12">
-                {careerPath.map((item, index) => (
-                  <div key={index} className="relative flex">
-                    {/* Left column - Timeline (1/3) */}
-                    <div className="w-1/3 relative flex items-center justify-center">
-                      {/* Timeline dot */}
-                      <div className="relative z-10">
-                        <div className="w-16 h-16 rounded-full bg-white dark:bg-gray-800 border-4 border-pink-600 dark:border-pink-400 flex items-center justify-center shadow-lg">
-                          <div className="w-3 h-3 rounded-full bg-pink-600 dark:bg-pink-400"></div>
+              {/* Content positioned on the right side, aligned with curves */}
+              <div className="relative w-full mr-0">
+                {careerPath.map((item, index) => {
+                  // Absolute positioning in px for each text block - adjust as needed
+                  // MANIA (0), Bondex (1), Endava (2)
+                  const positions = [
+                    { top: '-20px', right: 'calc(50% - 450px)', left: 'auto' }, // MANIA - right side
+                    { top: '200px', left: 'calc(50% - 500px)', right: 'auto' }, // Bondex - left side
+                    { top: '300px', right: 'calc(50% - 400px)', left: 'auto' }  // Endava - right side
+                  ];
+                  const pos = positions[index];
+                  const isRight = index % 2 === 0;
+                  
+                  return (
+                    <div 
+                      key={index} 
+                      className={`absolute ${isRight ? 'text-left' : 'text-right'} w-[30%] max-w-sm`}
+                      style={{
+                        top: pos.top,
+                        left: pos.left,
+                        right: pos.right
+                      }}
+                    >
+                      <div className="pb-8">
+                        <div className="mb-2 flex flex-col">
+                          <Text size="lg" weight="semibold" className="text-white">
+                            {item.company}
+                          </Text>
+                          <Text size="sm" className="text-white">
+                            {item.location}
+                          </Text>
                         </div>
-                      </div>
-                    </div>
-                    
-                    {/* Right column - Content (2/3) */}
-                    <div className="w-2/3 pb-8">
-                      <div className="mb-2 flex items-center gap-2">
-                        <Text size="lg" weight="semibold" className="text-gray-900 dark:text-white">
-                          {item.company}
+                        <Text size="base" weight="semibold" className="text-white mb-3">
+                          {item.role}
                         </Text>
-                        <Text size="lg" color="muted">
-                          {item.location}
+                        <Text size="base" className="text-white whitespace-pre-line">
+                          {item.description}
                         </Text>
                       </div>
-                      <Text size="base" weight="semibold" className="text-blue-600 dark:text-blue-400 mb-3">
-                        {item.role}
-                      </Text>
-                      <Text size="lg" className="text-gray-700 dark:text-gray-300 whitespace-pre-line">
-                        {item.description}
-                      </Text>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
