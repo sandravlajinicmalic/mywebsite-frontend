@@ -123,7 +123,7 @@ const AboutMe = () => {
                   {/* Vertical road path in S shape - first curve starts from right side, wide amplitudes */}
                   <path
                     d="M 1100 0 Q 50 100, 600 200 S 1150 350, 600 500 S 300 750, 600 850"
-                    stroke="#EC4899"
+                    stroke="rgb(236, 72, 153)"
                     strokeWidth="60"
                     fill="none"
                     strokeLinecap="round"
@@ -237,7 +237,7 @@ const AboutMe = () => {
                     {category.techs.map((tech) => {
                       const iconUrl = getIconUrl(tech);
                       return (
-                        <span key={tech} className="inline-flex items-center gap-2 px-4 py-2 bg-black rounded-lg text-sm text-white border" style={{ borderColor: 'rgba(236, 72, 153, 0.5)' }}>
+                        <span key={tech} className="inline-flex items-center gap-2 px-4 py-2 bg-black rounded-lg text-sm text-white border border-[rgba(244,114,182,0.5)]">
                           <img
                             src={iconUrl}
                             alt={tech}

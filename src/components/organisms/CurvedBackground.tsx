@@ -15,9 +15,9 @@ const CurvedBackground = ({ flipped = false, inverted = false }: CurvedBackgroun
       >
         <defs>
           <linearGradient id="pinkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#ec4899" stopOpacity="1" />
-            <stop offset="50%" stopColor="#f472b6" stopOpacity="1" />
-            <stop offset="85%" stopColor="#f9a8d4" stopOpacity="0.98" />
+            <stop offset="0%" stopColor="rgb(236, 72, 153)" stopOpacity="1" />
+            <stop offset="50%" stopColor="rgb(244, 114, 182)" stopOpacity="1" />
+            <stop offset="85%" stopColor="rgb(249, 168, 212)" stopOpacity="0.98" />
           </linearGradient>
         </defs>
         

@@ -112,13 +112,13 @@ const AboutProject = () => {
 
           {/* Tech Stack */}
           <div className="flex-1">
-            <Text as="h3" size="4xl" weight="bold" className="mb-4 text-black dark:text-black !font-bold" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.3)' }}>
+            <Text as="h3" size="4xl" weight="bold" className="mb-4 !text-black !font-bold drop-shadow-[2px_2px_4px_rgba(0,0,0,0.3)]">
               {t('aboutProject.techStack.title')}
             </Text>
-            <Text size="lg" className="mb-6 leading-relaxed text-black dark:text-black">
+            <Text size="lg" className="mb-6 leading-relaxed !text-black">
               {t('aboutProject.techStack.description')}
             </Text>
-            <Text size="base" weight="semibold" className="mb-4 text-black dark:text-black">
+            <Text size="base" weight="semibold" className="mb-4 !text-black">
               {t('aboutProject.techStack.subtitle')}
             </Text>
             <div className="flex flex-wrap gap-3 mb-4">

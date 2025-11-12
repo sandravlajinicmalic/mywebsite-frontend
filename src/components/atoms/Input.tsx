@@ -29,8 +29,8 @@ const Input = ({
 }: InputProps) => {
   // Default variant: border, black background, white text (for Login form)
   const defaultBaseStyles = 'w-full px-4 py-2 border rounded-lg transition-colors duration-200 focus:outline-none focus:ring-1 focus:ring-offset-0 text-white bg-black placeholder:text-gray-400'
-  const defaultNormalStyles = 'border-pink-500/30 focus:border-pink-500/50 focus:ring-pink-500 focus:ring-offset-pink-500/50'
-  const defaultErrorStyles = 'border-pink-500/30 focus:border-pink-500/50 focus:ring-pink-500 focus:ring-offset-pink-500/50'
+  const defaultNormalStyles = 'border-brand-pink/30 focus:border-brand-pink/50 focus:ring-brand-pink focus:ring-offset-brand-pink/50'
+  const defaultErrorStyles = 'border-brand-pink/30 focus:border-brand-pink/50 focus:ring-brand-pink focus:ring-offset-brand-pink/50'
   const defaultDisabledStyles = disabled ? 'bg-gray-900 cursor-not-allowed opacity-50' : ''
   
   // White variant: no border, white background, black text (for Contact form and SmartCat)

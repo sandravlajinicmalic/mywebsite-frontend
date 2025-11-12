@@ -171,7 +171,7 @@ const Header = () => {
                   aria-label={t('header.rewardHistoryAriaLabel')}
                 >
                   <Trophy 
-                    className="w-5 h-5 text-white" 
+                    className="w-5 h-5 text-white hover:text-[#06B6D4] transition-colors" 
                     strokeWidth={2}
                   />
                 </button>
@@ -211,7 +211,7 @@ const Header = () => {
           </div>
         ) : spinHistory.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-8 m-6">
-            <Trophy className="w-16 h-16 text-[#f472b6] mb-4" />
+            <Trophy className="w-16 h-16 text-brand-pink-light mb-4" />
             <Text className="text-white text-center">
               {t('header.noRewards')}
             </Text>
@@ -257,15 +257,15 @@ const Header = () => {
           background: transparent;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #9ca3af;
+          background: theme('colors.scrollbar.DEFAULT');
           border-radius: 3px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #6b7280;
+          background: theme('colors.scrollbar.hover');
         }
         .custom-scrollbar {
           scrollbar-width: thin;
-          scrollbar-color: #9ca3af transparent;
+          scrollbar-color: theme('colors.scrollbar.DEFAULT') transparent;
         }
       `}</style>
     </header>

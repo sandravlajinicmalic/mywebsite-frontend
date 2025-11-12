@@ -126,11 +126,10 @@ const UserMenu = ({ userNickname, userAvatar }: UserMenuProps) => {
       {/* Dropdown Menu */}
       {isOpen && (
         <div 
-          className="absolute right-0 mt-2 w-56 bg-black rounded-lg z-50 flex flex-col"
-          style={{ boxShadow: '0 0 15px rgba(244, 114, 182, 0.3), 0 0 30px rgba(244, 114, 182, 0.2)' }}
+          className="absolute right-0 mt-2 w-56 bg-black rounded-lg z-50 flex flex-col shadow-[0_0_15px_rgba(244,114,182,0.3),0_0_30px_rgba(244,114,182,0.2)]"
         >
           {/* User Info */}
-          <div className="px-4 border-b py-4" style={{ borderColor: 'rgba(244, 114, 182, 0.5)' }}>
+          <div className="px-4 border-b border-[rgba(244,114,182,0.5)] py-4">
             <div className="flex items-center gap-2">
               <Cat className="w-5 h-5 text-white" />
               <Text size="sm" weight="medium" className="text-white">
@@ -150,20 +149,20 @@ const UserMenu = ({ userNickname, userAvatar }: UserMenuProps) => {
             <div className="flex gap-2">
               <button
                 onClick={() => handleLanguageChange('sr')}
-                className={`flex-1 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#374151] ${
+                className={`flex-1 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#06B6D4] ${
                   language === 'sr'
-                    ? 'bg-[#374151] hover:bg-[#4b5563] text-[#FFFFFF] border-2 border-[#06B6D4]'
-                    : 'bg-[#374151] hover:bg-[#4b5563] text-[#FFFFFF]'
+                    ? 'bg-[#06B6D4] hover:bg-[#0891B2] text-white'
+                    : 'bg-brand-gray-dark hover:bg-[#0891B2] text-white border-2 border-[#06B6D4]'
                 }`}
               >
                 {t('nav.language.sr')}
               </button>
               <button
                 onClick={() => handleLanguageChange('en')}
-                className={`flex-1 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#374151] ${
+                className={`flex-1 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#06B6D4] ${
                   language === 'en'
-                    ? 'bg-[#374151] hover:bg-[#4b5563] text-[#FFFFFF] border-2 border-[#06B6D4]'
-                    : 'bg-[#374151] hover:bg-[#4b5563] text-[#FFFFFF]'
+                    ? 'bg-[#06B6D4] hover:bg-[#0891B2] text-white'
+                    : 'bg-brand-gray-dark hover:bg-[#0891B2] text-white border-2 border-[#06B6D4]'
                 }`}
               >
                 {t('nav.language.en')}
@@ -172,7 +171,7 @@ const UserMenu = ({ userNickname, userAvatar }: UserMenuProps) => {
           </div>
 
           {/* Delete Profile Button */}
-          <div className="px-4 border-t py-2" style={{ borderColor: 'rgba(244, 114, 182, 0.5)' }}>
+          <div className="px-4 border-t border-[rgba(244,114,182,0.5)] py-2">
             <button
               onClick={handleDeleteProfile}
               className="w-full flex items-center gap-2 pt-2 text-sm font-medium text-white bg-transparent hover:text-[#06B6D4] transition-colors cursor-pointer"

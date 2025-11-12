@@ -209,14 +209,14 @@ const WheelOfFortuneCat = () => {
   }
 
   const colors = [
-'#F76C9B', // lively pink – playful and energetic (for "New Me, Who Dis?")
-'#6EC1E4', // bright pastel blue – cheerful, eye-catching
-'#63D9A0', // minty green – fresh, optimistic
-'#F8D44C', // warm yellow – bright and positive
-'#FFA85C', // peachy orange – fun and inviting
-'#B488E4', // light purple – elegant, royal tone
-'#5ED3C3', // aqua teal – calm but vivid
-'#F7A7A3'  // soft coral red – warm and expressive
+    '#F76C9B', // wheel-pink – lively pink – playful and energetic (for "New Me, Who Dis?")
+    '#6EC1E4', // wheel-blue – bright pastel blue – cheerful, eye-catching
+    '#63D9A0', // wheel-green – minty green – fresh, optimistic
+    '#F8D44C', // wheel-yellow – warm yellow – bright and positive
+    '#FFA85C', // wheel-orange – peachy orange – fun and inviting
+    '#B488E4', // wheel-purple – light purple – elegant, royal tone
+    '#5ED3C3', // wheel-teal – aqua teal – calm but vivid
+    '#F7A7A3'  // wheel-coral – soft coral red – warm and expressive
   ]
 
   const wheelSize = 500

@@ -107,17 +107,16 @@ const Modal = ({
       
       {/* Modal Content */}
       <div 
-        className={`relative bg-black rounded-lg w-full ${sizes[size]} max-h-[90vh] flex flex-col transition-all duration-300 ${
+        className={`relative bg-black rounded-lg w-full ${sizes[size]} max-h-[90vh] flex flex-col transition-all duration-300 shadow-[0_0_15px_rgba(244,114,182,0.3),0_0_30px_rgba(244,114,182,0.2)] ${
           isAnimating 
             ? 'opacity-100 scale-100 translate-y-0' 
             : 'opacity-0 scale-95 translate-y-4'
         }`}
-        style={{ boxShadow: '0 0 15px rgba(244, 114, 182, 0.3), 0 0 30px rgba(244, 114, 182, 0.2)' }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div className="flex items-center justify-between p-6 border-b" style={{ borderColor: 'rgba(244, 114, 182, 0.5)' }}>
+          <div className="flex items-center justify-between p-6 border-b border-[rgba(244,114,182,0.5)]">
             {title && (
               typeof title === 'string' ? (
                 <Text as="h3" size="2xl" weight="bold" className="text-white">
@@ -132,7 +131,7 @@ const Modal = ({
             {showCloseButton && (
               <button
                 onClick={onClose}
-                className="ml-auto text-white hover:text-[#f472b6] transition-colors"
+                className="ml-auto text-white hover:text-brand-pink-light transition-colors"
                 aria-label="Zatvori modal"
               >
                 <svg 
@@ -160,7 +159,7 @@ const Modal = ({
 
         {/* Footer */}
         {footer && (
-          <div className="flex items-center justify-center p-6 border-t" style={{ borderColor: 'rgba(244, 114, 182, 0.5)' }}>
+          <div className="flex items-center justify-center p-6 border-t border-[rgba(244,114,182,0.5)]">
             {footer}
           </div>
         )}

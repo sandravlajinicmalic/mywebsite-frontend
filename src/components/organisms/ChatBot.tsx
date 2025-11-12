@@ -179,14 +179,9 @@ const ChatBot = () => {
                   <div
                     className={`max-w-[95%] rounded-3xl px-5 py-3 shadow-lg ${
                       message.role === 'user'
-                        ? 'bg-[#06B6D4] text-white rounded-tl-sm'
-                        : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-tl-3xl rounded-bl-3xl rounded-br-sm'
+                        ? 'bg-[#06B6D4] text-white rounded-tl-sm shadow-[0_4px_6px_-1px_rgba(6,182,212,0.3),0_2px_4px_-1px_rgba(6,182,212,0.2),0_0_10px_rgba(6,182,212,0.3)]'
+                        : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-tl-3xl rounded-bl-3xl rounded-br-sm shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)]'
                     }`}
-                    style={{
-                      boxShadow: message.role === 'user' 
-                        ? '0 4px 6px -1px rgba(6, 182, 212, 0.3), 0 2px 4px -1px rgba(6, 182, 212, 0.2), 0 0 10px rgba(6, 182, 212, 0.3)'
-                        : '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
-                    }}
                   >
                     <Text size="sm" className="whitespace-pre-wrap">
                       {message.content}
@@ -205,10 +200,7 @@ const ChatBot = () => {
               {isLoading && (
                 <div className="flex justify-end">
                   <div 
-                    className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl px-5 py-3 shadow-lg"
-                    style={{
-                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
-                    }}
+                    className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl px-5 py-3 shadow-lg shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)]"
                   >
                     <div className="flex gap-1">
                       <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
@@ -225,7 +217,7 @@ const ChatBot = () => {
                 variant="outline"
                 size="md"
                 onClick={handleClear}
-                className="bg-black hover:bg-gray-800 text-white border-2 border-pink-500 shadow-lg"
+                className="bg-black hover:bg-gray-800 text-white border-2 border-brand-pink shadow-lg"
               >
                 {t('chat.clear')}
               </Button>

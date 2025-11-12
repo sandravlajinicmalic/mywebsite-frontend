@@ -70,11 +70,7 @@ const Login = () => {
     <div className="min-h-screen bg-black flex items-center justify-center px-4">
       <div className="max-w-md w-full">
         <div 
-          className="bg-black rounded-lg p-8 border"
-          style={{ 
-            boxShadow: '0 0 15px rgba(244, 114, 182, 0.3), 0 0 30px rgba(244, 114, 182, 0.2)',
-            borderColor: 'rgba(244, 114, 182, 0.5)'
-          }}
+          className="bg-black rounded-lg p-8 border border-brand-pink-light/50 shadow-[0_0_15px_rgba(244,114,182,0.3),0_0_30px_rgba(244,114,182,0.2)]"
         >
           <Text as="h1" size="3xl" weight="bold" className="mb-8 text-center text-white">
             {t('login.welcome')}
