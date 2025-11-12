@@ -6,6 +6,7 @@ import { useI18n } from '../../contexts/i18n'
 import { authService } from '../../services/auth'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '../../constants'
+import { disconnectSocket } from '../../services/socket'
 
 interface UserMenuProps {
   userNickname: string
@@ -49,9 +50,14 @@ const UserMenu = ({ userNickname, userAvatar }: UserMenuProps) => {
   }, [isOpen])
 
   const handleLogout = () => {
+    // Disconnect socket if connected
+    disconnectSocket()
+    // Logout user
     authService.logout()
-    navigate(ROUTES.LOGIN)
+    // Close menu
     setIsOpen(false)
+    // Navigate to login page and reload
+    window.location.href = ROUTES.LOGIN
   }
 
   const handleDeleteProfile = () => {
