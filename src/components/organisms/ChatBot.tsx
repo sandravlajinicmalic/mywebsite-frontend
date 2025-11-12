@@ -127,6 +127,7 @@ const ChatBot = () => {
             onKeyPress={handleKeyPress}
             disabled={isLoading}
             className="flex-1"
+            variant="white"
           />
           <Button
             onClick={handleSend}
@@ -138,11 +139,11 @@ const ChatBot = () => {
         </div>
       </div>
 
-      {/* Layout sa messages */}
+      {/* Layout with messages */}
       <div className="flex gap-8 items-start justify-center w-full">
-        {/* Messages sekcija sa lijeve strane */}
+        {/* Messages section on the left */}
         <div className="w-2/5 max-w-lg bg-transparent rounded-3xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-visible flex flex-col relative">
-          {/* Strelica oblačića prema mački */}
+          {/* Arrow from message bubble to cat */}
           <div 
             className="absolute right-0 bottom-4 translate-x-full z-10"
             style={{
@@ -167,7 +168,7 @@ const ChatBot = () => {
               filter: 'drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.1))'
             }}
           />
-          {/* Messages oblačići */}
+          {/* Message bubbles */}
           <div ref={messagesContainerRef} className="h-[400px] overflow-y-auto overflow-x-hidden pl-4 pr-1 pt-4 pb-0 bg-transparent custom-scrollbar flex flex-col" style={{ scrollbarGutter: 'stable' }}>
             <div className="flex-1 space-y-4">
               {messages.map((message, index) => (
@@ -232,7 +233,7 @@ const ChatBot = () => {
           </div>
         </div>
 
-        {/* Slika mačke sa desne strane */}
+        {/* Cat image on the right */}
         <div className="flex-shrink-0 ml-8 mt-40">
           <Image
             src="/images/question.svg"

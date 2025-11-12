@@ -25,7 +25,7 @@ const Modal = ({
   const [isAnimating, setIsAnimating] = useState(false)
   const scrollYRef = useRef<number>(0)
 
-  // Zatvori modal na ESC tipku i spreči scroll
+  // Close modal on ESC key and prevent scroll
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
@@ -40,10 +40,10 @@ const Modal = ({
     if (isOpen) {
       document.addEventListener('keydown', handleEscape)
       
-      // Sačuvaj scroll poziciju
+      // Save scroll position
       scrollYRef.current = window.scrollY
       
-      // Blokiraj scroll na html i body
+      // Block scroll on html and body
       document.documentElement.style.overflow = 'hidden'
       document.documentElement.style.position = 'fixed'
       document.documentElement.style.width = '100%'
@@ -53,11 +53,11 @@ const Modal = ({
       document.body.style.position = 'fixed'
       document.body.style.width = '100%'
       
-      // Spreči scroll event direktno
+      // Prevent scroll event directly
       document.addEventListener('wheel', preventScroll, { passive: false })
       document.addEventListener('touchmove', preventScroll, { passive: false })
       
-      // Pokreni animaciju nakon kratke pauze
+      // Start animation after short delay
       setTimeout(() => setIsAnimating(true), 10)
       
       return () => {
@@ -65,7 +65,7 @@ const Modal = ({
         document.removeEventListener('wheel', preventScroll)
         document.removeEventListener('touchmove', preventScroll)
         
-        // Vrati scroll poziciju
+        // Restore scroll position
         document.documentElement.style.overflow = ''
         document.documentElement.style.position = ''
         document.documentElement.style.width = ''

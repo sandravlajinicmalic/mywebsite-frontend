@@ -10,6 +10,7 @@ const ContactForm = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [fieldError, setFieldError] = useState<string | null>(null)
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -21,6 +22,7 @@ const ContactForm = () => {
     
     setIsLoading(true)
     setError(null)
+    setFieldError(null)
     setSuccess(false)
     
     try {
@@ -33,8 +35,20 @@ const ContactForm = () => {
       
       setSuccess(true)
       setMessage('')
+      setFieldError(null)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to send message')
+      if (err instanceof Error) {
+        const errorWithField = err as Error & { field?: string }
+        // If error is related to message field, display it below textarea
+        if (errorWithField.field === 'message') {
+          setFieldError(errorWithField.message)
+        } else {
+          // For other errors (name, email, general), display as general error
+          setError(errorWithField.message)
+        }
+      } else {
+        setError('Failed to send message')
+      }
     } finally {
       setIsLoading(false)
     }
@@ -74,25 +88,39 @@ const ContactForm = () => {
               <div className="mb-4">
                 <textarea
                   value={message}
-                  onChange={(e) => setMessage(e.target.value)}
+                  onChange={(e) => {
+                    setMessage(e.target.value)
+                    // Clear error when user starts typing
+                    if (fieldError) {
+                      setFieldError(null)
+                    }
+                    if (error) {
+                      setError(null)
+                    }
+                  }}
                   placeholder={t('contact.messagePlaceholder') || 'Enter your message...'}
                   rows={6}
-                  className="w-full px-4 py-2 border-2 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#ec4899] focus:ring-offset-2 bg-black text-white placeholder-gray-400"
-                  style={{ borderColor: '#ec4899' }}
-                  onFocus={(e) => e.target.style.borderColor = '#ec4899'}
-                  onBlur={(e) => e.target.style.borderColor = '#ec4899'}
+                  className="w-full px-4 py-2 rounded-lg bg-white text-black placeholder-gray-500 focus:outline-none"
                   disabled={isLoading}
                 />
-                {error && (
-                  <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                    {error}
-                  </p>
-                )}
-                {success && (
-                  <p className="mt-1 text-sm text-black dark:text-black">
-                    {t('contact.success') || 'Message sent successfully!'}
-                  </p>
-                )}
+                {/* Error message container with fixed height to prevent layout shift */}
+                <div className="mt-1 min-h-[20px]">
+                  {fieldError && (
+                    <p className="text-sm text-black dark:text-black">
+                      {fieldError}
+                    </p>
+                  )}
+                  {error && !fieldError && (
+                    <p className="text-sm text-black dark:text-black">
+                      {error}
+                    </p>
+                  )}
+                  {success && !fieldError && !error && (
+                    <p className="text-sm text-green-600 dark:text-green-400">
+                      {t('contact.success') || 'Message sent successfully!'}
+                    </p>
+                  )}
+                </div>
               </div>
               
               <div className="flex justify-end">

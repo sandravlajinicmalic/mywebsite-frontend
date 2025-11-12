@@ -224,12 +224,12 @@ const WheelOfFortuneCat = () => {
   const centerY = wheelSize / 2
   const baseRadius = wheelSize / 2 - 10
   
-  // Funkcija koja generiše nepravilan radijus poput krompira
-  // Koristimo više sinusnih funkcija za 5 krivulja i više nejednakosti
+  // Function that generates irregular radius like a potato
+  // Using multiple sine functions for 5 curves and more irregularities
   const getPotatoRadius = (angle: number): number => {
-    // 5 krivulja na cijeli krug = frekvencija 5
+    // 5 curves on full circle = frequency 5
     const variation1 = Math.sin(angle * 5) * 12
-    // Dodatne varijacije za više nejednakosti sa smanjenom amplitudom
+    // Additional variations for more irregularities with reduced amplitude
     const variation2 = Math.cos(angle * 2.5) * 5
     const variation3 = Math.sin(angle * 7.5 + Math.PI / 3) * 3
     return baseRadius + variation1 + variation2 + variation3
@@ -276,8 +276,8 @@ const WheelOfFortuneCat = () => {
                   const startAngle = (index * segmentAngle - 90) * (Math.PI / 180)
                   const endAngle = ((index + 1) * segmentAngle - 90) * (Math.PI / 180)
                   
-                  // Generišemo tačke duž luka za glatki nepravilan oblik
-                  // Više tačaka za glatkije povezivanje i 5 krivulja
+                  // Generate points along the arc for smooth irregular shape
+                  // More points for smoother connection and 5 curves
                   const numPoints = 12
                   const points: Array<{x: number, y: number}> = []
                   
@@ -290,7 +290,7 @@ const WheelOfFortuneCat = () => {
                     })
                   }
                   
-                  // Dodatna tačka malo izvan granice za bolji kontinuitet
+                  // Additional point slightly beyond boundary for better continuity
                   const smallStep = (endAngle - startAngle) * 0.1
                   const beyondEndAngle = endAngle + smallStep
                   const beyondEndR = getPotatoRadius(beyondEndAngle)
@@ -299,8 +299,8 @@ const WheelOfFortuneCat = () => {
                     y: centerY + beyondEndR * Math.sin(beyondEndAngle)
                   }
                   
-                  // Kreiranje path-a sa glatkim kubičnim bezier krivuljama da izbjegnemo "odječene" talase
-                  // Koristimo glatke krivulje i na granicama za kontinuitet između segmenata
+                  // Creating path with smooth cubic bezier curves to avoid "choppy" waves
+                  // Using smooth curves also at boundaries for continuity between segments
                   let pathData = `M ${centerX} ${centerY} L ${points[0].x} ${points[0].y} `
                   
                   for (let i = 1; i < points.length; i++) {
@@ -309,15 +309,15 @@ const WheelOfFortuneCat = () => {
                     const isLastPoint = i === points.length - 1
                     
                     if (isLastPoint) {
-                      // Poslednja tačka segmenta - koristimo dodatnu tačku izvan granice za glatko povezivanje
+                      // Last point of segment - use additional point beyond boundary for smooth connection
                       const cp1X = prev.x + (curr.x - prev.x) * 0.4
                       const cp1Y = prev.y + (curr.y - prev.y) * 0.4
-                      // Kontrolna tačka koja vodi prema tački izvan granice za glatkiji prelaz
+                      // Control point that leads towards point beyond boundary for smoother transition
                       const cp2X = curr.x + (beyondEndPoint.x - curr.x) * 0.3
                       const cp2Y = curr.y + (beyondEndPoint.y - curr.y) * 0.3
                       pathData += `C ${cp1X} ${cp1Y}, ${cp2X} ${cp2Y}, ${curr.x} ${curr.y} `
                     } else {
-                      // Srednje tačke - koristimo kubične bezier krivulje za glatkost
+                      // Middle points - use cubic bezier curves for smoothness
                       const next = points[i + 1]
                       const cp1X = prev.x + (curr.x - prev.x) * 0.5
                       const cp1Y = prev.y + (curr.y - prev.y) * 0.5

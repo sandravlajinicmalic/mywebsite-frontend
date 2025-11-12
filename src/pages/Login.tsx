@@ -19,7 +19,7 @@ const Login = () => {
     setEmailError(undefined)
     setNicknameError(undefined)
     
-    // Frontend validacija prije slanja na backend
+    // Frontend validation before sending to backend
     let hasErrors = false
     
     if (!email || email.trim() === '') {
@@ -39,22 +39,22 @@ const Login = () => {
     setLoading(true)
 
     try {
-      // Pozovi backend API za login/register
+      // Call backend API for login/register
       await authService.login(email, nickname)
       
-      // Uspešno kreiran korisnik - prebaci na Home
+      // Successfully created user - redirect to Home
       navigate(ROUTES.HOME)
     } catch (err: unknown) {
       // Handle error
       if (err instanceof Error) {
-        // Provjeri da li je to LoginError sa specifičnim greškama
+        // Check if it's LoginError with specific field errors
         const loginError = err as LoginError
         if (loginError.errors) {
-          // Postavi specifične greške za svako polje
+          // Set specific errors for each field
           setEmailError(loginError.errors.email)
           setNicknameError(loginError.errors.nickname)
         } else {
-          // Ako nema specifičnih grešaka, pokušaj prikazati generičku grešku ispod email polja
+          // If there are no specific errors, try to display generic error below email field
           setEmailError(err.message || t('login.error'))
         }
       } else {

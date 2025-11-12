@@ -65,7 +65,7 @@ export const authService = {
         const errorData = axiosError.response?.data
         const validationErrors = errorData?.errors
         
-        // Ako ima specifičnih grešaka za polja, baci error sa errors objektom
+        // If there are specific field errors, throw error with errors object
         if (validationErrors) {
           const loginError = new Error(errorData?.error || 'Validation failed') as LoginError
           loginError.errors = validationErrors

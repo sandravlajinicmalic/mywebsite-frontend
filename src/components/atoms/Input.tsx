@@ -8,11 +8,12 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   error?: string
   disabled?: boolean
   className?: string
+  variant?: 'default' | 'white'
 }
 
 /**
- * Input atom komponenta
- * Osnovna input komponenta za formularne inpute
+ * Input atom component
+ * Basic input component for form inputs
  */
 const Input = ({ 
   type = 'text',
@@ -23,13 +24,26 @@ const Input = ({
   error,
   disabled = false,
   className = '',
+  variant = 'default',
   ...props 
 }: InputProps) => {
-  const baseStyles = 'w-full px-4 py-2 border rounded-lg transition-colors duration-200 focus:outline-none focus:ring-1 focus:ring-offset-0 text-white bg-black placeholder:text-gray-400'
+  // Default variant: border, black background, white text (for Login form)
+  const defaultBaseStyles = 'w-full px-4 py-2 border rounded-lg transition-colors duration-200 focus:outline-none focus:ring-1 focus:ring-offset-0 text-white bg-black placeholder:text-gray-400'
+  const defaultNormalStyles = 'border-pink-500/30 focus:border-pink-500/50 focus:ring-pink-500 focus:ring-offset-pink-500/50'
+  const defaultErrorStyles = 'border-pink-500/30 focus:border-pink-500/50 focus:ring-pink-500 focus:ring-offset-pink-500/50'
+  const defaultDisabledStyles = disabled ? 'bg-gray-900 cursor-not-allowed opacity-50' : ''
   
-  const normalStyles = 'border-pink-500/30 focus:border-pink-500/50 focus:ring-pink-500 focus:ring-offset-pink-500/50'
-  const errorStyles = 'border-pink-500/30 focus:border-pink-500/50 focus:ring-pink-500 focus:ring-offset-pink-500/50'
-  const disabledStyles = disabled ? 'bg-gray-900 cursor-not-allowed opacity-50' : ''
+  // White variant: no border, white background, black text (for Contact form and SmartCat)
+  const whiteBaseStyles = 'w-full px-4 py-2 rounded-lg transition-colors duration-200 focus:outline-none text-black bg-white placeholder:text-gray-500'
+  const whiteNormalStyles = ''
+  const whiteErrorStyles = ''
+  const whiteDisabledStyles = disabled ? 'bg-gray-200 cursor-not-allowed opacity-50' : ''
+  
+  const isWhiteVariant = variant === 'white'
+  const baseStyles = isWhiteVariant ? whiteBaseStyles : defaultBaseStyles
+  const normalStyles = isWhiteVariant ? whiteNormalStyles : defaultNormalStyles
+  const errorStyles = isWhiteVariant ? whiteErrorStyles : defaultErrorStyles
+  const disabledStyles = isWhiteVariant ? whiteDisabledStyles : defaultDisabledStyles
   
   const inputClasses = `${baseStyles} ${error ? errorStyles : normalStyles} ${disabledStyles} ${className}`
   
@@ -50,7 +64,7 @@ const Input = ({
         {...props}
       />
       {error && (
-        <p className="mt-1 text-sm text-white">
+        <p className={`mt-1 text-sm ${variant === 'white' ? 'text-black' : 'text-white'}`}>
           {error}
         </p>
       )}
