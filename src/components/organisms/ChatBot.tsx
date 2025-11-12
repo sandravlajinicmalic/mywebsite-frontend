@@ -179,12 +179,12 @@ const ChatBot = () => {
                   <div
                     className={`max-w-[95%] rounded-3xl px-5 py-3 shadow-lg ${
                       message.role === 'user'
-                        ? 'bg-indigo-600 text-white rounded-tl-sm'
+                        ? 'bg-[#06B6D4] text-white rounded-tl-sm'
                         : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-tl-3xl rounded-bl-3xl rounded-br-sm'
                     }`}
                     style={{
                       boxShadow: message.role === 'user' 
-                        ? '0 4px 6px -1px rgba(79, 70, 229, 0.3), 0 2px 4px -1px rgba(79, 70, 229, 0.2)'
+                        ? '0 4px 6px -1px rgba(6, 182, 212, 0.3), 0 2px 4px -1px rgba(6, 182, 212, 0.2), 0 0 10px rgba(6, 182, 212, 0.3)'
                         : '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
                     }}
                   >
@@ -192,7 +192,7 @@ const ChatBot = () => {
                       {message.content}
                     </Text>
                     {message.timestamp && (
-                      <Text size="xs" className={`mt-1 ${message.role === 'user' ? 'text-indigo-100' : 'text-gray-500 dark:text-gray-400'}`}>
+                      <Text size="xs" className={`mt-1 ${message.role === 'user' ? 'text-cyan-100' : 'text-gray-500 dark:text-gray-400'}`}>
                         {message.timestamp.toLocaleTimeString('sr-RS', { 
                           hour: '2-digit', 
                           minute: '2-digit' 
