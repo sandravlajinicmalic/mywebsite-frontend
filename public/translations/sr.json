@@ -16,6 +16,7 @@
   "login.loading": "Učitavanje...",
   "login.error": "Došlo je do greške prilikom prijave",
   "login.error.generic": "Došlo je do greške prilikom prijave. Pokušajte ponovo.",
+  "login.forgotNickname": "Zaboravili ste nickname?",
   "home.title": "Dobrodošli na moj website",
   "about.title": "O meni",
   "contact.title": "Kontakt forma",
@@ -108,6 +109,17 @@
   "cat.websocketAlt": "Websocket Mačka",
   "goToAbout.title": "O meni (ili: Kako je doslo do toga da napravim ovaj projekat)",
   "goToAbout.subtitle": "Mešavina dizajna, razvoja i dovoljno haosa inspirisanog mačkama da bude zabavno.",
-  "goToAbout.button": "Zagebi ovde da saznaš više"
+  "goToAbout.button": "Zagebi ovde da saznaš više",
+  "forgotNickname.title": "Zaboravili ste nickname?",
+  "forgotNickname.description": "Nema problema! Unesite vašu email adresu i poslaćemo vam vaš nickname.",
+  "forgotNickname.email.label": "Email adresa",
+  "forgotNickname.email.placeholder": "Unesite vašu email adresu",
+  "forgotNickname.email.required": "Email je obavezan",
+  "forgotNickname.submit": "Pošalji nickname",
+  "forgotNickname.loading": "Šalje...",
+  "forgotNickname.success": "Poslali smo vam nickname na vašu email adresu.",
+  "forgotNickname.error": "Došlo je do greške. Pokušajte ponovo.",
+  "forgotNickname.error.emailNotFound": "Nije pronađen nalog sa ovom email adresom",
+  "forgotNickname.backToLogin": "Nazad na prijavu"
 }
 

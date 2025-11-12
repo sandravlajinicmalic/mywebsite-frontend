@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { Button, Input, Text } from '../components/atoms'
 import { ROUTES } from '../constants'
 import { authService, LoginError } from '../services/auth'
@@ -118,6 +118,15 @@ const Login = () => {
             >
               {loading ? t('login.loading') : t('login.submit')}
             </Button>
+
+            <div className="text-center mt-4">
+              <Link 
+                to={ROUTES.FORGOT_NICKNAME}
+                className="text-pink-400 hover:text-pink-300 text-sm underline"
+              >
+                {t('login.forgotNickname')}
+              </Link>
+            </div>
           </form>
         </div>
       </div>

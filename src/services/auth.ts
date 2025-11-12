@@ -159,5 +159,33 @@ export const authService = {
       throw new Error('Failed to delete account. Please try again.')
     }
   },
+
+  /**
+   * Request nickname reminder via email
+   */
+  async forgotNickname(email: string): Promise<{ success: boolean; message: string }> {
+    try {
+      const response = await api.post<{ success: boolean; message: string }>('/auth/forgot-nickname', {
+        email,
+      })
+      return response.data
+    } catch (error: unknown) {
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { 
+          response?: { 
+            status?: number
+            data?: { 
+              error?: string
+              message?: string
+            } 
+          } 
+        }
+        const errorData = axiosError.response?.data
+        const errorMessage = errorData?.error || errorData?.message || 'Failed to send nickname reminder'
+        throw new Error(errorMessage)
+      }
+      throw new Error('Failed to send nickname reminder. Please try again.')
+    }
+  },
 }
 

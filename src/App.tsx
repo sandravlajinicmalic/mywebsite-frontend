@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { Login, Home, About } from './pages'
+import { Login, Home, About, ForgotNickname } from './pages'
 import { Header, Footer } from './components/molecules'
 import { CurvedBackground, AboutCurvedBackground } from './components/organisms'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -19,6 +19,16 @@ function App() {
                 <Navigate to={ROUTES.HOME} replace />
               ) : (
                 <Login />
+              )
+            } 
+          />
+          <Route 
+            path={ROUTES.FORGOT_NICKNAME} 
+            element={
+              authService.isAuthenticated() ? (
+                <Navigate to={ROUTES.HOME} replace />
+              ) : (
+                <ForgotNickname />
               )
             } 
           />

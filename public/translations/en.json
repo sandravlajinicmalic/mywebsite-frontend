@@ -15,6 +15,7 @@
   "login.loading": "Loading...",
   "login.error": "An error occurred during login",
   "login.error.generic": "An error occurred during login. Please try again.",
+  "login.forgotNickname": "Forgot your nickname?",
   "home.title": "Welcome to my website",
   "about.title": "About me",
   "contact.title": "Contact form",
@@ -107,6 +108,17 @@
   "cat.websocketAlt": "Websocket Cat",
   "goToAbout.title": "About (or: How I Ended Up Making This Thing)",
   "goToAbout.subtitle": "A mix of design, development, and just enough cat-inspired chaos to make it fun.",
-  "goToAbout.button": "Scratch Here to Learn More"
+  "goToAbout.button": "Scratch Here to Learn More",
+  "forgotNickname.title": "Forgot Your Nickname?",
+  "forgotNickname.description": "No worries! Enter your email address and we'll send you your nickname.",
+  "forgotNickname.email.label": "Email address",
+  "forgotNickname.email.placeholder": "Enter your email address",
+  "forgotNickname.email.required": "Email is required",
+  "forgotNickname.submit": "Send Nickname",
+  "forgotNickname.loading": "Sending...",
+  "forgotNickname.success": "We have sent your nickname to your email address.",
+  "forgotNickname.error": "An error occurred. Please try again.",
+  "forgotNickname.error.emailNotFound": "No account found with this email address",
+  "forgotNickname.backToLogin": "Back to Login"
 }
 

@@ -5,6 +5,7 @@ export const ROUTES = {
   LOGIN: '/',
   HOME: '/home',
   ABOUT: '/about',
+  FORGOT_NICKNAME: '/forgot-nickname',
 } as const
 
 export const APP_NAME = 'My Website' as const
