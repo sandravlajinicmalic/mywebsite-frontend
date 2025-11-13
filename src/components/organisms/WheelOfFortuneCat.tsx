@@ -2,7 +2,20 @@ import { Text, Image } from '../atoms'
 import { Button } from '../atoms'
 import Modal from '../molecules/Modal'
 import { useWheelOfFortune } from '../../hooks'
-import { WHEEL_CONFIG } from '../../constants'
+import {
+  WHEEL_CONFIG,
+  WHEEL_RENDERING_CONFIG,
+  getWheelDimensions,
+  getSegmentAngle,
+  getSegmentAngles,
+  degToRad,
+  generateArcPoints,
+  getBeyondBoundaryPoint,
+  generateSegmentPath,
+  getTextPosition,
+  formatTextForSegment,
+  getPrizeDescription,
+} from '../../config/wheel'
 
 const WheelOfFortuneCat = () => {
   const {
@@ -19,22 +32,8 @@ const WheelOfFortuneCat = () => {
   } = useWheelOfFortune()
 
   const colors = WHEEL_CONFIG.COLORS
-
-  const wheelSize = 500
-  const centerX = wheelSize / 2
-  const centerY = wheelSize / 2
-  const baseRadius = wheelSize / 2 - 10
-  
-  // Function that generates irregular radius like a potato
-  // Using multiple sine functions for 5 curves and more irregularities
-  const getPotatoRadius = (angle: number): number => {
-    // 5 curves on full circle = frequency 5
-    const variation1 = Math.sin(angle * 5) * 12
-    // Additional variations for more irregularities with reduced amplitude
-    const variation2 = Math.cos(angle * 2.5) * 5
-    const variation3 = Math.sin(angle * 7.5 + Math.PI / 3) * 3
-    return baseRadius + variation1 + variation2 + variation3
-  }
+  const dimensions = getWheelDimensions(WHEEL_RENDERING_CONFIG.SIZE)
+  const { size: wheelSize, centerX, centerY, baseRadius } = dimensions
 
   return (
     <section className="w-full bg-transparent py-12 px-4 relative z-10">
@@ -63,7 +62,7 @@ const WheelOfFortuneCat = () => {
               <svg
                 width={wheelSize}
                 height={wheelSize}
-                viewBox={`-30 -30 ${wheelSize + 60} ${wheelSize + 60}`}
+                viewBox={`-${WHEEL_RENDERING_CONFIG.VIEWBOX_PADDING} -${WHEEL_RENDERING_CONFIG.VIEWBOX_PADDING} ${wheelSize + WHEEL_RENDERING_CONFIG.VIEWBOX_PADDING * 2} ${wheelSize + WHEEL_RENDERING_CONFIG.VIEWBOX_PADDING * 2}`}
                 className="drop-shadow-2xl"
               >
                 <defs>
@@ -73,112 +72,15 @@ const WheelOfFortuneCat = () => {
                 </defs>
                 
                 {WHEEL_CONFIG.ITEMS.map((item, index) => {
-                  const segmentAngle = 360 / WHEEL_CONFIG.ITEMS.length
-                  const startAngle = (index * segmentAngle - 90) * (Math.PI / 180)
-                  const endAngle = ((index + 1) * segmentAngle - 90) * (Math.PI / 180)
+                  const { startAngle, endAngle } = getSegmentAngles(index)
+                  const points = generateArcPoints(startAngle, endAngle, centerX, centerY, baseRadius)
+                  const beyondEndPoint = getBeyondBoundaryPoint(endAngle, centerX, centerY, baseRadius)
+                  const pathData = generateSegmentPath(points, beyondEndPoint, centerX, centerY)
                   
-                  // Generate points along the arc for smooth irregular shape
-                  // More points for smoother connection and 5 curves
-                  const numPoints = 12
-                  const points: Array<{x: number, y: number}> = []
-                  
-                  for (let i = 0; i <= numPoints; i++) {
-                    const angle = startAngle + (endAngle - startAngle) * (i / numPoints)
-                    const r = getPotatoRadius(angle)
-                    points.push({
-                      x: centerX + r * Math.cos(angle),
-                      y: centerY + r * Math.sin(angle)
-                    })
-                  }
-                  
-                  // Additional point slightly beyond boundary for better continuity
-                  const smallStep = (endAngle - startAngle) * 0.1
-                  const beyondEndAngle = endAngle + smallStep
-                  const beyondEndR = getPotatoRadius(beyondEndAngle)
-                  const beyondEndPoint = {
-                    x: centerX + beyondEndR * Math.cos(beyondEndAngle),
-                    y: centerY + beyondEndR * Math.sin(beyondEndAngle)
-                  }
-                  
-                  // Creating path with smooth cubic bezier curves to avoid "choppy" waves
-                  // Using smooth curves also at boundaries for continuity between segments
-                  let pathData = `M ${centerX} ${centerY} L ${points[0].x} ${points[0].y} `
-                  
-                  for (let i = 1; i < points.length; i++) {
-                    const prev = points[i - 1]
-                    const curr = points[i]
-                    const isLastPoint = i === points.length - 1
-                    
-                    if (isLastPoint) {
-                      // Last point of segment - use additional point beyond boundary for smooth connection
-                      const cp1X = prev.x + (curr.x - prev.x) * 0.4
-                      const cp1Y = prev.y + (curr.y - prev.y) * 0.4
-                      // Control point that leads towards point beyond boundary for smoother transition
-                      const cp2X = curr.x + (beyondEndPoint.x - curr.x) * 0.3
-                      const cp2Y = curr.y + (beyondEndPoint.y - curr.y) * 0.3
-                      pathData += `C ${cp1X} ${cp1Y}, ${cp2X} ${cp2Y}, ${curr.x} ${curr.y} `
-                    } else {
-                      // Middle points - use cubic bezier curves for smoothness
-                      const next = points[i + 1]
-                      const cp1X = prev.x + (curr.x - prev.x) * 0.5
-                      const cp1Y = prev.y + (curr.y - prev.y) * 0.5
-                      const cp2X = curr.x + (next.x - curr.x) * 0.5
-                      const cp2Y = curr.y + (next.y - curr.y) * 0.5
-                      pathData += `C ${cp1X} ${cp1Y}, ${cp2X} ${cp2Y}, ${curr.x} ${curr.y} `
-                    }
-                  }
-                  
-                  pathData += 'Z'
-                  
-                  const textAngle = (index * segmentAngle + segmentAngle / 2 - 90) * (Math.PI / 180)
-                  const textRadius = getPotatoRadius(textAngle) * 0.60
-                  const textX = centerX + textRadius * Math.cos(textAngle)
-                  const textY = centerY + textRadius * Math.sin(textAngle)
-                  const textRotation = index * segmentAngle + segmentAngle / 2 + 90
-                  
-                  // Calculate approximate text width based on segment angle
-                  const segmentArcLength = (getPotatoRadius(textAngle) * segmentAngle * Math.PI / 180) * 0.80
-                  // Calculate max characters per line - make it smaller to force line breaks
-                  const maxCharsPerLine = Math.floor(segmentArcLength / 9)
-                  
-                  // Split text into lines that fit the segment width (max 2 lines)
-                  const words = item.split(' ')
-                  const lines: string[] = []
-                  
-                  // If text has more than 2 words or is longer than threshold, split into 2 lines
-                  const shouldSplit = words.length > 2 || item.length > maxCharsPerLine
-                  
-                  if (!shouldSplit) {
-                    // Short text - use one line
-                    lines.push(item)
-                  } else {
-                    // Split into 2 lines - find the best split point
-                    const totalLength = item.length
-                    const targetSplit = Math.floor(totalLength / 2)
-                    
-                    // Find the space closest to the middle
-                    let bestSplitIndex = -1
-                    let bestDistance = Infinity
-                    
-                    for (let i = 0; i < words.length - 1; i++) {
-                      const line1Length = words.slice(0, i + 1).join(' ').length
-                      const distance = Math.abs(line1Length - targetSplit)
-                      if (distance < bestDistance) {
-                        bestDistance = distance
-                        bestSplitIndex = i
-                      }
-                    }
-                    
-                    if (bestSplitIndex >= 0 && bestSplitIndex < words.length - 1) {
-                      lines.push(words.slice(0, bestSplitIndex + 1).join(' '))
-                      lines.push(words.slice(bestSplitIndex + 1).join(' '))
-                    } else {
-                      // Fallback: split in the middle of word count
-                      const midPoint = Math.max(1, Math.floor(words.length / 2))
-                      lines.push(words.slice(0, midPoint).join(' '))
-                      lines.push(words.slice(midPoint).join(' '))
-                    }
-                  }
+                  const segmentAngle = getSegmentAngle()
+                  const textAngle = degToRad(index * segmentAngle + segmentAngle / 2 - 90)
+                  const { x: textX, y: textY, rotation: textRotation } = getTextPosition(index, centerX, centerY, baseRadius)
+                  const lines = formatTextForSegment(item, textAngle, baseRadius, segmentAngle)
                   
                   return (
                     <g key={index}>
@@ -219,7 +121,7 @@ const WheelOfFortuneCat = () => {
                 <circle
                   cx={centerX}
                   cy={centerY}
-                  r="20"
+                  r={WHEEL_RENDERING_CONFIG.CENTER_RADIUS}
                   fill="#fff"
                   stroke="#4B5563"
                   strokeWidth="3"
@@ -311,9 +213,7 @@ const WheelOfFortuneCat = () => {
                 weight="normal" 
                 className="text-center text-white mb-6 max-w-md leading-relaxed"
               >
-                {(winningItem && winningItem in WHEEL_CONFIG.PRIZE_DESCRIPTIONS 
-                  ? WHEEL_CONFIG.PRIZE_DESCRIPTIONS[winningItem as keyof typeof WHEEL_CONFIG.PRIZE_DESCRIPTIONS]
-                  : winningItem) || winningItem}
+                {getPrizeDescription(winningItem)}
               </Text>
             </>
           )}

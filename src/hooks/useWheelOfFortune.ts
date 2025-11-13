@@ -2,7 +2,8 @@ import { useState, useRef, useEffect } from 'react'
 import { wheelService } from '../services/wheel'
 import { authService } from '../services/auth'
 import { useI18n } from '../contexts/i18n'
-import { WHEEL_CONFIG, STORAGE_KEYS } from '../constants'
+import { STORAGE_KEYS } from '../constants'
+import { WHEEL_CONFIG } from '../config/wheel'
 
 export interface ConfettiPiece {
   id: number
