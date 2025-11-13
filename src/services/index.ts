@@ -6,4 +6,6 @@ export { wheelService } from './wheel'
 export type { WheelSpin, SpinResponse, CanSpinResponse, HistoryResponse } from './wheel'
 export { contactService } from './contact'
 export type { ContactRequest, ContactResponse } from './contact'
+export { userService } from './user'
+export type { ActiveReward, ActiveRewardsResponse, ActiveAvatarResponse } from './user'
 

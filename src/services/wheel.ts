@@ -59,7 +59,7 @@ export const wheelService = {
       return response.data
     } catch (error) {
       // If error, assume user can't spin
-      return { canSpin: false, cooldownSeconds: 120 }
+      return { canSpin: false, cooldownSeconds: 60 }
     }
   },
 

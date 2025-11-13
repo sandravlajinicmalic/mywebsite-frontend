@@ -123,22 +123,33 @@ export const useWheelOfFortune = () => {
       const actualWinningIndex = Math.round(adjustedPosition / segmentAngle) % WHEEL_CONFIG.ITEMS.length
       const actualWinningItem = WHEEL_CONFIG.ITEMS[actualWinningIndex]
       
-      console.log('Izabrano polje:', winningIndex, WHEEL_CONFIG.ITEMS[winningIndex])
-      console.log('Stvarno polje na vrhu:', actualWinningIndex, actualWinningItem)
-      console.log('Ukupna rotacija:', totalRotationAfter, 'normalizovano:', normalizedRotation)
-      console.log('Pozicija na vrhu:', positionAtTop, 'prilagođeno:', adjustedPosition)
-      
       setWinningItem(actualWinningItem)
       
       // Save spin to backend - this is the only API call
       try {
-        await wheelService.spin(actualWinningItem)
-        // Set cooldown locally after successful spin
-        const spinTime = Date.now()
-        lastSpinTimeRef.current = spinTime
-        localStorage.setItem(STORAGE_KEYS.WHEEL_LAST_SPIN_TIME, spinTime.toString())
-        setCooldownSeconds(120) // 2 minutes
-        setCanSpin(false)
+        const response = await wheelService.spin(actualWinningItem)
+        // Use canSpin and cooldownSeconds from response
+        // If "Spin Again, Brave Soul", canSpin will be true and cooldownSeconds will be 0
+        if (response.canSpin) {
+          // No cooldown - user can spin again immediately
+          setCanSpin(true)
+          setCooldownSeconds(0)
+          lastSpinTimeRef.current = null
+          localStorage.removeItem(STORAGE_KEYS.WHEEL_LAST_SPIN_TIME)
+        } else {
+          // Normal cooldown applies
+          const spinTime = Date.now()
+          lastSpinTimeRef.current = spinTime
+          localStorage.setItem(STORAGE_KEYS.WHEEL_LAST_SPIN_TIME, spinTime.toString())
+          setCooldownSeconds(response.cooldownSeconds || 60) // Use from response or default to 1 minute
+          setCanSpin(false)
+        }
+        
+        // Mark if reward requires refresh (will be handled when modal closes)
+        const rewardsRequiringRefresh = ['Paw-some Cursor', 'Color Catastrophe', 'Chase the Yarn!']
+        if (rewardsRequiringRefresh.includes(actualWinningItem)) {
+          sessionStorage.setItem('shouldRefreshOnModalClose', 'true')
+        }
       } catch (error: any) {
         console.error('Error saving spin:', error)
         // If error is cooldown, extract cooldown seconds and set timer
@@ -155,16 +166,24 @@ export const useWheelOfFortune = () => {
           localStorage.setItem(STORAGE_KEYS.WHEEL_LAST_SPIN_TIME, spinTime.toString())
           setCooldownSeconds(error.response.data.cooldownSeconds)
         } else {
-          // Default to 2 minutes on error
+          // Default to 1 minute on error
           const spinTime = Date.now()
           lastSpinTimeRef.current = spinTime
           localStorage.setItem(STORAGE_KEYS.WHEEL_LAST_SPIN_TIME, spinTime.toString())
-          setCooldownSeconds(120)
+          setCooldownSeconds(60)
         }
         setCanSpin(false)
       }
       
       setTimeout(() => {
+        // Save scroll position BEFORE opening modal (for rewards that need refresh)
+        const rewardsRequiringRefresh = ['Paw-some Cursor', 'Color Catastrophe', 'Chase the Yarn!']
+        if (rewardsRequiringRefresh.includes(actualWinningItem)) {
+          const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0
+          sessionStorage.setItem('scrollPosition', scrollY.toString())
+          sessionStorage.setItem('scrollPath', window.location.pathname)
+        }
+        
         setIsModalOpen(true)
         // Create confetti explosion when modal opens
         const confettiCount = 50
