@@ -1,118 +1,19 @@
-import { useState, useRef, useEffect } from 'react'
 import { Button, Input, Text, Image } from '../atoms'
-import { chatService, type ChatMessage } from '../../services/chat'
 import { useI18n } from '../../contexts/i18n'
+import { useChatBot } from '../../hooks'
 
 const ChatBot = () => {
-  const { t, language } = useI18n()
-  const [messages, setMessages] = useState<ChatMessage[]>([])
-  const [inputValue, setInputValue] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const messagesContainerRef = useRef<HTMLDivElement>(null)
-
-  const scrollToBottom = () => {
-    if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTo({
-        top: messagesContainerRef.current.scrollHeight,
-        behavior: 'smooth'
-      })
-    }
-  }
-
-  // Initialize welcome message after translations are loaded
-  useEffect(() => {
-    const welcomeText = t('chat.welcome')
-    // Only set initial message if translation is loaded (not just the key)
-    if (messages.length === 0 && welcomeText !== 'chat.welcome') {
-      setMessages([
-        {
-          role: 'assistant',
-          content: welcomeText,
-          timestamp: new Date()
-        }
-      ])
-    }
-  }, [t, messages.length])
-
-  useEffect(() => {
-    scrollToBottom()
-  }, [messages])
-
-  const handleSend = async () => {
-    console.log('[CHATBOT] Send button clicked', { inputValue, isLoading })
-    
-    if (!inputValue.trim() || isLoading) {
-      console.log('[CHATBOT] Cannot send - empty input or already loading')
-      return
-    }
-
-    const userMessage: ChatMessage = {
-      role: 'user',
-      content: inputValue.trim(),
-      timestamp: new Date()
-    }
-
-    console.log('[CHATBOT] Sending message:', userMessage.content)
-
-    setMessages(prev => [...prev, userMessage])
-    setInputValue('')
-    setIsLoading(true)
-
-    try {
-      console.log('[CHATBOT] Calling chatService.sendMessage...')
-      const response = await chatService.sendMessage(userMessage.content, undefined, language)
-      console.log('[CHATBOT] Received response:', response)
-      
-      const assistantMessage: ChatMessage = {
-        role: 'assistant',
-        content: response.response,
-        timestamp: new Date()
-      }
-
-      console.log('[CHATBOT] Adding assistant message to chat')
-      setMessages(prev => [...prev, assistantMessage])
-    } catch (error) {
-      console.error('[CHATBOT] Chat error:', error)
-      console.error('[CHATBOT] Error details:', error)
-      const errorMessage: ChatMessage = {
-        role: 'assistant',
-        content: 'Sorry, an error occurred. Please try again! 😸',
-        timestamp: new Date()
-      }
-      setMessages(prev => [...prev, errorMessage])
-    } finally {
-      setIsLoading(false)
-      console.log('[CHATBOT] Request completed, loading set to false')
-    }
-  }
-
-  const handleClear = async () => {
-    try {
-      await chatService.clearHistory()
-      setMessages([
-        {
-          role: 'assistant',
-          content: t('chat.clearMessage'),
-          timestamp: new Date()
-        }
-      ])
-    } catch (error) {
-      console.error('Clear history error:', error)
-    }
-  }
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      handleSend()
-    }
-  }
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Allow only text characters: letters, numbers, spaces, and basic punctuation
-    const textOnly = e.target.value.replace(/[^\p{L}\p{N}\s.,!?;:'"()-]/gu, '')
-    setInputValue(textOnly)
-  }
+  const { t } = useI18n()
+  const {
+    messages,
+    inputValue,
+    isLoading,
+    messagesContainerRef,
+    handleSend,
+    handleClear,
+    handleKeyPress,
+    handleInputChange,
+  } = useChatBot()
 
   return (
     <div className="w-full mx-auto relative flex flex-col items-center">

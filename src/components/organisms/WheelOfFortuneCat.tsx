@@ -1,223 +1,24 @@
-import { useState, useRef, useEffect } from 'react'
 import { Text, Image } from '../atoms'
 import { Button } from '../atoms'
 import Modal from '../molecules/Modal'
-import { wheelService } from '../../services'
-import { authService } from '../../services'
-import { useI18n } from '../../contexts/i18n'
-
-const WHEEL_ITEMS = [
-  'New Me, Who Dis?',
-  'Fancy Schmancy Nickname',
-  'Chase the Yarn!',
-  'Paw-some Cursor',
-  'Royal Meowjesty',
-  'Color Catastrophe',
-  'Spin Again, Brave Soul',
-  'Total Cat-astrophe'
-]
-
-const PRIZE_DESCRIPTIONS: Record<string, string> = {
-  'New Me, Who Dis?': 'Your old icon is gone. A new identity has appeared. Embrace the chaos, mystery, and possibly worse hair.',
-  'Fancy Schmancy Nickname': 'Your nickname just got a glow-up. Prepare to outshine everyone — it\'s giving ✨main character energy✨.',
-  'Chase the Yarn!': 'A wild yarn ball appears! Push it, chase it, or let it roll into existential questions about your life choices.',
-  'Paw-some Cursor': 'Your cursor is now a cat paw. Warning: excessive cuteness may decrease productivity by 73%.',
-  'Royal Meowjesty': 'You\'ve been knighted by the Cat Kingdom. Please use your power responsibly… or dramatically.',
-  'Color Catastrophe': 'Everything pink is now blue, everything blue is now pink. It\'s fashion. It\'s chaos. It\'s art.',
-  'Spin Again, Brave Soul': 'Fortune says: "Not today." But you get another chance — because persistence (and a bit of luck) never hurt anyone.',
-  'Total Cat-astrophe': 'Congratulations! You\'ve achieved absolutely nothing. That\'s still a kind of win, right? 😹'
-}
+import { useWheelOfFortune } from '../../hooks'
+import { WHEEL_CONFIG } from '../../constants'
 
 const WheelOfFortuneCat = () => {
-  const { t } = useI18n()
-  const [rotation, setRotation] = useState(0)
-  const [isSpinning, setIsSpinning] = useState(false)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [winningItem, setWinningItem] = useState<string | null>(null)
-  const [canSpin, setCanSpin] = useState(true)
-  const [cooldownSeconds, setCooldownSeconds] = useState(0)
-  const [confetti, setConfetti] = useState<Array<{ id: number; color: string; left: number; delay: number; duration: number; horizontal: number; vertical: number }>>([])
-  const wheelRef = useRef<HTMLDivElement>(null)
-  const lastSpinTimeRef = useRef<number | null>(null)
+  const {
+    rotation,
+    isSpinning,
+    isModalOpen,
+    setIsModalOpen,
+    winningItem,
+    canSpin,
+    cooldownSeconds,
+    confetti,
+    wheelRef,
+    spinWheel,
+  } = useWheelOfFortune()
 
-  // Check initial cooldown status on mount (only once, no periodic calls)
-  useEffect(() => {
-    const user = authService.getCurrentUser()
-    if (!user) {
-      setCanSpin(false)
-      return
-    }
-
-    // Get last spin time from localStorage if available
-    const storedLastSpin = localStorage.getItem('wheel_last_spin_time')
-    if (storedLastSpin) {
-      const lastSpinTime = parseInt(storedLastSpin, 10)
-      const now = Date.now()
-      const timeSinceLastSpin = now - lastSpinTime
-      const cooldownMs = 2 * 60 * 1000 // 2 minutes
-
-      if (timeSinceLastSpin < cooldownMs) {
-        lastSpinTimeRef.current = lastSpinTime
-        const remainingMs = cooldownMs - timeSinceLastSpin
-        const remainingSeconds = Math.ceil(remainingMs / 1000)
-        setCooldownSeconds(remainingSeconds)
-        setCanSpin(false)
-      } else {
-        // Cooldown expired, clear storage
-        localStorage.removeItem('wheel_last_spin_time')
-        lastSpinTimeRef.current = null
-        setCooldownSeconds(0)
-        setCanSpin(true)
-      }
-    }
-  }, [])
-
-  // Update cooldown timer every second (only local, no API calls)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (lastSpinTimeRef.current) {
-        const now = Date.now()
-        const timeSinceLastSpin = now - lastSpinTimeRef.current
-        const cooldownMs = 2 * 60 * 1000 // 2 minutes
-        const remainingMs = cooldownMs - timeSinceLastSpin
-
-        if (remainingMs > 0) {
-          const remainingSeconds = Math.ceil(remainingMs / 1000)
-          setCooldownSeconds(remainingSeconds)
-          setCanSpin(false)
-        } else {
-          setCooldownSeconds(0)
-          setCanSpin(true)
-          lastSpinTimeRef.current = null
-          localStorage.removeItem('wheel_last_spin_time')
-        }
-      }
-    }, 1000)
-
-    return () => clearInterval(interval)
-  }, [])
-
-  // Clear confetti when modal closes
-  useEffect(() => {
-    if (!isModalOpen) {
-      setConfetti([])
-    }
-  }, [isModalOpen])
-
-  const spinWheel = async () => {
-    if (isSpinning || !canSpin) return
-
-    const user = authService.getCurrentUser()
-    if (!user) {
-      alert(t('wheel.mustBeLoggedIn'))
-      return
-    }
-
-    setIsSpinning(true)
-    setCanSpin(false)
-    
-    const spins = Math.floor(Math.random() * 5) + 3
-    const segmentAngle = 360 / WHEEL_ITEMS.length
-    const winningIndex = Math.floor(Math.random() * WHEEL_ITEMS.length)
-    const segmentCenterAngle = -90 + (winningIndex * segmentAngle) + (segmentAngle / 2)
-    const currentRotationNormalized = ((rotation % 360) + 360) % 360
-    const segmentCenterAtZero = ((segmentCenterAngle + 90) % 360 + 360) % 360
-    const currentPosition = (segmentCenterAtZero + currentRotationNormalized) % 360
-    const angleToRotate = (360 - currentPosition) % 360
-    const finalRotation = spins * 360 + angleToRotate
-    const totalRotationAfter = rotation + finalRotation
-    
-    setRotation(prev => prev + finalRotation)
-    
-    setTimeout(async () => {
-      setIsSpinning(false)
-      
-      const normalizedRotation = ((totalRotationAfter % 360) + 360) % 360
-      const positionAtTop = (360 - normalizedRotation) % 360
-      const adjustedPosition = (positionAtTop - 22.5 + 360) % 360
-      const actualWinningIndex = Math.round(adjustedPosition / segmentAngle) % WHEEL_ITEMS.length
-      const actualWinningItem = WHEEL_ITEMS[actualWinningIndex]
-      
-      console.log('Izabrano polje:', winningIndex, WHEEL_ITEMS[winningIndex])
-      console.log('Stvarno polje na vrhu:', actualWinningIndex, actualWinningItem)
-      console.log('Ukupna rotacija:', totalRotationAfter, 'normalizovano:', normalizedRotation)
-      console.log('Pozicija na vrhu:', positionAtTop, 'prilagođeno:', adjustedPosition)
-      
-      setWinningItem(actualWinningItem)
-      
-      // Save spin to backend - this is the only API call
-      try {
-        await wheelService.spin(actualWinningItem)
-        // Set cooldown locally after successful spin
-        const spinTime = Date.now()
-        lastSpinTimeRef.current = spinTime
-        localStorage.setItem('wheel_last_spin_time', spinTime.toString())
-        setCooldownSeconds(120) // 2 minutes
-        setCanSpin(false)
-      } catch (error: any) {
-        console.error('Error saving spin:', error)
-        // If error is cooldown, extract cooldown seconds and set timer
-        if (error.cooldownSeconds) {
-          const remainingMs = error.cooldownSeconds * 1000
-          const spinTime = Date.now() - (2 * 60 * 1000 - remainingMs)
-          lastSpinTimeRef.current = spinTime
-          localStorage.setItem('wheel_last_spin_time', spinTime.toString())
-          setCooldownSeconds(error.cooldownSeconds)
-        } else if (error.response?.data?.cooldownSeconds) {
-          const remainingMs = error.response.data.cooldownSeconds * 1000
-          const spinTime = Date.now() - (2 * 60 * 1000 - remainingMs)
-          lastSpinTimeRef.current = spinTime
-          localStorage.setItem('wheel_last_spin_time', spinTime.toString())
-          setCooldownSeconds(error.response.data.cooldownSeconds)
-        } else {
-          // Default to 2 minutes on error
-          const spinTime = Date.now()
-          lastSpinTimeRef.current = spinTime
-          localStorage.setItem('wheel_last_spin_time', spinTime.toString())
-          setCooldownSeconds(120)
-        }
-        setCanSpin(false)
-      }
-      
-      setTimeout(() => {
-        setIsModalOpen(true)
-        // Create confetti explosion when modal opens
-        const confettiCount = 50
-        const newConfetti = Array.from({ length: confettiCount }, (_, i) => {
-          // Random angle for explosion in all directions (0 to 360 degrees)
-          const angle = (Math.PI * 2 * i) / confettiCount + Math.random() * 0.5
-          // Distance for explosion (100-200px)
-          const distance = 100 + Math.random() * 100
-          return {
-            id: i,
-            color: colors[Math.floor(Math.random() * colors.length)],
-            left: 50, // Start from center (50%)
-            delay: Math.random() * 0.2, // Shorter delay for explosion effect
-            duration: 3 + Math.random() * 2, // 3-5 seconds (slower)
-            horizontal: Math.cos(angle) * distance, // X direction based on angle
-            vertical: Math.sin(angle) * distance // Y direction based on angle
-          }
-        })
-        setConfetti(newConfetti)
-        
-        // Clear confetti after animation
-        setTimeout(() => {
-          setConfetti([])
-        }, 6000)
-      }, 1000)
-    }, 4000)
-  }
-
-  const colors = [
-    '#F76C9B', // wheel-pink – lively pink – playful and energetic (for "New Me, Who Dis?")
-    '#6EC1E4', // wheel-blue – bright pastel blue – cheerful, eye-catching
-    '#63D9A0', // wheel-green – minty green – fresh, optimistic
-    '#F8D44C', // wheel-yellow – warm yellow – bright and positive
-    '#FFA85C', // wheel-orange – peachy orange – fun and inviting
-    '#B488E4', // wheel-purple – light purple – elegant, royal tone
-    '#5ED3C3', // wheel-teal – aqua teal – calm but vivid
-    '#F7A7A3'  // wheel-coral – soft coral red – warm and expressive
-  ]
+  const colors = WHEEL_CONFIG.COLORS
 
   const wheelSize = 500
   const centerX = wheelSize / 2
@@ -271,8 +72,8 @@ const WheelOfFortuneCat = () => {
                   </filter>
                 </defs>
                 
-                {WHEEL_ITEMS.map((item, index) => {
-                  const segmentAngle = 360 / WHEEL_ITEMS.length
+                {WHEEL_CONFIG.ITEMS.map((item, index) => {
+                  const segmentAngle = 360 / WHEEL_CONFIG.ITEMS.length
                   const startAngle = (index * segmentAngle - 90) * (Math.PI / 180)
                   const endAngle = ((index + 1) * segmentAngle - 90) * (Math.PI / 180)
                   
@@ -510,7 +311,9 @@ const WheelOfFortuneCat = () => {
                 weight="normal" 
                 className="text-center text-white mb-6 max-w-md leading-relaxed"
               >
-                {PRIZE_DESCRIPTIONS[winningItem] || winningItem}
+                {(winningItem && winningItem in WHEEL_CONFIG.PRIZE_DESCRIPTIONS 
+                  ? WHEEL_CONFIG.PRIZE_DESCRIPTIONS[winningItem as keyof typeof WHEEL_CONFIG.PRIZE_DESCRIPTIONS]
+                  : winningItem) || winningItem}
               </Text>
             </>
           )}

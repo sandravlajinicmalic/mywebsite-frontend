@@ -1,4 +1,5 @@
 import api from './api'
+import { API_ENDPOINTS } from '../constants'
 
 export interface WheelSpin {
   id: string
@@ -30,7 +31,7 @@ export const wheelService = {
    */
   async spin(reward: string): Promise<SpinResponse> {
     try {
-      const response = await api.post<SpinResponse>('/wheel/spin', {
+      const response = await api.post<SpinResponse>(API_ENDPOINTS.WHEEL_SPIN, {
         reward,
       })
       return response.data
@@ -54,7 +55,7 @@ export const wheelService = {
    */
   async canSpin(): Promise<CanSpinResponse> {
     try {
-      const response = await api.get<CanSpinResponse>('/wheel/can-spin')
+      const response = await api.get<CanSpinResponse>(API_ENDPOINTS.WHEEL_CAN_SPIN)
       return response.data
     } catch (error) {
       // If error, assume user can't spin
@@ -67,7 +68,7 @@ export const wheelService = {
    */
   async getHistory(): Promise<WheelSpin[]> {
     try {
-      const response = await api.get<HistoryResponse>('/wheel/history')
+      const response = await api.get<HistoryResponse>(API_ENDPOINTS.WHEEL_HISTORY)
       return response.data.spins
     } catch (error) {
       console.error('Error fetching wheel history:', error)

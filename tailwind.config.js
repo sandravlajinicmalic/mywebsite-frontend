@@ -34,19 +34,7 @@ export default {
           teal: '#5ED3C3',
           coral: '#F7A7A3',
         },
-        // Terminal colors (for WebsocketCat)
-        terminal: {
-          bg: '#1e1e1e',
-          header: '#2d2d2d',
-          border: '#3d3d3d',
-          'scrollbar-hover': '#4d4d4d',
-          red: '#ff5f56',
-          yellow: '#ffbd2e',
-          green: '#27c93f',
-          'text-muted': '#b3b3b3',
-          cyan: '#4ec9b0',
-          text: '#d4d4d4',
-        },
+        
         // Scrollbar colors
         scrollbar: {
           DEFAULT: '#9ca3af',

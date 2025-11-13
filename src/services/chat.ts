@@ -1,4 +1,5 @@
 import api from './api'
+import { API_ENDPOINTS } from '../constants'
 
 export interface ChatMessage {
   role: 'user' | 'assistant'
@@ -14,7 +15,7 @@ export interface ChatResponse {
 export const chatService = {
   async sendMessage(message: string, sessionId?: string, language?: string): Promise<ChatResponse> {
     try {
-      const response = await api.post<ChatResponse>('/chat/message', {
+      const response = await api.post<ChatResponse>(API_ENDPOINTS.CHAT_MESSAGE, {
         message,
         sessionId: sessionId || 'default',
         language: language || 'en'
@@ -28,7 +29,7 @@ export const chatService = {
 
   async clearHistory(sessionId?: string): Promise<void> {
     try {
-      await api.post('/chat/clear', {
+      await api.post(API_ENDPOINTS.CHAT_CLEAR, {
         sessionId: sessionId || 'default'
       })
     } catch (error) {
