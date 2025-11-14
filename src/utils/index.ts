@@ -4,6 +4,10 @@
 const CURSOR_STYLE_ID = 'paw-cursor-style'
 let currentCursorUrl: string | null = null
 let cursorObserver: MutationObserver | null = null
+let navigationListener: (() => void) | null = null
+let originalPushState: typeof history.pushState | null = null
+let originalReplaceState: typeof history.replaceState | null = null
+let isHistoryIntercepted = false
 
 /**
  * Apply cursor to a specific element
@@ -25,7 +29,7 @@ const applyCursorToAllElements = (cursorUrl: string): void => {
 }
 
 /**
- * Set up MutationObserver to apply cursor to new elements
+ * Set up MutationObserver to apply cursor to new elements and watch for attribute changes
  */
 const setupCursorObserver = (): void => {
   // Remove existing observer if any
@@ -38,6 +42,7 @@ const setupCursorObserver = (): void => {
     if (!currentCursorUrl) return
     
     mutations.forEach((mutation) => {
+      // Handle new nodes being added (e.g., during navigation)
       mutation.addedNodes.forEach((node) => {
         if (node.nodeType === Node.ELEMENT_NODE) {
           const element = node as HTMLElement
@@ -49,13 +54,24 @@ const setupCursorObserver = (): void => {
           })
         }
       })
+      
+      // Handle attribute changes (style, class changes that might affect cursor)
+      if (mutation.type === 'attributes') {
+        const target = mutation.target as HTMLElement
+        if (target && target.style) {
+          // Reapply cursor if style or class was changed
+          applyCursorToElement(target, currentCursorUrl!)
+        }
+      }
     })
   })
   
-  // Start observing
+  // Start observing - watch for new nodes AND attribute changes
   cursorObserver.observe(document.body, {
     childList: true,
-    subtree: true
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['style', 'class'] // Watch for style and class changes
   })
 }
 
@@ -138,6 +154,26 @@ export const applyCustomCursor = async (cursorUrl: string): Promise<void> => {
           [style*="cursor"] {
             cursor: url('${resizedDataUrl}') 16 16, auto !important;
           }
+          /* Override Tailwind cursor classes - must come after general rules */
+          .cursor-pointer, .cursor-pointer:hover, .cursor-pointer:focus,
+          .cursor-auto, .cursor-auto:hover, .cursor-auto:focus,
+          .cursor-default, .cursor-default:hover, .cursor-default:focus {
+            cursor: url('${resizedDataUrl}') 16 16, pointer !important;
+          }
+          /* Ensure cursor persists on all hover and focus states */
+          a:hover, a:focus, a:active,
+          button:hover, button:focus, button:active,
+          [role="button"]:hover, [role="button"]:focus, [role="button"]:active,
+          input:hover, input:focus,
+          textarea:hover, textarea:focus,
+          select:hover, select:focus,
+          label:hover, label:focus {
+            cursor: url('${resizedDataUrl}') 16 16, pointer !important;
+          }
+          /* Catch-all for any hover state */
+          *:hover {
+            cursor: url('${resizedDataUrl}') 16 16, auto !important;
+          }
         `
         document.head.appendChild(style)
         
@@ -155,6 +191,9 @@ export const applyCustomCursor = async (cursorUrl: string): Promise<void> => {
         
         // Set up observer for new elements
         setupCursorObserver()
+        
+        // Set up navigation listener to reapply cursor after route changes
+        setupNavigationListener(resizedDataUrl)
         
         console.log('✅ Cursor applied successfully with resized image')
       }
@@ -209,6 +248,26 @@ const applyCursorFallback = (cursorUrl: string): void => {
     [style*="cursor"] {
       cursor: url('${cursorUrl}') 16 16, auto !important;
     }
+    /* Override Tailwind cursor classes - must come after general rules */
+    .cursor-pointer, .cursor-pointer:hover, .cursor-pointer:focus,
+    .cursor-auto, .cursor-auto:hover, .cursor-auto:focus,
+    .cursor-default, .cursor-default:hover, .cursor-default:focus {
+      cursor: url('${cursorUrl}') 16 16, pointer !important;
+    }
+    /* Ensure cursor persists on all hover and focus states */
+    a:hover, a:focus, a:active,
+    button:hover, button:focus, button:active,
+    [role="button"]:hover, [role="button"]:focus, [role="button"]:active,
+    input:hover, input:focus,
+    textarea:hover, textarea:focus,
+    select:hover, select:focus,
+    label:hover, label:focus {
+      cursor: url('${cursorUrl}') 16 16, pointer !important;
+    }
+    /* Catch-all for any hover state */
+    *:hover {
+      cursor: url('${cursorUrl}') 16 16, auto !important;
+    }
   `
   document.head.appendChild(style)
   
@@ -227,7 +286,62 @@ const applyCursorFallback = (cursorUrl: string): void => {
   // Set up observer for new elements
   setupCursorObserver()
   
+  // Set up navigation listener to reapply cursor after route changes
+  setupNavigationListener(cursorUrl)
+  
   console.log('✅ Fallback cursor applied')
+}
+
+/**
+ * Set up navigation listener to reapply cursor after React Router navigation
+ */
+const setupNavigationListener = (cursorUrl: string): void => {
+  // Remove existing listener if any
+  if (navigationListener) {
+    window.removeEventListener('popstate', navigationListener)
+    navigationListener = null
+  }
+  
+  // Create navigation handler
+  navigationListener = () => {
+    if (!currentCursorUrl) return
+    
+    // Reapply cursor after a short delay to allow DOM to update
+    setTimeout(() => {
+      if (currentCursorUrl) {
+        applyCursorToAllElements(cursorUrl)
+        // Also reapply to body and html
+        if (document.body) {
+          document.body.style.cursor = `url('${cursorUrl}') 16 16, auto`
+        }
+        if (document.documentElement) {
+          document.documentElement.style.cursor = `url('${cursorUrl}') 16 16, auto`
+        }
+      }
+    }, 100)
+  }
+  
+  // Listen for browser navigation (back/forward)
+  window.addEventListener('popstate', navigationListener)
+  
+  // Also listen for React Router navigation by intercepting pushState/replaceState
+  // Only intercept once to avoid multiple wrappers
+  if (!isHistoryIntercepted) {
+    originalPushState = history.pushState.bind(history)
+    originalReplaceState = history.replaceState.bind(history)
+    
+    history.pushState = function(...args) {
+      originalPushState!.apply(history, args)
+      setTimeout(() => navigationListener?.(), 50)
+    }
+    
+    history.replaceState = function(...args) {
+      originalReplaceState!.apply(history, args)
+      setTimeout(() => navigationListener?.(), 50)
+    }
+    
+    isHistoryIntercepted = true
+  }
 }
 
 /**
@@ -242,6 +356,21 @@ export const removeCustomCursor = (): void => {
     if (cursorObserver) {
       cursorObserver.disconnect()
       cursorObserver = null
+    }
+    
+    // Remove navigation listener
+    if (navigationListener) {
+      window.removeEventListener('popstate', navigationListener)
+      navigationListener = null
+    }
+    
+    // Restore original history methods if they were intercepted
+    if (isHistoryIntercepted && originalPushState && originalReplaceState) {
+      history.pushState = originalPushState
+      history.replaceState = originalReplaceState
+      originalPushState = null
+      originalReplaceState = null
+      isHistoryIntercepted = false
     }
     
     const existingStyle = document.getElementById(CURSOR_STYLE_ID)
