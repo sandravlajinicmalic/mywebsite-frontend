@@ -182,7 +182,10 @@ export const useWheelOfFortune = () => {
         ]
         if (rewardsRequiringRefresh.includes(actualWinningItem)) {
           // Dispatch event to notify components (ActiveRewards, Header) to refetch rewards immediately
-          window.dispatchEvent(new CustomEvent('reward-activated'))
+          // Include reward type in event detail for optimistic updates
+          window.dispatchEvent(new CustomEvent('reward-activated', {
+            detail: { rewardType: actualWinningItem }
+          }))
         }
         
         setIsModalOpen(true)

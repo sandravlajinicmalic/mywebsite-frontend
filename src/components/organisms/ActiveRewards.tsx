@@ -17,6 +17,7 @@ const ActiveRewards = () => {
   const [previousCursorState, setPreviousCursorState] = useState<string | null>(null)
   const [previousColorState, setPreviousColorState] = useState<boolean>(false)
   const expirationTimersRef = useRef<NodeJS.Timeout[]>([])
+  const optimisticColorApplyTimeRef = useRef<number | null>(null)
 
   useEffect(() => {
     const fetchRewards = async () => {
@@ -28,9 +29,6 @@ const ActiveRewards = () => {
 
       try {
         const rewards = await userService.getActiveRewards()
-        
-        // Force a small delay to ensure DOM is ready
-        await new Promise(resolve => setTimeout(resolve, 100))
         
         // Check for yarn reward changes
         const yarnReward = rewards.yarn
@@ -71,11 +69,17 @@ const ActiveRewards = () => {
           if (currentColorState) {
             console.log('🎨 Color theme changed! Pink → Blue', { swap: colorReward.value.swap, expiresAt: colorReward.expiresAt })
             applyColorSwap()
+            // Clear optimistic time ref since reward is now confirmed
+            optimisticColorApplyTimeRef.current = null
           } else {
             console.log('🎨 Color theme reverted to default (reward expired)')
             removeColorSwap()
+            optimisticColorApplyTimeRef.current = null
           }
           setPreviousColorState(currentColorState)
+        } else if (currentColorState && optimisticColorApplyTimeRef.current) {
+          // Reward is confirmed, clear optimistic time ref
+          optimisticColorApplyTimeRef.current = null
         }
         
         setActiveRewards(rewards)
@@ -127,8 +131,18 @@ const ActiveRewards = () => {
           }
         } else if (previousColorState) {
           // Reward expired or doesn't exist, but effect is still active
-          removeColorSwap()
-          setPreviousColorState(false)
+          // Don't remove if we just optimistically applied it (within last 2 seconds)
+          const timeSinceOptimistic = optimisticColorApplyTimeRef.current 
+            ? Date.now() - optimisticColorApplyTimeRef.current 
+            : Infinity
+          
+          if (timeSinceOptimistic > 2000) {
+            // Only remove if it's been more than 2 seconds since optimistic apply
+            // This prevents removing the effect if backend hasn't created the reward yet
+            removeColorSwap()
+            setPreviousColorState(false)
+            optimisticColorApplyTimeRef.current = null
+          }
         }
       } catch (error) {
         console.error('Error fetching active rewards:', error)
@@ -143,9 +157,32 @@ const ActiveRewards = () => {
     const interval = setInterval(fetchRewards, 5000)
     
     // Also listen for custom event to refresh rewards immediately
-    const handleRewardActivated = () => {
-      // Fetch immediately for faster effect application
-      fetchRewards()
+    const handleRewardActivated = (event: Event) => {
+      // Get reward type from event detail if available, or apply optimistically
+      const customEvent = event as CustomEvent
+      const rewardType = customEvent.detail?.rewardType
+      
+      // Optimistically apply effects immediately for known reward types
+      if (rewardType === 'Color Catastrophe') {
+        // Apply color swap optimistically and update state
+        if (!previousColorState) {
+          applyColorSwap()
+          setPreviousColorState(true)
+          optimisticColorApplyTimeRef.current = Date.now()
+        }
+      }
+      if (rewardType === 'Paw-some Cursor') {
+        // Cursor will be applied after fetchRewards confirms
+      }
+      if (rewardType === 'Chase the Yarn!') {
+        // Yarn will be applied after fetchRewards confirms
+      }
+      
+      // Fetch after a short delay to allow backend to create the reward
+      // This ensures the reward exists when we fetch
+      setTimeout(() => {
+        fetchRewards()
+      }, 200)
     }
     window.addEventListener('reward-activated', handleRewardActivated)
 

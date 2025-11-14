@@ -41,10 +41,10 @@ export const WHEEL_CONFIG = {
   PRIZE_WEIGHTS: {
     'New Me, Who Dis?': 1,
     'Fancy Schmancy Nickname': 1,
-    'Chase the Yarn!': 3, // More likely
-    'Paw-some Cursor': 3, // More likely
+    'Chase the Yarn!': 1, // More likely
+    'Paw-some Cursor': 10, // More likely
     'Royal Meowjesty': 1,
-    'Color Catastrophe': 3, // More likely
+    'Color Catastrophe': 1, // More likely
     'Spin Again, Brave Soul': 1,
     'Total Cat-astrophe': 1
   },
