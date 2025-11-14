@@ -134,11 +134,19 @@ const Header = () => {
 
     fetchRewards()
 
-    // Refresh rewards every 30 seconds to check for expired rewards (more frequent)
-    const interval = setInterval(fetchRewards, 30000)
+    // Refresh rewards every 5 seconds to check for expired rewards (more frequent check for accurate expiration)
+    const interval = setInterval(fetchRewards, 5000)
+    
+    // Also listen for custom event to refresh rewards immediately when reward is activated
+    const handleRewardActivated = () => {
+      // Fetch immediately for faster avatar update
+      fetchRewards()
+    }
+    window.addEventListener('reward-activated', handleRewardActivated)
 
     return () => {
       clearInterval(interval)
+      window.removeEventListener('reward-activated', handleRewardActivated)
       // Clear avatar expiration timer on unmount
       if (avatarExpirationTimerRef.current) {
         clearTimeout(avatarExpirationTimerRef.current)

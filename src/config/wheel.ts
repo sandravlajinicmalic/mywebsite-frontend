@@ -15,7 +15,7 @@ export const WHEEL_CONFIG = {
     'Spin Again, Brave Soul',
     'Total Cat-astrophe'
   ],
-  COOLDOWN_MS: 60 * 1000, // 1 minute (60 seconds)
+  COOLDOWN_MS: 30 * 1000, // 30 seconds
   COLORS: [
     '#F76C9B', // wheel-pink
     '#6EC1E4', // wheel-blue

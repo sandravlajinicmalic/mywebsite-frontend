@@ -162,19 +162,8 @@ const WheelOfFortuneCat = () => {
         isOpen={isModalOpen}
         onClose={() => {
           setIsModalOpen(false)
-          
-          // Check if we should refresh after closing modal (for rewards that need visual effect)
-          const shouldRefresh = sessionStorage.getItem('shouldRefreshOnModalClose')
-          if (shouldRefresh === 'true') {
-            // Scroll position is already saved before modal opened, just refresh
-            // Clear the flag
-            sessionStorage.removeItem('shouldRefreshOnModalClose')
-            // Small delay to ensure modal closes smoothly
-            setTimeout(() => {
-              // Refresh page to apply visual effects
-              window.location.reload()
-            }, 100)
-          }
+          // No refresh needed - ActiveRewards component will automatically refetch
+          // rewards when 'reward-activated' event is dispatched (handled in useWheelOfFortune)
         }}
         title={
           <Text as="h3" size="2xl" weight="bold" className="text-white">

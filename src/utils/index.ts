@@ -234,27 +234,34 @@ const applyCursorFallback = (cursorUrl: string): void => {
  * Remove custom cursor and revert to default
  */
 export const removeCustomCursor = (): void => {
-  currentCursorUrl = null
-  
-  // Disconnect observer
-  if (cursorObserver) {
-    cursorObserver.disconnect()
-    cursorObserver = null
-  }
-  
-  const existingStyle = document.getElementById(CURSOR_STYLE_ID)
-  if (existingStyle) {
-    existingStyle.remove()
-  }
-  
-  // Also reset body and html cursor
-  document.body.style.cursor = ''
-  document.documentElement.style.cursor = ''
-  
-  // Reset all elements
-  const allElements = document.querySelectorAll('*')
-  allElements.forEach(el => {
-    (el as HTMLElement).style.cursor = ''
+  // Use requestAnimationFrame to ensure DOM is ready
+  requestAnimationFrame(() => {
+    currentCursorUrl = null
+    
+    // Disconnect observer
+    if (cursorObserver) {
+      cursorObserver.disconnect()
+      cursorObserver = null
+    }
+    
+    const existingStyle = document.getElementById(CURSOR_STYLE_ID)
+    if (existingStyle) {
+      existingStyle.remove()
+    }
+    
+    // Also reset body and html cursor
+    if (document.body) {
+      document.body.style.cursor = ''
+    }
+    if (document.documentElement) {
+      document.documentElement.style.cursor = ''
+    }
+    
+    // Reset all elements
+    const allElements = document.querySelectorAll('*')
+    allElements.forEach(el => {
+      (el as HTMLElement).style.cursor = ''
+    })
   })
 }
 
@@ -266,51 +273,69 @@ let colorSwapObserver: MutationObserver | null = null
  * Uses global hue-rotate filter to swap all colors
  */
 export const applyColorSwap = (): void => {
-  // Remove existing style if any
-  const existingStyle = document.getElementById(COLOR_STYLE_ID)
-  if (existingStyle) {
-    existingStyle.remove()
-  }
-  
-  // Apply CSS filter to swap pink to blue
-  const style = document.createElement('style')
-  style.id = COLOR_STYLE_ID
-  style.textContent = `
-    html {
-      filter: hue-rotate(180deg) saturate(1.2) !important;
+  // Use requestAnimationFrame to ensure DOM is ready
+  requestAnimationFrame(() => {
+    // Remove existing style if any
+    const existingStyle = document.getElementById(COLOR_STYLE_ID)
+    if (existingStyle) {
+      existingStyle.remove()
     }
-    /* Override specific pink colors to blue */
-    [class*="brand-pink"], [class*="pink-"] {
-      filter: hue-rotate(180deg) !important;
+    
+    // Apply CSS filter to swap pink to blue
+    const style = document.createElement('style')
+    style.id = COLOR_STYLE_ID
+    style.textContent = `
+      html, body {
+        filter: hue-rotate(180deg) saturate(1.2) !important;
+      }
+      /* Override specific pink colors to blue */
+      [class*="brand-pink"], [class*="pink-"] {
+        filter: hue-rotate(180deg) !important;
+      }
+    `
+    document.head.appendChild(style)
+    
+    // Also apply directly to html and body elements for immediate effect
+    if (document.documentElement) {
+      document.documentElement.style.filter = 'hue-rotate(180deg) saturate(1.2)'
     }
-  `
-  document.head.appendChild(style)
-  
-  // Also apply to body
-  document.documentElement.style.filter = 'hue-rotate(180deg) saturate(1.2)'
-  
-  // Disconnect observer if it exists
-  if (colorSwapObserver) {
-    colorSwapObserver.disconnect()
-    colorSwapObserver = null
-  }
+    if (document.body) {
+      document.body.style.filter = 'hue-rotate(180deg) saturate(1.2)'
+    }
+    
+    // Disconnect observer if it exists
+    if (colorSwapObserver) {
+      colorSwapObserver.disconnect()
+      colorSwapObserver = null
+    }
+  })
 }
 
 /**
  * Remove color theme swap
  */
 export const removeColorSwap = (): void => {
-  const existingStyle = document.getElementById(COLOR_STYLE_ID)
-  if (existingStyle) {
-    existingStyle.remove()
-  }
-  document.documentElement.style.filter = ''
-  
-  // Disconnect observer if it exists
-  if (colorSwapObserver) {
-    colorSwapObserver.disconnect()
-    colorSwapObserver = null
-  }
+  // Use requestAnimationFrame to ensure DOM is ready
+  requestAnimationFrame(() => {
+    const existingStyle = document.getElementById(COLOR_STYLE_ID)
+    if (existingStyle) {
+      existingStyle.remove()
+    }
+    
+    // Remove filter from html and body elements
+    if (document.documentElement) {
+      document.documentElement.style.filter = ''
+    }
+    if (document.body) {
+      document.body.style.filter = ''
+    }
+    
+    // Disconnect observer if it exists
+    if (colorSwapObserver) {
+      colorSwapObserver.disconnect()
+      colorSwapObserver = null
+    }
+  })
 }
 
 /**

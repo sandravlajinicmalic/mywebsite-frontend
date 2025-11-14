@@ -141,15 +141,10 @@ export const useWheelOfFortune = () => {
           const spinTime = Date.now()
           lastSpinTimeRef.current = spinTime
           localStorage.setItem(STORAGE_KEYS.WHEEL_LAST_SPIN_TIME, spinTime.toString())
-          setCooldownSeconds(response.cooldownSeconds || 60) // Use from response or default to 1 minute
+          setCooldownSeconds(response.cooldownSeconds || 30) // Use from response or default to 30 seconds
           setCanSpin(false)
         }
         
-        // Mark if reward requires refresh (will be handled when modal closes)
-        const rewardsRequiringRefresh = ['Paw-some Cursor', 'Color Catastrophe', 'Chase the Yarn!']
-        if (rewardsRequiringRefresh.includes(actualWinningItem)) {
-          sessionStorage.setItem('shouldRefreshOnModalClose', 'true')
-        }
       } catch (error: any) {
         console.error('Error saving spin:', error)
         // If error is cooldown, extract cooldown seconds and set timer
@@ -166,22 +161,28 @@ export const useWheelOfFortune = () => {
           localStorage.setItem(STORAGE_KEYS.WHEEL_LAST_SPIN_TIME, spinTime.toString())
           setCooldownSeconds(error.response.data.cooldownSeconds)
         } else {
-          // Default to 1 minute on error
+          // Default to 30 seconds on error
           const spinTime = Date.now()
           lastSpinTimeRef.current = spinTime
           localStorage.setItem(STORAGE_KEYS.WHEEL_LAST_SPIN_TIME, spinTime.toString())
-          setCooldownSeconds(60)
+          setCooldownSeconds(30)
         }
         setCanSpin(false)
       }
       
       setTimeout(() => {
-        // Save scroll position BEFORE opening modal (for rewards that need refresh)
-        const rewardsRequiringRefresh = ['Paw-some Cursor', 'Color Catastrophe', 'Chase the Yarn!']
+        // Dispatch event to trigger components to refresh (for rewards that need visual effects)
+        // This includes: avatar changes, cursor, color swap, and yarn ball
+        // Dispatch at the same time as modal opens so effects appear simultaneously
+        const rewardsRequiringRefresh = [
+          'New Me, Who Dis?',      // Changes avatar
+          'Paw-some Cursor',        // Changes cursor
+          'Color Catastrophe',      // Changes color theme
+          'Chase the Yarn!'         // Shows yarn ball
+        ]
         if (rewardsRequiringRefresh.includes(actualWinningItem)) {
-          const scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0
-          sessionStorage.setItem('scrollPosition', scrollY.toString())
-          sessionStorage.setItem('scrollPath', window.location.pathname)
+          // Dispatch event to notify components (ActiveRewards, Header) to refetch rewards immediately
+          window.dispatchEvent(new CustomEvent('reward-activated'))
         }
         
         setIsModalOpen(true)
