@@ -3,7 +3,7 @@ import { wheelService } from '../services/wheel'
 import { authService } from '../services/auth'
 import { useI18n } from '../contexts/i18n'
 import { STORAGE_KEYS } from '../constants'
-import { WHEEL_CONFIG } from '../config/wheel'
+import { WHEEL_CONFIG, getWeightedRandomPrizeIndex } from '../config/wheel'
 
 export interface ConfettiPiece {
   id: number
@@ -103,7 +103,7 @@ export const useWheelOfFortune = () => {
     
     const spins = Math.floor(Math.random() * 5) + 3
     const segmentAngle = 360 / WHEEL_CONFIG.ITEMS.length
-    const winningIndex = Math.floor(Math.random() * WHEEL_CONFIG.ITEMS.length)
+    const winningIndex = getWeightedRandomPrizeIndex()
     const segmentCenterAngle = -90 + (winningIndex * segmentAngle) + (segmentAngle / 2)
     const currentRotationNormalized = ((rotation % 360) + 360) % 360
     const segmentCenterAtZero = ((segmentCenterAngle + 90) % 360 + 360) % 360
@@ -208,7 +208,7 @@ export const useWheelOfFortune = () => {
         setTimeout(() => {
           setConfetti([])
         }, 6000)
-      }, 1000)
+      }, 500)
     }, 4000)
   }
 
