@@ -1,6 +1,3 @@
-// Utility funkcije
-// Primjer: formatDate, debounce, validateEmail, itd.
-
 const CURSOR_STYLE_ID = 'paw-cursor-style'
 let currentCursorUrl: string | null = null
 let cursorObserver: MutationObserver | null = null
@@ -11,21 +8,31 @@ let isHistoryIntercepted = false
 
 /**
  * Apply cursor to a specific element
+ * Note: We don't set inline styles here to avoid conflicts with CSS
+ * The CSS style tag should handle all cursor styling
  */
 const applyCursorToElement = (element: HTMLElement, cursorUrl: string): void => {
-  if (element.style) {
-    element.style.cursor = `url('${cursorUrl}') 16 16, auto`
-  }
+  // Don't set inline styles - let CSS handle it
+  // This prevents conflicts with CSS specificity
 }
 
 /**
  * Apply cursor to all elements in the document
+ * Note: We rely on CSS stylesheet for cursor styling, but we can force a reflow
+ * to ensure styles are applied correctly
  */
 const applyCursorToAllElements = (cursorUrl: string): void => {
-  const allElements = document.querySelectorAll('*')
-  allElements.forEach(el => {
-    applyCursorToElement(el as HTMLElement, cursorUrl)
-  })
+  // Force a reflow to ensure CSS styles are applied
+  // This helps when elements are added dynamically
+  void document.body.offsetHeight
+  
+  // Reapply cursor style to body and html to ensure it's active
+  if (document.body) {
+    document.body.style.cursor = `url('${cursorUrl}') 16 16, auto`
+  }
+  if (document.documentElement) {
+    document.documentElement.style.cursor = `url('${cursorUrl}') 16 16, auto`
+  }
 }
 
 /**
@@ -41,26 +48,22 @@ const setupCursorObserver = (): void => {
   cursorObserver = new MutationObserver((mutations) => {
     if (!currentCursorUrl) return
     
-    mutations.forEach((mutation) => {
+      mutations.forEach((mutation) => {
       // Handle new nodes being added (e.g., during navigation)
-      mutation.addedNodes.forEach((node) => {
-        if (node.nodeType === Node.ELEMENT_NODE) {
-          const element = node as HTMLElement
-          applyCursorToElement(element, currentCursorUrl!)
-          // Also apply to all children
-          const children = element.querySelectorAll('*')
-          children.forEach(child => {
-            applyCursorToElement(child as HTMLElement, currentCursorUrl!)
-          })
-        }
-      })
+      // CSS stylesheet should handle cursor automatically, but we ensure it's applied
+      if (mutation.addedNodes.length > 0) {
+        // Force a reflow to ensure CSS is applied to new elements
+        void document.body.offsetHeight
+      }
       
       // Handle attribute changes (style, class changes that might affect cursor)
       if (mutation.type === 'attributes') {
         const target = mutation.target as HTMLElement
-        if (target && target.style) {
-          // Reapply cursor if style or class was changed
-          applyCursorToElement(target, currentCursorUrl!)
+        // If style attribute was changed, we might need to reapply cursor
+        // But CSS should handle it, so we just ensure the style tag is still there
+        if (target && mutation.attributeName === 'style') {
+          // Force a reflow to ensure CSS takes precedence
+          void target.offsetHeight
         }
       }
     })
@@ -143,35 +146,35 @@ export const applyCustomCursor = async (cursorUrl: string): Promise<void> => {
           html, body, * {
             cursor: url('${resizedDataUrl}') 16 16, auto !important;
           }
-          button, a, [role="button"], input, textarea, select, label {
+          /* Links and interactive elements - must be very specific with maximum specificity */
+          a, a *, a:hover, a:focus, a:active, a:visited, a:hover *, a:focus *, a:active *, a:visited *,
+          button, button *, button:hover, button:focus, button:active, button:hover *, button:focus *, button:active *,
+          [role="button"], [role="button"] *, [role="button"]:hover, [role="button"]:focus, [role="button"]:active,
+          [role="button"]:hover *, [role="button"]:focus *, [role="button"]:active *,
+          input, input:hover, input:focus,
+          textarea, textarea:hover, textarea:focus,
+          select, select:hover, select:focus,
+          label, label:hover, label:focus,
+          .cursor-pointer, .cursor-pointer *, .cursor-pointer:hover, .cursor-pointer:focus,
+          .cursor-pointer:hover *, .cursor-pointer:focus * {
+            cursor: url('${resizedDataUrl}') 16 16, pointer !important;
+          }
+          /* Extra specific selectors for links to ensure they always show pointer cursor */
+          html body a, html body a:hover, html body a:focus, html body a:active, html body a:visited,
+          html body a *, html body a:hover *, html body a:focus *, html body a:active *, html body a:visited * {
             cursor: url('${resizedDataUrl}') 16 16, pointer !important;
           }
           /* Ensure cursor applies to all elements including dropdowns, modals, etc. */
           div, span, p, h1, h2, h3, h4, h5, h6, li, ul, ol, nav, header, footer, main, section, article, aside {
             cursor: url('${resizedDataUrl}') 16 16, auto !important;
           }
-          /* Override any inline cursor styles */
-          [style*="cursor"] {
+          /* Override any inline cursor styles - but preserve pointer for links */
+          [style*="cursor"]:not(a):not(button):not([role="button"]) {
             cursor: url('${resizedDataUrl}') 16 16, auto !important;
           }
           /* Override Tailwind cursor classes - must come after general rules */
-          .cursor-pointer, .cursor-pointer:hover, .cursor-pointer:focus,
           .cursor-auto, .cursor-auto:hover, .cursor-auto:focus,
           .cursor-default, .cursor-default:hover, .cursor-default:focus {
-            cursor: url('${resizedDataUrl}') 16 16, pointer !important;
-          }
-          /* Ensure cursor persists on all hover and focus states */
-          a:hover, a:focus, a:active,
-          button:hover, button:focus, button:active,
-          [role="button"]:hover, [role="button"]:focus, [role="button"]:active,
-          input:hover, input:focus,
-          textarea:hover, textarea:focus,
-          select:hover, select:focus,
-          label:hover, label:focus {
-            cursor: url('${resizedDataUrl}') 16 16, pointer !important;
-          }
-          /* Catch-all for any hover state */
-          *:hover {
             cursor: url('${resizedDataUrl}') 16 16, auto !important;
           }
         `
@@ -185,9 +188,15 @@ export const applyCustomCursor = async (cursorUrl: string): Promise<void> => {
         currentCursorUrl = resizedDataUrl
         
         // Force cursor update on all existing elements
+        // Use multiple timeouts to ensure it's applied correctly
         setTimeout(() => {
           applyCursorToAllElements(resizedDataUrl)
         }, 100)
+        
+        // Second application to ensure it's applied after any async operations
+        setTimeout(() => {
+          applyCursorToAllElements(resizedDataUrl)
+        }, 300)
         
         // Set up observer for new elements
         setupCursorObserver()
@@ -237,35 +246,35 @@ const applyCursorFallback = (cursorUrl: string): void => {
     html, body, * {
       cursor: url('${cursorUrl}') 16 16, auto !important;
     }
-    button, a, [role="button"], input, textarea, select, label {
+    /* Links and interactive elements - must be very specific with maximum specificity */
+    a, a *, a:hover, a:focus, a:active, a:visited, a:hover *, a:focus *, a:active *, a:visited *,
+    button, button *, button:hover, button:focus, button:active, button:hover *, button:focus *, button:active *,
+    [role="button"], [role="button"] *, [role="button"]:hover, [role="button"]:focus, [role="button"]:active,
+    [role="button"]:hover *, [role="button"]:focus *, [role="button"]:active *,
+    input, input:hover, input:focus,
+    textarea, textarea:hover, textarea:focus,
+    select, select:hover, select:focus,
+    label, label:hover, label:focus,
+    .cursor-pointer, .cursor-pointer *, .cursor-pointer:hover, .cursor-pointer:focus,
+    .cursor-pointer:hover *, .cursor-pointer:focus * {
+      cursor: url('${cursorUrl}') 16 16, pointer !important;
+    }
+    /* Extra specific selectors for links to ensure they always show pointer cursor */
+    html body a, html body a:hover, html body a:focus, html body a:active, html body a:visited,
+    html body a *, html body a:hover *, html body a:focus *, html body a:active *, html body a:visited * {
       cursor: url('${cursorUrl}') 16 16, pointer !important;
     }
     /* Ensure cursor applies to all elements including dropdowns, modals, etc. */
     div, span, p, h1, h2, h3, h4, h5, h6, li, ul, ol, nav, header, footer, main, section, article, aside {
       cursor: url('${cursorUrl}') 16 16, auto !important;
     }
-    /* Override any inline cursor styles */
-    [style*="cursor"] {
+    /* Override any inline cursor styles - but preserve pointer for links */
+    [style*="cursor"]:not(a):not(button):not([role="button"]) {
       cursor: url('${cursorUrl}') 16 16, auto !important;
     }
     /* Override Tailwind cursor classes - must come after general rules */
-    .cursor-pointer, .cursor-pointer:hover, .cursor-pointer:focus,
     .cursor-auto, .cursor-auto:hover, .cursor-auto:focus,
     .cursor-default, .cursor-default:hover, .cursor-default:focus {
-      cursor: url('${cursorUrl}') 16 16, pointer !important;
-    }
-    /* Ensure cursor persists on all hover and focus states */
-    a:hover, a:focus, a:active,
-    button:hover, button:focus, button:active,
-    [role="button"]:hover, [role="button"]:focus, [role="button"]:active,
-    input:hover, input:focus,
-    textarea:hover, textarea:focus,
-    select:hover, select:focus,
-    label:hover, label:focus {
-      cursor: url('${cursorUrl}') 16 16, pointer !important;
-    }
-    /* Catch-all for any hover state */
-    *:hover {
       cursor: url('${cursorUrl}') 16 16, auto !important;
     }
   `
@@ -279,9 +288,15 @@ const applyCursorFallback = (cursorUrl: string): void => {
   currentCursorUrl = cursorUrl
   
   // Force cursor update on all existing elements
+  // Use multiple timeouts to ensure it's applied correctly
   setTimeout(() => {
     applyCursorToAllElements(cursorUrl)
   }, 100)
+  
+  // Second application to ensure it's applied after any async operations
+  setTimeout(() => {
+    applyCursorToAllElements(cursorUrl)
+  }, 300)
   
   // Set up observer for new elements
   setupCursorObserver()
@@ -306,7 +321,8 @@ const setupNavigationListener = (cursorUrl: string): void => {
   navigationListener = () => {
     if (!currentCursorUrl) return
     
-    // Reapply cursor after a short delay to allow DOM to update
+    // Reapply cursor after a delay to allow DOM to update
+    // Use multiple timeouts to ensure it's applied even if React Router takes longer
     setTimeout(() => {
       if (currentCursorUrl) {
         applyCursorToAllElements(cursorUrl)
@@ -318,7 +334,14 @@ const setupNavigationListener = (cursorUrl: string): void => {
           document.documentElement.style.cursor = `url('${cursorUrl}') 16 16, auto`
         }
       }
-    }, 100)
+    }, 150)
+    
+    // Second application after longer delay to catch any late DOM updates
+    setTimeout(() => {
+      if (currentCursorUrl) {
+        applyCursorToAllElements(cursorUrl)
+      }
+    }, 500)
   }
   
   // Listen for browser navigation (back/forward)
@@ -332,12 +355,12 @@ const setupNavigationListener = (cursorUrl: string): void => {
     
     history.pushState = function(...args) {
       originalPushState!.apply(history, args)
-      setTimeout(() => navigationListener?.(), 50)
+      setTimeout(() => navigationListener?.(), 100)
     }
     
     history.replaceState = function(...args) {
       originalReplaceState!.apply(history, args)
-      setTimeout(() => navigationListener?.(), 50)
+      setTimeout(() => navigationListener?.(), 100)
     }
     
     isHistoryIntercepted = true

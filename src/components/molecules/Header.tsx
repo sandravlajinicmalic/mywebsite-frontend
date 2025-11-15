@@ -374,15 +374,15 @@ const Header = () => {
           background: transparent;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: theme('colors.scrollbar.DEFAULT');
+          background: #9ca3af;
           border-radius: 3px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: theme('colors.scrollbar.hover');
+          background: #6b7280;
         }
         .custom-scrollbar {
           scrollbar-width: thin;
-          scrollbar-color: theme('colors.scrollbar.DEFAULT') transparent;
+          scrollbar-color: #9ca3af transparent;
         }
       `}</style>
     </header>

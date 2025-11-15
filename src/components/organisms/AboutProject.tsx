@@ -71,7 +71,7 @@ const AboutProject = () => {
       'Vite': 'vite',
       'Node.js': 'nodedotjs',
       'Supabase': 'supabase',
-      'WebSockets': 'websocket',
+      'WebSockets': 'socketdotio',
       'SmartChat AI': 'openai'
     }
     
