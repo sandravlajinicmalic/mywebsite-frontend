@@ -6,7 +6,7 @@ The Wheel of Fortune is a reward system that allows authenticated users to spin 
 
 ---
 
-## 🎨 Frontend Implementation
+## Frontend Implementation
 
 ### 1. **Configuration** (`src/config/wheel.ts`)
 
@@ -433,7 +433,7 @@ GET endpoint that retrieves all active (non-expired) rewards.
 
 ---
 
-## 🐛 Potential Issues and Solutions
+## Potential Issues and Solutions
 
 ### **Race Conditions:**
 - Backend checks cooldown before saving spin
@@ -493,7 +493,7 @@ mywebsite-backend/
 
 ---
 
-## 🎯 API Endpoints
+##  API Endpoints
 
 ### **POST `/wheel/spin`**
 - **Auth**: Required
@@ -517,7 +517,7 @@ mywebsite-backend/
 
 ---
 
-## 🚀 Future Enhancements
+## Future Enhancements
 
 Potential improvements:
 - Admin panel to view all spins
@@ -530,7 +530,7 @@ Potential improvements:
 
 ---
 
-## 📝 Changelog
+## Changelog
 
 ### Current Version
 - 8 prizes with weighted random selection
