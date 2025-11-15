@@ -1,5 +1,6 @@
 import api from './api'
 import { API_ENDPOINTS } from '../constants'
+import { mapBackendErrorToTranslationKey } from '../utils'
 
 export interface WheelSpin {
   id: string
@@ -38,7 +39,7 @@ export const wheelService = {
     } catch (error: unknown) {
       if (error && typeof error === 'object' && 'response' in error) {
         const axiosError = error as { response?: { data?: { error?: string; cooldownSeconds?: number } } }
-        const errorMessage = axiosError.response?.data?.error || 'An error occurred while spinning'
+        const errorMessage = mapBackendErrorToTranslationKey(axiosError.response?.data?.error || 'An error occurred while spinning')
         const cooldownSeconds = axiosError.response?.data?.cooldownSeconds || 0
         // Create error with cooldownSeconds attached
         const customError: any = new Error(errorMessage)

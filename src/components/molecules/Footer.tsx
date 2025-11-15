@@ -1,8 +1,10 @@
 import { Github, Linkedin, Mail } from 'lucide-react'
 import { Text } from '../atoms'
 import { APP_NAME } from '../../constants'
+import { useI18n } from '../../contexts/i18n'
 
 const Footer = () => {
+  const { t } = useI18n()
   const currentYear = new Date().getFullYear()
 
   return (
@@ -11,7 +13,7 @@ const Footer = () => {
         <div className="flex justify-between items-center">
           {/* Copyright */}
           <Text size="sm" className="text-white">
-            © {currentYear} {APP_NAME}. All rights reserved.
+            © {currentYear} {APP_NAME}. {t('footer.allRightsReserved')}
           </Text>
 
           {/* Social Icons */}
@@ -19,21 +21,21 @@ const Footer = () => {
             <a
               href="#"
               className="text-white hover:text-gray-400 transition-colors"
-              aria-label="GitHub"
+              aria-label={t('footer.ariaLabel.github')}
             >
               <Github size={24} />
             </a>
             <a
               href="#"
               className="text-white hover:text-gray-400 transition-colors"
-              aria-label="LinkedIn"
+              aria-label={t('footer.ariaLabel.linkedin')}
             >
               <Linkedin size={24} />
             </a>
             <a
               href="mailto:sandravlajinicmalic@gmail.com"
               className="text-white hover:text-gray-400 transition-colors"
-              aria-label="Email"
+              aria-label={t('footer.ariaLabel.email')}
             >
               <Mail size={24} />
             </a>

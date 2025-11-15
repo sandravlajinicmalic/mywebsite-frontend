@@ -26,16 +26,6 @@ export const WHEEL_CONFIG = {
     '#5ED3C3', // wheel-teal
     '#F7A7A3'  // wheel-coral
   ],
-  PRIZE_DESCRIPTIONS: {
-    'New Me, Who Dis?': 'Your old icon is gone. A new identity has appeared. Embrace the chaos, mystery, and possibly worse hair.',
-    'Fancy Schmancy Nickname': 'Your nickname just got a glow-up. Prepare to outshine everyone — it\'s giving ✨main character energy✨.',
-    'Chase the Yarn!': 'A wild yarn ball appears! Push it, chase it, or let it roll into existential questions about your life choices.',
-    'Paw-some Cursor': 'Your cursor is now a cat paw. Warning: excessive cuteness may decrease productivity by 73%.',
-    'Royal Meowjesty': 'You\'ve been knighted by the Cat Kingdom. Please use your power responsibly… or dramatically.',
-    'Color Catastrophe': 'Everything pink is now blue, everything blue is now pink. It\'s fashion. It\'s chaos. It\'s art.',
-    'Spin Again, Brave Soul': 'Fortune says: "Not today." But you get another chance — because persistence (and a bit of luck) never hurt anyone.',
-    'Total Cat-astrophe': 'Congratulations! You\'ve achieved absolutely nothing. That\'s still a kind of win, right? 😹'
-  },
   // Weights for each prize (higher = more likely to win)
   // Special prizes get 3x weight, others get 1x weight
   PRIZE_WEIGHTS: {
@@ -311,14 +301,61 @@ export const getWeightedRandomPrizeIndex = (): number => {
 
 /**
  * Get prize description for a winning item
+ * @param item - The prize item name
+ * @param t - Optional translation function. If provided, will return translated description
  */
-export const getPrizeDescription = (item: string | null): string => {
+export const getPrizeDescription = (item: string | null, t?: (key: string) => string): string => {
   if (!item) return ''
   
-  if (item in WHEEL_CONFIG.PRIZE_DESCRIPTIONS) {
-    return WHEEL_CONFIG.PRIZE_DESCRIPTIONS[item as keyof typeof WHEEL_CONFIG.PRIZE_DESCRIPTIONS]
+  // Translation function should always be provided
+  if (t) {
+    const prizeKeyMap: Record<string, string> = {
+      'New Me, Who Dis?': 'wheel.prizeDescriptions.newMeWhoDis',
+      'Fancy Schmancy Nickname': 'wheel.prizeDescriptions.fancySchmancyNickname',
+      'Chase the Yarn!': 'wheel.prizeDescriptions.chaseTheYarn',
+      'Paw-some Cursor': 'wheel.prizeDescriptions.pawSomeCursor',
+      'Royal Meowjesty': 'wheel.prizeDescriptions.royalMeowjesty',
+      'Color Catastrophe': 'wheel.prizeDescriptions.colorCatastrophe',
+      'Spin Again, Brave Soul': 'wheel.prizeDescriptions.spinAgainBraveSoul',
+      'Total Cat-astrophe': 'wheel.prizeDescriptions.totalCatastrophe'
+    }
+    
+    const translationKey = prizeKeyMap[item]
+    if (translationKey) {
+      const translated = t(translationKey)
+      // If translation returns the key itself, it means translation is missing
+      // Return the item name as fallback
+      return translated !== translationKey ? translated : item
+    }
+  }
+  
+  // Fallback: return item name if translation is not available
+  return item
+}
+
+/**
+ * Get translated prize name
+ * @param item - The prize item name
+ * @param t - Translation function
+ */
+export const getTranslatedPrizeName = (item: string, t: (key: string) => string): string => {
+  const prizeKeyMap: Record<string, string> = {
+    'New Me, Who Dis?': 'wheel.prizes.newMeWhoDis',
+    'Fancy Schmancy Nickname': 'wheel.prizes.fancySchmancyNickname',
+    'Chase the Yarn!': 'wheel.prizes.chaseTheYarn',
+    'Paw-some Cursor': 'wheel.prizes.pawSomeCursor',
+    'Royal Meowjesty': 'wheel.prizes.royalMeowjesty',
+    'Color Catastrophe': 'wheel.prizes.colorCatastrophe',
+    'Spin Again, Brave Soul': 'wheel.prizes.spinAgainBraveSoul',
+    'Total Cat-astrophe': 'wheel.prizes.totalCatastrophe'
+  }
+  
+  const translationKey = prizeKeyMap[item]
+  if (translationKey) {
+    return t(translationKey)
   }
   
   return item
 }
+
 

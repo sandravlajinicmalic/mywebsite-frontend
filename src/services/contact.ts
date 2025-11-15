@@ -1,4 +1,5 @@
 import api from './api'
+import { mapBackendErrorToTranslationKey } from '../utils'
 
 export interface ContactRequest {
   name: string
@@ -32,11 +33,11 @@ export const contactService = {
         const axiosError = error as { response?: { data?: ContactError } }
         const errorData = axiosError.response?.data
         if (errorData) {
-          const customError = new Error(errorData.error) as Error & { field?: string }
+          const customError = new Error(mapBackendErrorToTranslationKey(errorData.error)) as Error & { field?: string }
           customError.field = errorData.field
           throw customError
         }
-        throw new Error('An error occurred while sending message')
+        throw new Error('contact.error.failed')
       }
       throw new Error('An error occurred while sending message. Please try again.')
     }

@@ -11,10 +11,6 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   variant?: 'default' | 'white'
 }
 
-/**
- * Input atom component
- * Basic input component for form inputs
- */
 const Input = ({ 
   type = 'text',
   placeholder,

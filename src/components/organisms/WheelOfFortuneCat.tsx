@@ -2,6 +2,7 @@ import { Text, Image } from '../atoms'
 import { Button } from '../atoms'
 import Modal from '../molecules/Modal'
 import { useWheelOfFortune } from '../../hooks'
+import { useI18n } from '../../contexts/i18n'
 import {
   WHEEL_CONFIG,
   WHEEL_RENDERING_CONFIG,
@@ -15,9 +16,11 @@ import {
   getTextPosition,
   formatTextForSegment,
   getPrizeDescription,
+  getTranslatedPrizeName,
 } from '../../config/wheel'
 
 const WheelOfFortuneCat = () => {
+  const { t } = useI18n()
   const {
     rotation,
     isSpinning,
@@ -46,7 +49,7 @@ const WheelOfFortuneCat = () => {
             >
               <Image
                 src="/images/finnish.svg"
-                alt="Pointer"
+                alt={t('wheel.alt.pointer')}
                 className="w-40 h-40 drop-shadow-lg"
               />
             </div>
@@ -80,7 +83,8 @@ const WheelOfFortuneCat = () => {
                   const segmentAngle = getSegmentAngle()
                   const textAngle = degToRad(index * segmentAngle + segmentAngle / 2 - 90)
                   const { x: textX, y: textY, rotation: textRotation } = getTextPosition(index, centerX, centerY, baseRadius)
-                  const lines = formatTextForSegment(item, textAngle, baseRadius, segmentAngle)
+                  const translatedItem = getTranslatedPrizeName(item, t)
+                  const lines = formatTextForSegment(translatedItem, textAngle, baseRadius, segmentAngle)
                   
                   return (
                     <g key={index}>
@@ -138,21 +142,20 @@ const WheelOfFortuneCat = () => {
                 className="min-w-[200px]"
               >
                 {isSpinning 
-                  ? 'Vrti se...' 
+                  ? t('wheel.spinning')
                   : !canSpin 
-                    ? `Sačekaj ${cooldownSeconds}s` 
-                    : 'Zavrti'}
+                    ? t('wheel.wait').replace('{seconds}', cooldownSeconds.toString())
+                    : t('wheel.spin')}
               </Button>
             </div>
           </div>
 
           <div className="flex flex-col items-center justify-center text-center self-center -mt-16">
             <h2 className="text-5xl font-bold text-black mb-4" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.3), 0 0 8px rgba(0, 0, 0, 0.2)', lineHeight: '1.3' }}>
-            Spin the Cat Wheel of Fortune and discover your destiny!
+            {t('wheel.title')}
             </h2>
             <p className="text-xl text-black max-w-md drop-shadow-sm pt-4 leading-relaxed">
-              Spin the wheel, meow for luck, and see what fate (or your cat) has in store!
-              Remember: nine lives, but only one spin! Prizes may vary depending on the cat's mood. (Good luck with that.)
+              {t('wheel.description')}
             </p>
           </div>
         </div>
@@ -167,12 +170,12 @@ const WheelOfFortuneCat = () => {
         }}
         title={
           <Text as="h3" size="2xl" weight="bold" className="text-white">
-            Behold! The Wheel Has Spoken!
+            {t('wheel.modal.title')}
           </Text>
         }
         footer={
           <Text size="sm" weight="normal" className="text-white text-center italic">
-            Don't blame the wheel. Blame the cat that coded it.
+            {t('wheel.modal.footer')}
           </Text>
         }
         size="md"
@@ -209,7 +212,7 @@ const WheelOfFortuneCat = () => {
                   weight="bold" 
                   className="text-center text-white relative z-20 pb-2"
                 >
-                  "{winningItem}"
+                  "{winningItem ? getTranslatedPrizeName(winningItem, t) : ''}"
                 </Text>
               </div>
               <Text 
@@ -217,7 +220,7 @@ const WheelOfFortuneCat = () => {
                 weight="normal" 
                 className="text-center text-white mb-6 max-w-md leading-relaxed"
               >
-                {getPrizeDescription(winningItem)}
+                {getPrizeDescription(winningItem, t)}
               </Text>
             </>
           )}

@@ -11,10 +11,6 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   className?: string
 }
 
-/**
- * Button atom komponenta
- * Osnovna button komponenta koja se može koristiti svugdje u aplikaciji
- */
 const Button = ({ 
   children, 
   onClick, 

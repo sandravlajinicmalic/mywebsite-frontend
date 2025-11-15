@@ -81,11 +81,11 @@ const UserMenu = ({ userNickname, userAvatar }: UserMenuProps) => {
     } catch (error) {
       console.error('Error deleting account:', error)
       setIsDeleting(false)
-      alert(
-        error instanceof Error 
-          ? error.message 
-          : (t('nav.deleteProfile.error') || 'Failed to delete account. Please try again.')
-      )
+      // error.message is already a translation key from the service
+      const errorMessage = error instanceof Error 
+        ? (error.message ? t(error.message) : t('nav.deleteProfile.error'))
+        : t('nav.deleteProfile.error')
+      alert(errorMessage)
     }
   }
 
@@ -114,7 +114,7 @@ const UserMenu = ({ userNickname, userAvatar }: UserMenuProps) => {
         onClick={() => setIsOpen(!isOpen)}
         className="w-12 h-12 rounded-full overflow-hidden border-2 border-indigo-500 dark:border-indigo-400 hover:border-indigo-600 dark:hover:border-indigo-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 cursor-pointer"
         style={dropShadowStyle}
-        aria-label="User menu"
+        aria-label={t('userMenu.ariaLabel')}
       >
         <img
           src={userAvatar}
@@ -198,7 +198,7 @@ const UserMenu = ({ userNickname, userAvatar }: UserMenuProps) => {
       <Modal
         isOpen={isDeleteModalOpen}
         onClose={handleDeleteCancel}
-        title="Danger Zone Ahead!"
+        title={t('userMenu.deleteModal.title')}
         size="md"
         footer={
           <div className="flex gap-3 w-full">
@@ -208,7 +208,7 @@ const UserMenu = ({ userNickname, userAvatar }: UserMenuProps) => {
               className="flex-1 bg-black"
               disabled={isDeleting}
             >
-              {isDeleting ? 'Deleting...' : 'Delete Anyway'}
+              {isDeleting ? t('userMenu.deleteModal.deleting') : t('userMenu.deleteModal.deleteButton')}
             </Button>
             <Button
               variant="primary"
@@ -216,17 +216,17 @@ const UserMenu = ({ userNickname, userAvatar }: UserMenuProps) => {
               className="flex-1"
               disabled={isDeleting}
             >
-              Never Mind
+              {t('userMenu.deleteModal.cancelButton')}
             </Button>
           </div>
         }
       >
         <div className="space-y-4 text-center">
           <Text size="base" className="text-white">
-            This action can't be undone — unless you know time travel (in which case, cool).
+            {t('userMenu.deleteModal.message1')}
           </Text>
           <Text size="base" className="text-white">
-            Proceed with caution… and regret later.
+            {t('userMenu.deleteModal.message2')}
           </Text>
         </div>
       </Modal>

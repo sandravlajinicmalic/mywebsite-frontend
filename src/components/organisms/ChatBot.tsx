@@ -17,7 +17,7 @@ const ChatBot = () => {
 
   return (
     <div className="w-full mx-auto relative flex flex-col items-center">
-      {/* Input sekcija */}
+      {/* Input section */}
       <div className="pb-12 w-full">
         <div className="flex gap-2 max-w-2xl mx-auto w-full">
           <Input

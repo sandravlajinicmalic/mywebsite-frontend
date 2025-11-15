@@ -31,7 +31,8 @@ const ForgotNickname = () => {
       setSuccess(true)
     } catch (err: unknown) {
       if (err instanceof Error) {
-        setEmailError(err.message || t('forgotNickname.error'))
+        // err.message is already a translation key from the service
+        setEmailError(err.message ? t(err.message) : t('forgotNickname.error'))
       } else {
         setEmailError(t('forgotNickname.error'))
       }

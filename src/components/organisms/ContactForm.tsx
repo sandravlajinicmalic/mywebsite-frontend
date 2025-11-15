@@ -16,7 +16,7 @@ const ContactForm = () => {
     e.preventDefault()
     
     if (!message.trim()) {
-      setError('Please enter a message')
+      setError(t('contact.error.messageRequired'))
       return
     }
     
@@ -28,8 +28,8 @@ const ContactForm = () => {
     try {
       const user = authService.getCurrentUser()
       await contactService.sendMessage({
-        name: user?.nickname || 'Guest',
-        email: user?.email || 'guest@example.com',
+        name: user?.nickname || t('contact.guest.name'),
+        email: user?.email || t('contact.guest.email'),
         message: message.trim(),
       })
       
@@ -39,15 +39,17 @@ const ContactForm = () => {
     } catch (err) {
       if (err instanceof Error) {
         const errorWithField = err as Error & { field?: string }
+        // err.message is already a translation key from the service
+        const translatedMessage = errorWithField.message ? t(errorWithField.message) : t('contact.error.failed')
         // If error is related to message field, display it below textarea
         if (errorWithField.field === 'message') {
-          setFieldError(errorWithField.message)
+          setFieldError(translatedMessage)
         } else {
           // For other errors (name, email, general), display as general error
-          setError(errorWithField.message)
+          setError(translatedMessage)
         }
       } else {
-        setError('Failed to send message')
+        setError(t('contact.error.failed'))
       }
     } finally {
       setIsLoading(false)
@@ -60,11 +62,11 @@ const ContactForm = () => {
         {/* Title and subtitle above */}
         <div className="text-right mb-6">
           <Text as="h2" size="4xl" weight="bold" className="mb-4 !text-black !font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
-            Let's Talk (or Meow)
+            {t('contact.titleSection')}
           </Text>
           <div className="w-1/2 ml-auto pb-4">
             <Text size="lg" className="!text-black">
-              Got questions, feedback, or just want to say hi? Drop a message below — I promise my SmartChat won't answer this one for me.
+              {t('contact.subtitleSection')}
             </Text>
           </div>
         </div>
@@ -75,7 +77,7 @@ const ContactForm = () => {
           <div className="w-full md:w-1/3 relative">
             <Image
               src="/images/education.png"
-              alt="Education"
+              alt={t('contact.alt.education')}
               className="absolute max-w-80 h-auto"
               style={{ bottom: '60px', right: '0' }}
               objectFit="contain"
@@ -129,7 +131,7 @@ const ContactForm = () => {
                   disabled={isLoading || !message.trim()}
                   className="min-w-32"
                 >
-                  {isLoading ? (t('contact.sending') || 'Sending...') : 'Meow to Me'}
+                  {isLoading ? t('contact.sending') : t('contact.button')}
                 </Button>
               </div>
             </form>

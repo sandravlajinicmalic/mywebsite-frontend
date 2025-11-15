@@ -25,7 +25,7 @@ const formatDate = (dateString: string): string => {
 const Header = () => {
   const { t } = useI18n()
   const user = authService.getCurrentUser()
-  const userNickname = user?.nickname || 'User'
+  const userNickname = user?.nickname || t('header.defaultNickname')
   
   // Calculate default avatar based on user ID/nickname to avoid flash of wrong avatar
   const defaultAvatar = useMemo(() => {
@@ -316,7 +316,7 @@ const Header = () => {
         }
         footer={
           <Text size="sm" weight="normal" className="text-white text-center italic">
-            No cats were bribed in the making of these rewards.
+            {t('header.footerMessage')}
           </Text>
         }
         size="md"

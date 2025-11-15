@@ -67,14 +67,14 @@ const WebsocketCat = () => {
                   <span className="terminal-button terminal-button-minimize"></span>
                   <span className="terminal-button terminal-button-maximize"></span>
                 </div>
-                <div className="terminal-title">websocket-terminal</div>
+                <div className="terminal-title">{t('websocketCat.terminal.title')}</div>
               </div>
               <div className="terminal-body" ref={terminalRef}>
                 <div className="terminal-content">
                   {logs.length === 0 ? (
                     <div className="terminal-line">
                       <span className="terminal-prompt">$</span>
-                      <span className="terminal-text">Waiting for messages...</span>
+                      <span className="terminal-text">{t('websocketCat.terminal.waiting')}</span>
                     </div>
                   ) : (
                     logs.map((log) => (

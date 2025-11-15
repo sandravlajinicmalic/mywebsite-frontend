@@ -23,12 +23,12 @@ const Login = () => {
     let hasErrors = false
     
     if (!email || email.trim() === '') {
-      setEmailError('Email is required')
+      setEmailError(t('api.auth.emailRequired'))
       hasErrors = true
     }
     
     if (!nickname || nickname.trim() === '') {
-      setNicknameError('Nickname is required')
+      setNicknameError(t('api.auth.nicknameRequired'))
       hasErrors = true
     }
     
@@ -50,12 +50,13 @@ const Login = () => {
         // Check if it's LoginError with specific field errors
         const loginError = err as LoginError
         if (loginError.errors) {
-          // Set specific errors for each field
-          setEmailError(loginError.errors.email)
-          setNicknameError(loginError.errors.nickname)
+          // Set specific errors for each field - these are already translation keys
+          setEmailError(loginError.errors.email ? t(loginError.errors.email) : undefined)
+          setNicknameError(loginError.errors.nickname ? t(loginError.errors.nickname) : undefined)
         } else {
           // If there are no specific errors, try to display generic error below email field
-          setEmailError(err.message || t('login.error'))
+          // err.message is already a translation key from the service
+          setEmailError(err.message ? t(err.message) : t('login.error'))
         }
       } else {
         setEmailError(t('login.error.generic'))

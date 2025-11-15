@@ -82,11 +82,6 @@ const AboutProject = () => {
   return (
     <section className="w-full bg-transparent py-12 px-4 relative z-10">
       <div className="max-w-6xl mx-auto">
-        {/* Title */}
-        {/* <Text as="h2" size="3xl" weight="bold" className="mb-8 text-gray-900 dark:text-white">
-          {t('aboutProject.title')}
-        </Text> */}
-
         {/* How It All Started and Tech Stack side by side */}
         <div className="mb-12 flex flex-col md:flex-row gap-8 pb-12">
           {/* How It All Started */}
@@ -103,7 +98,7 @@ const AboutProject = () => {
             <div className="mt-4 relative">
               <img
                 src="/images/thinking1.png"
-                alt="Thinking cat"
+                alt={t('aboutProject.alt.thinkingCat')}
                 className="absolute w-1/4 max-w-xs h-auto object-contain"
                 style={{ top: '50px', left: '100px' }}
               />
@@ -162,7 +157,7 @@ const AboutProject = () => {
           <div className="flex-1 flex justify-center">
             <img
               src="/images/reading.png"
-              alt="Reading cat"
+              alt={t('aboutProject.alt.readingCat')}
               className="w-auto max-w-[260px] h-auto object-contain"
             />
           </div>

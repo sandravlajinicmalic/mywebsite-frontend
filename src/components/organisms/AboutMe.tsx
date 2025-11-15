@@ -208,7 +208,7 @@ const AboutMe = () => {
               <div className="absolute -bottom-24 right-36">
                 <Image 
                   src="/images/thinking2.png" 
-                  alt="Thinking cat" 
+                  alt={t('aboutMe.alt.thinkingCat')}
                   className="w-52 h-52"
                 />
               </div>

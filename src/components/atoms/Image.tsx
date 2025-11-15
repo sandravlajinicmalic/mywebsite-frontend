@@ -10,10 +10,6 @@ export interface ImageProps extends ImgHTMLAttributes<HTMLImageElement> {
   loading?: 'lazy' | 'eager'
 }
 
-/**
- * Image atom komponenta
- * Osnovna image komponenta za prikaz slika sa različitim stilovima
- */
 const Image = ({ 
   src,
   alt,

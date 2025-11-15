@@ -13,10 +13,6 @@ export interface TextProps extends Omit<HTMLAttributes<HTMLElement>, 'size'> {
   className?: string
 }
 
-/**
- * Text atom komponenta
- * Osnovna text komponenta za prikaz teksta sa različitim stilovima
- */
 const Text = ({ 
   children, 
   as: Component = 'p',

@@ -24,7 +24,7 @@ const GoToAbout = () => {
           <div className="relative flex flex-col items-center mt-4">
             <Image
               src="/images/laptop-computer.png"
-              alt="Cat with laptop"
+              alt={t('goToAbout.alt.catWithLaptop')}
               className="absolute -top-[110px] z-10 w-32 h-32 object-contain"
               objectFit="contain"
             />
