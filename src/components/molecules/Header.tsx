@@ -6,35 +6,154 @@ import { authService } from '../../services/auth'
 import { useI18n } from '../../contexts/i18n'
 import UserMenu from './UserMenu'
 import Modal from './Modal'
-import { useState, useEffect, useMemo } from 'react'
-import { wheelService, type WheelSpin } from '../../services'
+import { useState, useEffect, useMemo, useRef } from 'react'
+import { wheelService, userService, type WheelSpin } from '../../services'
+import { getUserDefaultAvatar } from '../../utils'
 
-// Function to get random avatar icon based on user identifier (consistent for same user)
-const getUserAvatarIcon = (userId: string | undefined, nickname: string): string => {
-  const identifier = userId || nickname || 'default'
-  
-  // Simple hash function to convert string to number
-  let hash = 0
-  for (let i = 0; i < identifier.length; i++) {
-    const char = identifier.charCodeAt(i)
-    hash = ((hash << 5) - hash) + char
-    hash = hash & hash // Convert to 32bit integer
-  }
-  
-  // Get absolute value and map to 1-10 range
-  const catNumber = (Math.abs(hash) % 10) + 1
-  return `/images/user-profile-icons/cat${catNumber}.svg`
+// Helper function to format date
+const formatDate = (dateString: string): string => {
+  const date = new Date(dateString)
+  return new Intl.DateTimeFormat('sr-RS', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date)
 }
 
 const Header = () => {
   const { t } = useI18n()
   const user = authService.getCurrentUser()
   const userNickname = user?.nickname || 'User'
-  const userAvatar = useMemo(() => getUserAvatarIcon(user?.id, userNickname), [user?.id, userNickname])
+  
+  // Calculate default avatar based on user ID/nickname to avoid flash of wrong avatar
+  const defaultAvatar = useMemo(() => {
+    return getUserDefaultAvatar(user?.id, userNickname)
+  }, [user?.id, userNickname])
+  
+  const [userAvatar, setUserAvatar] = useState<string>(defaultAvatar)
+  const [nicknameReward, setNicknameReward] = useState<{ style?: string; prefix?: string; fontSize?: string } | null>(null)
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false)
   const [spinHistory, setSpinHistory] = useState<WheelSpin[]>([])
   const [isLoadingHistory, setIsLoadingHistory] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const avatarExpirationTimerRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Update default avatar when user changes
+  useEffect(() => {
+    if (user && userAvatar === defaultAvatar) {
+      // Only update if we're still using default avatar
+      setUserAvatar(defaultAvatar)
+    }
+  }, [defaultAvatar, user])
+
+  // Fetch active rewards from backend
+  useEffect(() => {
+    const fetchRewards = async () => {
+      if (!user) return
+      
+      try {
+        // Fetch avatar
+        const avatarData = await userService.getActiveAvatar()
+        const previousAvatar = userAvatar
+        
+        // Check if avatar reward is expired
+        const isAvatarExpired = avatarData.isTemporary && avatarData.expiresAt 
+          ? new Date(avatarData.expiresAt) < new Date()
+          : false
+        
+        // Use original avatar if temporary avatar expired, otherwise use the avatar from response
+        const avatarToUse = (avatarData.isTemporary && isAvatarExpired) 
+          ? avatarData.originalAvatar 
+          : avatarData.avatar
+        
+        if (previousAvatar !== avatarToUse) {
+          console.log('🔄 Avatar changed:', {
+            from: previousAvatar,
+            to: avatarToUse,
+            isTemporary: avatarData.isTemporary && !isAvatarExpired,
+            expiresAt: avatarData.expiresAt,
+            originalAvatar: avatarData.originalAvatar
+          })
+        }
+        
+        setUserAvatar(avatarToUse)
+        
+        // Clear existing avatar expiration timer
+        if (avatarExpirationTimerRef.current) {
+          clearTimeout(avatarExpirationTimerRef.current)
+          avatarExpirationTimerRef.current = null
+        }
+        
+        // Set up timer to automatically revert avatar when it expires
+        if (avatarData.isTemporary && avatarData.expiresAt && !isAvatarExpired) {
+          const expiresIn = new Date(avatarData.expiresAt).getTime() - Date.now()
+          if (expiresIn > 0) {
+            avatarExpirationTimerRef.current = setTimeout(() => {
+              console.log('🔄 Avatar reward expired, reverting to default:', avatarData.originalAvatar)
+              setUserAvatar(avatarData.originalAvatar)
+              // Also refresh rewards to get updated state
+              fetchRewards()
+            }, expiresIn)
+          }
+        }
+
+        // Fetch all active rewards to check for nickname rewards
+        const activeRewards = await userService.getActiveRewards()
+        const nicknameRewardData = activeRewards.nickname
+        
+        // Check if nickname reward is expired
+        const isNicknameExpired = nicknameRewardData?.expiresAt 
+          ? new Date(nicknameRewardData.expiresAt) < new Date()
+          : true
+        
+        if (nicknameRewardData && nicknameRewardData.value && !isNicknameExpired) {
+          const previousReward = nicknameReward
+          const newReward = nicknameRewardData.value
+          
+          if (JSON.stringify(previousReward) !== JSON.stringify(newReward)) {
+            console.log('🔄 Nickname reward changed:', {
+              from: previousReward,
+              to: newReward,
+              expiresAt: nicknameRewardData.expiresAt
+            })
+          }
+          
+          setNicknameReward(newReward)
+        } else {
+          if (nicknameReward !== null) {
+            console.log('🔄 Nickname reward expired, using default')
+          }
+          setNicknameReward(null)
+        }
+      } catch (error) {
+        console.error('Error fetching rewards:', error)
+      }
+    }
+
+    fetchRewards()
+
+    // Refresh rewards every 5 seconds to check for expired rewards (more frequent check for accurate expiration)
+    const interval = setInterval(fetchRewards, 5000)
+    
+    // Also listen for custom event to refresh rewards immediately when reward is activated
+    const handleRewardActivated = () => {
+      // Fetch immediately for faster avatar update
+      fetchRewards()
+    }
+    window.addEventListener('reward-activated', handleRewardActivated)
+
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener('reward-activated', handleRewardActivated)
+      // Clear avatar expiration timer on unmount
+      if (avatarExpirationTimerRef.current) {
+        clearTimeout(avatarExpirationTimerRef.current)
+        avatarExpirationTimerRef.current = null
+      }
+    }
+  }, [user, userAvatar, nicknameReward])
 
   const handleTrophyClick = async () => {
     if (!user) return
@@ -86,38 +205,27 @@ const Header = () => {
     }
   }, [isHistoryModalOpen, user])
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return new Intl.DateTimeFormat('sr-RS', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(date)
-  }
-
-  // Shadow styles for scrolled state with smooth transition
-  const textShadowStyle = {
+  // Memoize shadow styles to avoid recalculation on every render
+  const textShadowStyle = useMemo(() => ({
     textShadow: isScrolled 
       ? '0 0 3px rgba(0,0,0,1), 0 0 6px rgba(0,0,0,0.95), 0 0 10px rgba(0,0,0,0.9), 0 0 14px rgba(0,0,0,0.85)'
       : '0 0 0px rgba(0,0,0,0), 0 0 0px rgba(0,0,0,0), 0 0 0px rgba(0,0,0,0), 0 0 0px rgba(0,0,0,0)',
     transition: 'text-shadow 0.4s ease-in-out'
-  }
+  }), [isScrolled])
 
-  const dropShadowStyle = {
+  const dropShadowStyle = useMemo(() => ({
     filter: isScrolled
       ? 'drop-shadow(0 0 3px rgba(0,0,0,1)) drop-shadow(0 0 6px rgba(0,0,0,0.95)) drop-shadow(0 0 10px rgba(0,0,0,0.9)) drop-shadow(0 0 14px rgba(0,0,0,0.85))'
       : 'drop-shadow(0 0 0px rgba(0,0,0,0)) drop-shadow(0 0 0px rgba(0,0,0,0)) drop-shadow(0 0 0px rgba(0,0,0,0)) drop-shadow(0 0 0px rgba(0,0,0,0))',
     transition: 'filter 0.4s ease-in-out'
-  }
+  }), [isScrolled])
 
-  const smallDropShadowStyle = {
+  const smallDropShadowStyle = useMemo(() => ({
     filter: isScrolled
       ? 'drop-shadow(0 0 2px rgba(0,0,0,0.8)) drop-shadow(0 0 4px rgba(0,0,0,0.6))'
       : 'drop-shadow(0 0 0px rgba(0,0,0,0)) drop-shadow(0 0 0px rgba(0,0,0,0))',
     transition: 'filter 0.4s ease-in-out'
-  }
+  }), [isScrolled])
 
   return (
     <header className="bg-transparent sticky top-0 z-50">
@@ -159,9 +267,18 @@ const Header = () => {
                   size="base" 
                   weight="medium" 
                   className="text-gray-900 dark:text-white transition-all"
-                  style={textShadowStyle}
+                  style={{
+                    ...textShadowStyle,
+                    fontStyle: nicknameReward?.style === 'cursive' ? 'italic' : 'normal',
+                    fontFamily: nicknameReward?.style === 'cursive' 
+                      ? '"Brush Script MT", "Lucida Handwriting", cursive' 
+                      : undefined,
+                    fontSize: nicknameReward?.fontSize 
+                      ? `${parseFloat(nicknameReward.fontSize)}em` 
+                      : undefined
+                  }}
                 >
-                  {userNickname}
+                  {nicknameReward?.prefix ? `${nicknameReward.prefix} ` : ''}{userNickname}
                 </Text>
                 
                 <button

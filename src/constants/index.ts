@@ -30,6 +30,10 @@ export const API_ENDPOINTS = {
   WHEEL_SPIN: '/wheel/spin',
   WHEEL_CAN_SPIN: '/wheel/can-spin',
   WHEEL_HISTORY: '/wheel/history',
+  
+  // User endpoints
+  USER_ACTIVE_REWARDS: '/user/active-rewards',
+  USER_ACTIVE_AVATAR: '/user/active-avatar',
 } as const
 
 // Socket.io events

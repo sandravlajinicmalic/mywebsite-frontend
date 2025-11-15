@@ -15,7 +15,7 @@ export const WHEEL_CONFIG = {
     'Spin Again, Brave Soul',
     'Total Cat-astrophe'
   ],
-  COOLDOWN_MS: 2 * 60 * 1000, // 2 minutes
+  COOLDOWN_MS: 30 * 1000, // 30 seconds
   COLORS: [
     '#F76C9B', // wheel-pink
     '#6EC1E4', // wheel-blue
@@ -35,6 +35,18 @@ export const WHEEL_CONFIG = {
     'Color Catastrophe': 'Everything pink is now blue, everything blue is now pink. It\'s fashion. It\'s chaos. It\'s art.',
     'Spin Again, Brave Soul': 'Fortune says: "Not today." But you get another chance — because persistence (and a bit of luck) never hurt anyone.',
     'Total Cat-astrophe': 'Congratulations! You\'ve achieved absolutely nothing. That\'s still a kind of win, right? 😹'
+  },
+  // Weights for each prize (higher = more likely to win)
+  // Special prizes get 3x weight, others get 1x weight
+  PRIZE_WEIGHTS: {
+    'New Me, Who Dis?': 1,
+    'Fancy Schmancy Nickname': 1,
+    'Chase the Yarn!': 1, // More likely
+    'Paw-some Cursor': 1, // More likely
+    'Royal Meowjesty': 1,
+    'Color Catastrophe': 1, // More likely
+    'Spin Again, Brave Soul': 1,
+    'Total Cat-astrophe': 1
   },
 } as const
 
@@ -266,6 +278,35 @@ export const formatTextForSegment = (
   }
   
   return lines
+}
+
+/**
+ * Get weighted random prize index based on PRIZE_WEIGHTS
+ * Prizes with higher weights are more likely to be selected
+ */
+export const getWeightedRandomPrizeIndex = (): number => {
+  const items = WHEEL_CONFIG.ITEMS
+  const weights = WHEEL_CONFIG.PRIZE_WEIGHTS
+  
+  // Calculate total weight
+  const totalWeight = items.reduce((sum, item) => sum + weights[item as keyof typeof weights], 0)
+  
+  // Generate random number between 0 and totalWeight
+  let random = Math.random() * totalWeight
+  
+  // Find which prize this random number falls into
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i]
+    const weight = weights[item as keyof typeof weights]
+    random -= weight
+    
+    if (random <= 0) {
+      return i
+    }
+  }
+  
+  // Fallback to last item (should never reach here)
+  return items.length - 1
 }
 
 /**

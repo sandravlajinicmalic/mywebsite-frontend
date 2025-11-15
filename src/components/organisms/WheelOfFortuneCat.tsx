@@ -160,7 +160,11 @@ const WheelOfFortuneCat = () => {
 
       <Modal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false)
+          // No refresh needed - ActiveRewards component will automatically refetch
+          // rewards when 'reward-activated' event is dispatched (handled in useWheelOfFortune)
+        }}
         title={
           <Text as="h3" size="2xl" weight="bold" className="text-white">
             Behold! The Wheel Has Spoken!

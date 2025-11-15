@@ -24,6 +24,8 @@ const Modal = ({
 }: ModalProps) => {
   const [isAnimating, setIsAnimating] = useState(false)
   const scrollYRef = useRef<number>(0)
+  const backdropRef = useRef<HTMLDivElement>(null)
+  const backdropPreventScrollRef = useRef<((e: Event) => void) | null>(null)
 
   // Close modal on ESC key and prevent scroll
   useEffect(() => {
@@ -60,7 +62,29 @@ const Modal = ({
       // Start animation after short delay
       setTimeout(() => setIsAnimating(true), 10)
       
+      // Add non-passive event listeners to backdrop after a short delay to ensure ref is set
+      const backdropTimeout = setTimeout(() => {
+        const backdrop = backdropRef.current
+        if (backdrop) {
+          const backdropPreventScroll = (e: Event) => {
+            e.preventDefault()
+          }
+          backdropPreventScrollRef.current = backdropPreventScroll
+          backdrop.addEventListener('wheel', backdropPreventScroll, { passive: false })
+          backdrop.addEventListener('touchmove', backdropPreventScroll, { passive: false })
+        }
+      }, 50)
+      
       return () => {
+        clearTimeout(backdropTimeout)
+        const backdrop = backdropRef.current
+        const backdropPreventScroll = backdropPreventScrollRef.current
+        if (backdrop && backdropPreventScroll) {
+          backdrop.removeEventListener('wheel', backdropPreventScroll)
+          backdrop.removeEventListener('touchmove', backdropPreventScroll)
+        }
+        backdropPreventScrollRef.current = null
+        
         document.removeEventListener('keydown', handleEscape)
         document.removeEventListener('wheel', preventScroll)
         document.removeEventListener('touchmove', preventScroll)
@@ -95,14 +119,15 @@ const Modal = ({
     <div 
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
       onClick={onClose}
+      data-modal="true"
+      style={{ filter: 'none', isolation: 'isolate' }}
     >
       {/* Backdrop */}
       <div 
+        ref={backdropRef}
         className={`absolute inset-0 bg-black transition-opacity duration-300 ${
           isAnimating ? 'bg-opacity-50 opacity-100' : 'bg-opacity-0 opacity-0'
         }`}
-        onWheel={(e) => e.preventDefault()}
-        onTouchMove={(e) => e.preventDefault()}
       />
       
       {/* Modal Content */}

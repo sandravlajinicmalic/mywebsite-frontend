@@ -1,13 +1,14 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { Login, Home, About, ForgotNickname } from './pages'
 import { Header, Footer } from './components/molecules'
-import { CurvedBackground, AboutCurvedBackground } from './components/organisms'
+import { CurvedBackground, AboutCurvedBackground, ActiveRewards } from './components/organisms'
 import ProtectedRoute from './components/ProtectedRoute'
 import { ROUTES } from './constants'
 import { authService } from './services/auth'
 import { I18nProvider } from './contexts/i18n'
 
 function App() {
+
   return (
     <I18nProvider>
       <Router>
@@ -43,6 +44,7 @@ function App() {
                     <Home />
                   </main>
                   <Footer />
+                  <ActiveRewards />
                 </div>
               </ProtectedRoute>
             } 
@@ -58,6 +60,7 @@ function App() {
                     <About />
                   </main>
                   <Footer />
+                  <ActiveRewards />
                 </div>
               </ProtectedRoute>
             } 

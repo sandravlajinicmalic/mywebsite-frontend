@@ -3,7 +3,7 @@ import { wheelService } from '../services/wheel'
 import { authService } from '../services/auth'
 import { useI18n } from '../contexts/i18n'
 import { STORAGE_KEYS } from '../constants'
-import { WHEEL_CONFIG } from '../config/wheel'
+import { WHEEL_CONFIG, getWeightedRandomPrizeIndex } from '../config/wheel'
 
 export interface ConfettiPiece {
   id: number
@@ -103,7 +103,7 @@ export const useWheelOfFortune = () => {
     
     const spins = Math.floor(Math.random() * 5) + 3
     const segmentAngle = 360 / WHEEL_CONFIG.ITEMS.length
-    const winningIndex = Math.floor(Math.random() * WHEEL_CONFIG.ITEMS.length)
+    const winningIndex = getWeightedRandomPrizeIndex()
     const segmentCenterAngle = -90 + (winningIndex * segmentAngle) + (segmentAngle / 2)
     const currentRotationNormalized = ((rotation % 360) + 360) % 360
     const segmentCenterAtZero = ((segmentCenterAngle + 90) % 360 + 360) % 360
@@ -123,22 +123,28 @@ export const useWheelOfFortune = () => {
       const actualWinningIndex = Math.round(adjustedPosition / segmentAngle) % WHEEL_CONFIG.ITEMS.length
       const actualWinningItem = WHEEL_CONFIG.ITEMS[actualWinningIndex]
       
-      console.log('Izabrano polje:', winningIndex, WHEEL_CONFIG.ITEMS[winningIndex])
-      console.log('Stvarno polje na vrhu:', actualWinningIndex, actualWinningItem)
-      console.log('Ukupna rotacija:', totalRotationAfter, 'normalizovano:', normalizedRotation)
-      console.log('Pozicija na vrhu:', positionAtTop, 'prilagođeno:', adjustedPosition)
-      
       setWinningItem(actualWinningItem)
       
       // Save spin to backend - this is the only API call
       try {
-        await wheelService.spin(actualWinningItem)
-        // Set cooldown locally after successful spin
-        const spinTime = Date.now()
-        lastSpinTimeRef.current = spinTime
-        localStorage.setItem(STORAGE_KEYS.WHEEL_LAST_SPIN_TIME, spinTime.toString())
-        setCooldownSeconds(120) // 2 minutes
-        setCanSpin(false)
+        const response = await wheelService.spin(actualWinningItem)
+        // Use canSpin and cooldownSeconds from response
+        // If "Spin Again, Brave Soul", canSpin will be true and cooldownSeconds will be 0
+        if (response.canSpin) {
+          // No cooldown - user can spin again immediately
+          setCanSpin(true)
+          setCooldownSeconds(0)
+          lastSpinTimeRef.current = null
+          localStorage.removeItem(STORAGE_KEYS.WHEEL_LAST_SPIN_TIME)
+        } else {
+          // Normal cooldown applies
+          const spinTime = Date.now()
+          lastSpinTimeRef.current = spinTime
+          localStorage.setItem(STORAGE_KEYS.WHEEL_LAST_SPIN_TIME, spinTime.toString())
+          setCooldownSeconds(response.cooldownSeconds || 30) // Use from response or default to 30 seconds
+          setCanSpin(false)
+        }
+        
       } catch (error: any) {
         console.error('Error saving spin:', error)
         // If error is cooldown, extract cooldown seconds and set timer
@@ -155,16 +161,33 @@ export const useWheelOfFortune = () => {
           localStorage.setItem(STORAGE_KEYS.WHEEL_LAST_SPIN_TIME, spinTime.toString())
           setCooldownSeconds(error.response.data.cooldownSeconds)
         } else {
-          // Default to 2 minutes on error
+          // Default to 30 seconds on error
           const spinTime = Date.now()
           lastSpinTimeRef.current = spinTime
           localStorage.setItem(STORAGE_KEYS.WHEEL_LAST_SPIN_TIME, spinTime.toString())
-          setCooldownSeconds(120)
+          setCooldownSeconds(30)
         }
         setCanSpin(false)
       }
       
       setTimeout(() => {
+        // Dispatch event to trigger components to refresh (for rewards that need visual effects)
+        // This includes: avatar changes, cursor, color swap, and yarn ball
+        // Dispatch at the same time as modal opens so effects appear simultaneously
+        const rewardsRequiringRefresh = [
+          'New Me, Who Dis?',      // Changes avatar
+          'Paw-some Cursor',        // Changes cursor
+          'Color Catastrophe',      // Changes color theme
+          'Chase the Yarn!'         // Shows yarn ball
+        ]
+        if (rewardsRequiringRefresh.includes(actualWinningItem)) {
+          // Dispatch event to notify components (ActiveRewards, Header) to refetch rewards immediately
+          // Include reward type in event detail for optimistic updates
+          window.dispatchEvent(new CustomEvent('reward-activated', {
+            detail: { rewardType: actualWinningItem }
+          }))
+        }
+        
         setIsModalOpen(true)
         // Create confetti explosion when modal opens
         const confettiCount = 50
@@ -189,7 +212,7 @@ export const useWheelOfFortune = () => {
         setTimeout(() => {
           setConfetti([])
         }, 6000)
-      }, 1000)
+      }, 500)
     }, 4000)
   }
 
