@@ -28,32 +28,26 @@ const AboutMe = () => {
   const toolsCategories = [
     {
       title: t('aboutMe.tools.frontend.title'),
-      description: t('aboutMe.tools.frontend.description'),
       techs: ['JavaScript', 'TypeScript', 'React', 'Vue.js', 'Angular', 'Sass', 'Tailwind CSS', 'Bootstrap', 'Material UI']
     },
     {
       title: t('aboutMe.tools.cloud.title'),
-      description: t('aboutMe.tools.cloud.description'),
       techs: ['AWS', 'Docker', 'Azure DevOps', 'GitLab']
     },
     {
       title: t('aboutMe.tools.testing.title'),
-      description: t('aboutMe.tools.testing.description'),
       techs: ['Jest', 'Mocha', 'Chai']
     },
     {
       title: t('aboutMe.tools.versionControl.title'),
-      description: t('aboutMe.tools.versionControl.description'),
       techs: ['Git', 'GitHub', 'GitLab', 'Bitbucket']
     },
     {
       title: t('aboutMe.tools.design.title'),
-      description: t('aboutMe.tools.design.description'),
       techs: ['Figma', 'Adobe XD', 'Adobe Photoshop', 'Adobe Illustrator']
     },
     {
       title: t('aboutMe.tools.projectManagement.title'),
-      description: t('aboutMe.tools.projectManagement.description'),
       techs: ['Jira', 'Trello', 'Asana']
     }
   ]
