@@ -1,29 +1,9 @@
-import { Text, Image } from '../atoms'
+import { Text } from '../atoms'
 import { useI18n } from '../../contexts/i18n'
+import MyJourney from './MyJourney'
 
 const AboutMe = () => {
   const { t } = useI18n()
-  
-  const careerPath = [
-    {
-      company: t('aboutMe.career.mania.company'),
-      location: t('aboutMe.career.mania.location'),
-      role: t('aboutMe.career.mania.role'),
-      description: t('aboutMe.career.mania.description')
-    },
-    {
-      company: t('aboutMe.career.bondex.company'),
-      location: t('aboutMe.career.bondex.location'),
-      role: t('aboutMe.career.bondex.role'),
-      description: t('aboutMe.career.bondex.description')
-    },
-    {
-      company: t('aboutMe.career.endava.company'),
-      location: t('aboutMe.career.endava.location'),
-      role: t('aboutMe.career.endava.role'),
-      description: t('aboutMe.career.endava.description')
-    }
-  ]
 
   const toolsCategories = [
     {
@@ -99,115 +79,7 @@ const AboutMe = () => {
     <section className="w-full bg-transparent py-12 pb-16 px-4 relative z-10">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col gap-8">
-          {/* Career Timeline */}
-          <div className='mb-16'>
-            <Text as="h1" size="4xl" weight="bold" className="mb-8 text-gray-900 dark:text-white" style={{ textShadow: '2px 2px 4px rgba(236, 72, 153, 0.8), 0 0 8px rgba(236, 72, 153, 0.5)' }}>
-              {t('aboutMe.career.title')}
-            </Text>
-            <div className="relative flex h-screen justify-center">
-              {/* Curved Road Path - full width, first curve starts from right side */}
-              <div className="absolute left-0 right-0 w-full -top-32">
-                <svg 
-                  width="100%" 
-                  height="100vh" 
-                  viewBox="0 0 1200 700" 
-                  preserveAspectRatio="none"
-                  className="overflow-visible"
-                >
-                  {/* Vertical road path in S shape - first curve starts from right side, wide amplitudes */}
-                  <path
-                    d="M 1100 0 Q 50 100, 600 200 S 1150 350, 600 500 S 300 750, 600 850"
-                    stroke="rgb(236, 72, 153)"
-                    strokeWidth="60"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  {/* White center line */}
-                  <path
-                    d="M 1100 0 Q 50 100, 600 200 S 1150 350, 600 500 S 300 750, 600 850"
-                    stroke="white"
-                    strokeWidth="3"
-                    fill="none"
-                    strokeDasharray="10, 8"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </div>
-              
-              {/* Content positioned one below another, centered */}
-              <div className="relative w-full flex flex-col items-center justify-start gap-6 h-full -mt-10 px-8">
-                {/* MANIA Marketing Agency */}
-                <div className="w-[350px] self-end -mt-4">
-                  <div className="text-right">
-                    <div className="mb-2 flex flex-col items-end">
-                      <Text size="2xl" weight="semibold" className="!text-black uppercase">
-                        {careerPath[0].company}
-                      </Text>
-                      <Text size="lg" className="!text-black">
-                        {careerPath[0].location}
-                      </Text>
-                    </div>
-                    <Text size="xl" weight="semibold" className="!text-black mb-3">
-                      {careerPath[0].role}
-                    </Text>
-                    <Text size="lg" className="!text-black whitespace-pre-line">
-                      {careerPath[0].description}
-                    </Text>
-                  </div>
-                </div>
-
-                {/* Bondex B.V. */}
-                <div className="w-[600px] self-start ml-12 -mt-16">
-                  <div className="text-left">
-                    <div className="mb-2 flex flex-col items-start">
-                      <Text size="2xl" weight="semibold" className="!text-black uppercase">
-                        {careerPath[1].company}
-                      </Text>
-                      <Text size="lg" className="!text-black">
-                        {careerPath[1].location}
-                      </Text>
-                    </div>
-                    <Text size="xl" weight="semibold" className="!text-black mb-3">
-                      {careerPath[1].role}
-                    </Text>
-                    <Text size="lg" className="!text-black whitespace-pre-line">
-                      {careerPath[1].description}
-                    </Text>
-                  </div>
-                </div>
-
-                {/* Endava */}
-                <div className="w-[700px] self-end">
-                  <div className="text-right">
-                    <div className="mb-2 flex flex-col items-end">
-                      <Text size="2xl" weight="semibold" className="!text-black uppercase">
-                        {careerPath[2].company}
-                      </Text>
-                      <Text size="lg" className="!text-black">
-                        {careerPath[2].location}
-                      </Text>
-                    </div>
-                    <Text size="xl" weight="semibold" className="!text-black mb-3">
-                      {careerPath[2].role}
-                    </Text>
-                    <Text size="lg" className="!text-black whitespace-pre-line">
-                      {careerPath[2].description}
-                    </Text>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Thinking cat image - absolute positioned bottom right */}
-              <div className="absolute -bottom-24 right-36">
-                <Image 
-                  src="/images/thinking2.png" 
-                  alt={t('aboutMe.alt.thinkingCat')}
-                  className="w-52 h-52"
-                />
-              </div>
-            </div>
-          </div>
+          <MyJourney />
 
           {/* My Toolbox of Tricks */}
           <div>
