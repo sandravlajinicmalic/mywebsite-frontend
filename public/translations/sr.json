@@ -7,6 +7,7 @@
   "nav.language.en": "Engleski",
   "nav.language.sr": "Srpski",
   "nav.logout": "Odjavi se",
+  "nav.menu": "Meni",
 
   "login.email": "Email adresa",
   "login.email.placeholder": "Upiši svoju email adresu",
@@ -106,6 +107,8 @@
   "header.defaultNickname": "Korisnik",
   "header.footerMessage": "Nijedna mačka nije potplaćena prilikom izrade ovih nagrada.",
   "header.loading": "Učitavanje...",
+  "header.menuAriaLabel": "Otvori meni",
+  "header.closeMenu": "Zatvori meni",
   "header.noRewards": "Još nemaš nijednu nagradu. Zavrti kolo i okušaj sreću!",
   "header.rewardHistoryAriaLabel": "Prikaži istoriju nagrada",
   "header.rewardHistoryTitle": "Istorija nagrada",

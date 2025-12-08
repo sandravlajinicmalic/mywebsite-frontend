@@ -41,16 +41,16 @@ const WheelOfFortuneCat = () => {
   return (
     <section className="w-full bg-transparent py-12 px-4 relative z-10">
       <div className="max-w-6xl mx-auto pt-12">
-        <div className="flex flex-row items-center justify-center gap-12 mb-8">
-          <div className="relative flex flex-col items-center">
+        <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12 mb-8">
+          <div className="relative flex flex-col items-center order-2 lg:order-1">
             <div 
               className="absolute left-1/2 transform -translate-x-1/2 z-10"
-              style={{ top: '-80px' }}
+              style={{ top: '-60px' }}
             >
               <Image
                 src="/images/finnish.svg"
                 alt={t('wheel.alt.pointer')}
-                className="w-40 h-40 drop-shadow-lg"
+                className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 drop-shadow-lg"
               />
             </div>
             <div
@@ -66,7 +66,7 @@ const WheelOfFortuneCat = () => {
                 width={wheelSize}
                 height={wheelSize}
                 viewBox={`-${WHEEL_RENDERING_CONFIG.VIEWBOX_PADDING} -${WHEEL_RENDERING_CONFIG.VIEWBOX_PADDING} ${wheelSize + WHEEL_RENDERING_CONFIG.VIEWBOX_PADDING * 2} ${wheelSize + WHEEL_RENDERING_CONFIG.VIEWBOX_PADDING * 2}`}
-                className="drop-shadow-2xl"
+                className="drop-shadow-2xl w-full max-w-[300px] md:max-w-[400px] lg:max-w-none h-auto"
               >
                 <defs>
                   <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
@@ -150,11 +150,11 @@ const WheelOfFortuneCat = () => {
             </div>
           </div>
 
-          <div className="flex flex-col items-center justify-center text-center self-center -mt-16">
-            <h2 className="text-5xl font-bold text-black mb-4" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.3), 0 0 8px rgba(0, 0, 0, 0.2)', lineHeight: '1.3' }}>
+          <div className="flex flex-col items-center justify-center text-center self-center order-1 lg:order-2 lg:-mt-16">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-black mb-4 px-4" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.3), 0 0 8px rgba(0, 0, 0, 0.2)', lineHeight: '1.3' }}>
             {t('wheel.title')}
             </h2>
-            <p className="text-xl text-black max-w-md drop-shadow-sm pt-4 leading-relaxed">
+            <p className="text-lg md:text-xl text-black max-w-md drop-shadow-sm pt-4 leading-relaxed px-4">
               {t('wheel.description')}
             </p>
           </div>

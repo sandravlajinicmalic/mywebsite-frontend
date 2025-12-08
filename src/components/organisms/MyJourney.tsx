@@ -50,25 +50,26 @@ const ScratchCard = ({ image, children }: ScratchCardProps) => {
     ctx.closePath()
     ctx.stroke()
     
-    // Draw image in center
-    const img = new Image()
-    img.src = image
-    img.onload = () => {
-      const imgSize = 220
-      const x = (canvas.width - imgSize) / 2
-      const y = (canvas.height - imgSize) / 2 - 30
-      ctx.drawImage(img, x, y, imgSize, imgSize)
-      
-      // Draw "SCRATCH FOR MORE" text below the image in two lines
-      ctx.fillStyle = 'rgb(236, 72, 153)'
-      ctx.font = '600 32px "Barlow Semi Condensed", sans-serif'
-      ctx.textAlign = 'center'
-      ctx.textBaseline = 'middle'
-      const lineHeight = 40
-      const textY = y + imgSize + 60
-      ctx.fillText('SCRATCH FOR', canvas.width / 2, textY)
-      ctx.fillText('MORE', canvas.width / 2, textY + lineHeight)
-    }
+      // Draw image in center
+      const img = new Image()
+      img.src = image
+      img.onload = () => {
+        const imgSize = Math.min(220, canvas.width * 0.6)
+        const x = (canvas.width - imgSize) / 2
+        const y = (canvas.height - imgSize) / 2 - 30
+        ctx.drawImage(img, x, y, imgSize, imgSize)
+        
+        // Draw "SCRATCH FOR MORE" text below the image in two lines
+        ctx.fillStyle = 'rgb(236, 72, 153)'
+        const fontSize = Math.min(32, canvas.width * 0.1)
+        ctx.font = `600 ${fontSize}px "Barlow Semi Condensed", sans-serif`
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        const lineHeight = fontSize * 1.25
+        const textY = y + imgSize + 60
+        ctx.fillText('SCRATCH FOR', canvas.width / 2, textY)
+        ctx.fillText('MORE', canvas.width / 2, textY + lineHeight)
+      }
   }, [image])
 
   useEffect(() => {
@@ -155,7 +156,7 @@ const ScratchCard = ({ image, children }: ScratchCardProps) => {
   return (
     <div 
       ref={containerRef}
-      className="relative w-[320px] h-[520px] rounded-lg overflow-hidden cursor-grab active:cursor-grabbing select-none transition-all duration-300"
+      className="relative w-full max-w-[320px] h-[520px] rounded-lg overflow-hidden cursor-grab active:cursor-grabbing select-none transition-all duration-300"
       style={{
         boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4), 0 5px 15px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(244, 114, 182, 0.2)',
         transform: 'perspective(1000px) rotateY(0deg) rotateX(0deg)',
@@ -228,11 +229,11 @@ const MyJourney = () => {
 
   return (
     <div>
-      <Text as="h1" size="4xl" weight="bold" className="mb-8 text-gray-900 dark:text-white" style={{ textShadow: '2px 2px 4px rgba(236, 72, 153, 0.8), 0 0 8px rgba(236, 72, 153, 0.5)' }}>
+      <Text as="h1" size="4xl" weight="bold" className="mb-8 text-gray-900 dark:text-white text-center md:text-left" style={{ textShadow: '2px 2px 4px rgba(236, 72, 153, 0.8), 0 0 8px rgba(236, 72, 153, 0.5)' }}>
         {t('aboutMe.career.title')}
       </Text>
-      <div className="py-32">
-        <div className="flex flex-row gap-16 justify-center items-center">
+      <div className="py-8 md:py-16 lg:py-32">
+        <div className="flex flex-col md:flex-row gap-8 md:gap-12 lg:gap-16 justify-center items-center">
           <ScratchCard image={careerPath[0].image}>
             <div className="mb-2 flex flex-col">
               <Text size="2xl" weight="semibold" className="!text-white uppercase mb-3">

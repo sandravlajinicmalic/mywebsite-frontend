@@ -20,13 +20,13 @@ const WebsocketCat = () => {
   } = useWebsocketCat()
 
   return (
-    <section className="w-full bg-transparent pt-16 pb-6 px-8 md:px-12 lg:px-16 relative z-10">
+    <section className="w-full bg-transparent pt-8 md:pt-16 pb-6 px-4 md:px-8 lg:px-16 relative z-10">
       <div className="max-w-6xl mx-auto relative">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
           {/* Left side - Cat image and Sleep button */}
-          <div className="flex flex-col items-center relative" style={{ minHeight: '400px', justifyContent: 'space-between' }}>
+          <div className="flex flex-col items-center relative" style={{ minHeight: '300px', justifyContent: 'space-between' }}>
             {/* Container for animation - fixed height */}
-            <div className="w-full max-w-xs relative cat-container">
+            <div className="w-full max-w-xs relative cat-container" style={{ height: '250px' }}>
               {/* Old image - exiting */}
               {showOldImage && (
                 <Image
@@ -97,8 +97,14 @@ const WebsocketCat = () => {
         }
 
         .cat-container {
-          height: 300px;
+          height: 250px;
           position: relative;
+        }
+        
+        @media (min-width: 768px) {
+          .cat-container {
+            height: 300px;
+          }
         }
 
         .cat-image {
@@ -155,11 +161,17 @@ const WebsocketCat = () => {
           border-radius: 8px;
           overflow: hidden;
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-          height: 400px;
+          height: 300px;
           display: flex;
           flex-direction: column;
           position: relative;
           z-index: 2;
+        }
+        
+        @media (min-width: 768px) {
+          .terminal-container {
+            height: 400px;
+          }
         }
 
         .terminal-header {

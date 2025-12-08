@@ -41,12 +41,12 @@ const ChatBot = () => {
       </div>
 
       {/* Layout with messages */}
-      <div className="flex gap-8 items-start justify-center w-full">
+      <div className="flex flex-col lg:flex-row gap-8 items-start justify-center w-full px-4">
         {/* Messages section on the left */}
-        <div className="w-2/5 max-w-lg bg-transparent rounded-3xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-visible flex flex-col relative">
-          {/* Arrow from message bubble to cat */}
+        <div className="w-full lg:w-2/5 max-w-lg bg-transparent rounded-3xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-visible flex flex-col relative">
+          {/* Arrow from message bubble to cat - hidden on mobile */}
           <div 
-            className="absolute right-0 bottom-4 translate-x-full z-10"
+            className="hidden lg:block absolute right-0 bottom-4 translate-x-full z-10"
             style={{
               width: 0,
               height: 0,
@@ -59,7 +59,7 @@ const ChatBot = () => {
             }}
           />
           <div 
-            className="absolute right-0 bottom-4 translate-x-full z-10 hidden dark:block"
+            className="hidden lg:block dark:block absolute right-0 bottom-4 translate-x-full z-10"
             style={{
               width: 0,
               height: 0,
@@ -70,7 +70,7 @@ const ChatBot = () => {
             }}
           />
           {/* Message bubbles */}
-          <div ref={messagesContainerRef} className="h-[400px] overflow-y-auto overflow-x-hidden pl-4 pr-1 pt-4 pb-0 bg-transparent custom-scrollbar flex flex-col" style={{ scrollbarGutter: 'stable' }}>
+          <div ref={messagesContainerRef} className="h-[300px] md:h-[350px] lg:h-[400px] overflow-y-auto overflow-x-hidden pl-4 pr-1 pt-4 pb-0 bg-transparent custom-scrollbar flex flex-col" style={{ scrollbarGutter: 'stable' }}>
             <div className="flex-1 space-y-4">
               {messages.map((message, index) => (
                 <div
@@ -127,11 +127,11 @@ const ChatBot = () => {
         </div>
 
         {/* Cat image on the right */}
-        <div className="flex-shrink-0 ml-8 mt-40">
+        <div className="flex-shrink-0 lg:ml-8 mt-8 lg:mt-40 flex justify-center lg:justify-start">
           <Image
             src="/images/question.svg"
             alt={t('chat.catAlt')}
-            className="w-80 h-80"
+            className="w-48 h-48 md:w-64 md:h-64 lg:w-80 lg:h-80"
             objectFit="contain"
           />
         </div>
