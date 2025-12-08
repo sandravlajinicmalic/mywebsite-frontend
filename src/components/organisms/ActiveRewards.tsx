@@ -13,9 +13,9 @@ const isRewardExpired = (expiresAt: string | null): boolean => {
 const ActiveRewards = () => {
   const [activeRewards, setActiveRewards] = useState<Record<string, any>>({})
   const [isLoading, setIsLoading] = useState(true)
-  const [previousYarnState, setPreviousYarnState] = useState<boolean>(false)
-  const [previousCursorState, setPreviousCursorState] = useState<string | null>(null)
-  const [previousColorState, setPreviousColorState] = useState<boolean>(false)
+  const previousYarnStateRef = useRef<boolean>(false)
+  const previousCursorStateRef = useRef<string | null>(null)
+  const previousColorStateRef = useRef<boolean>(false)
   const expirationTimersRef = useRef<NodeJS.Timeout[]>([])
   const optimisticColorApplyTimeRef = useRef<number | null>(null)
 
@@ -35,8 +35,8 @@ const ActiveRewards = () => {
         const isYarnExpired = yarnReward?.expiresAt ? isRewardExpired(yarnReward.expiresAt) : true
         const currentYarnState = yarnReward && yarnReward.value && !isYarnExpired
         
-        if (currentYarnState !== previousYarnState) {
-          setPreviousYarnState(currentYarnState)
+        if (currentYarnState !== previousYarnStateRef.current) {
+          previousYarnStateRef.current = currentYarnState
         }
 
         // Check for cursor reward changes
@@ -44,13 +44,13 @@ const ActiveRewards = () => {
         const isCursorExpired = cursorReward?.expiresAt ? isRewardExpired(cursorReward.expiresAt) : true
         const currentCursor = (cursorReward?.value?.cursor && !isCursorExpired) ? cursorReward.value.cursor : null
         
-        if (currentCursor !== previousCursorState) {
+        if (currentCursor !== previousCursorStateRef.current) {
           if (currentCursor) {
             applyCustomCursor(currentCursor)
           } else {
             removeCustomCursor()
           }
-          setPreviousCursorState(currentCursor)
+          previousCursorStateRef.current = currentCursor
         }
 
         // Check for color reward changes
@@ -58,7 +58,7 @@ const ActiveRewards = () => {
         const isColorExpired = colorReward?.expiresAt ? isRewardExpired(colorReward.expiresAt) : true
         const currentColorState = colorReward && colorReward.value && colorReward.value.enabled && !isColorExpired
         
-        if (currentColorState !== previousColorState) {
+        if (currentColorState !== previousColorStateRef.current) {
           if (currentColorState) {
             applyColorSwap()
             // Clear optimistic time ref since reward is now confirmed
@@ -67,7 +67,7 @@ const ActiveRewards = () => {
             removeColorSwap()
             optimisticColorApplyTimeRef.current = null
           }
-          setPreviousColorState(currentColorState)
+          previousColorStateRef.current = currentColorState
         } else if (currentColorState && optimisticColorApplyTimeRef.current) {
           // Reward is confirmed, clear optimistic time ref
           optimisticColorApplyTimeRef.current = null
@@ -85,7 +85,7 @@ const ActiveRewards = () => {
           const expiresIn = new Date(yarnReward.expiresAt).getTime() - Date.now()
           if (expiresIn > 0) {
             const timer = setTimeout(() => {
-              setPreviousYarnState(false)
+              previousYarnStateRef.current = false
               fetchRewards()
             }, expiresIn)
             expirationTimersRef.current.push(timer)
@@ -95,9 +95,9 @@ const ActiveRewards = () => {
         // Check if cursor reward expired (no timer needed, will be caught by frequent checks)
         if (!cursorReward || isCursorExpired) {
           // Reward expired or doesn't exist, but effect is still active
-          if (previousCursorState) {
+          if (previousCursorStateRef.current) {
             removeCustomCursor()
-            setPreviousCursorState(null)
+            previousCursorStateRef.current = null
           }
         }
         
@@ -108,19 +108,19 @@ const ActiveRewards = () => {
             const timer = setTimeout(() => {
               // Remove effect immediately when expired
               removeColorSwap()
-              setPreviousColorState(false)
+              previousColorStateRef.current = false
               // Refetch to ensure state is synced
               fetchRewards()
             }, expiresIn)
             expirationTimersRef.current.push(timer)
           } else {
             // Already expired, remove immediately
-            if (previousColorState) {
+            if (previousColorStateRef.current) {
               removeColorSwap()
-              setPreviousColorState(false)
+              previousColorStateRef.current = false
             }
           }
-        } else if (previousColorState) {
+        } else if (previousColorStateRef.current) {
           // Reward expired or doesn't exist, but effect is still active
           // Don't remove if we just optimistically applied it (within last 2 seconds)
           const timeSinceOptimistic = optimisticColorApplyTimeRef.current 
@@ -131,7 +131,7 @@ const ActiveRewards = () => {
             // Only remove if it's been more than 2 seconds since optimistic apply
             // This prevents removing the effect if backend hasn't created the reward yet
             removeColorSwap()
-            setPreviousColorState(false)
+            previousColorStateRef.current = false
             optimisticColorApplyTimeRef.current = null
           }
         }
@@ -156,9 +156,9 @@ const ActiveRewards = () => {
       // Optimistically apply effects immediately for known reward types
       if (rewardType === 'Color Catastrophe') {
         // Apply color swap optimistically and update state
-        if (!previousColorState) {
+        if (!previousColorStateRef.current) {
           applyColorSwap()
-          setPreviousColorState(true)
+          previousColorStateRef.current = true
           optimisticColorApplyTimeRef.current = Date.now()
         }
       }
@@ -187,7 +187,7 @@ const ActiveRewards = () => {
       removeCustomCursor()
       removeColorSwap()
     }
-  }, [previousYarnState, previousCursorState, previousColorState])
+  }, []) // Empty dependency array - only run once on mount
 
   if (isLoading) return null
 

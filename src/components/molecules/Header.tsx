@@ -159,7 +159,7 @@ const Header = () => {
         avatarExpirationTimerRef.current = null
       }
     }
-  }, [user, userAvatar, nicknameReward])
+  }, [user]) // Only depend on user - re-run if user changes (login/logout)
 
   const handleTrophyClick = async () => {
     if (!user) return
