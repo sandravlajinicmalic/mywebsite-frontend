@@ -93,7 +93,7 @@ const ChatBot = () => {
             }}
           />
           {/* Message bubbles */}
-          <div ref={messagesContainerRef} className="h-[300px] md:h-[350px] lg:h-[400px] overflow-y-auto overflow-x-hidden pl-4 pr-1 pt-4 pb-0 bg-transparent custom-scrollbar flex flex-col" style={{ scrollbarGutter: 'stable' }}>
+          <div ref={messagesContainerRef} className="h-[400px] md:h-[450px] lg:h-[400px] overflow-y-auto overflow-x-hidden pl-4 pr-1 pt-4 pb-0 bg-transparent custom-scrollbar flex flex-col" style={{ scrollbarGutter: 'stable' }}>
             <div className="flex-1 space-y-4">
               {messages.map((message, index) => (
                 <div

@@ -26,7 +26,7 @@ const WebsocketCat = () => {
           {/* Left side - Cat image and Sleep button */}
           <div className="flex flex-col items-center relative order-1 lg:order-1" style={{ minHeight: '300px', justifyContent: 'space-between' }}>
             {/* Container for animation - fixed height */}
-            <div className="w-full max-w-[300px] lg:max-w-xs relative cat-container" style={{ height: '250px' }}>
+            <div className="w-full max-w-[200px] md:max-w-[200px] lg:max-w-xs relative cat-container" style={{ height: '180px' }}>
               {/* Old image - exiting */}
               {showOldImage && (
                 <Image
@@ -97,13 +97,13 @@ const WebsocketCat = () => {
         }
 
         .cat-container {
-          height: 250px;
+          height: 180px;
           position: relative;
         }
         
         @media (min-width: 768px) {
           .cat-container {
-            height: 300px;
+            height: 200px;
           }
         }
         
@@ -123,7 +123,7 @@ const WebsocketCat = () => {
           top: 0;
           left: 0;
           width: 100%;
-          max-width: 300px;
+          max-width: 200px;
           will-change: transform;
           animation: catExit 0.7s ease-in forwards;
         }
@@ -133,7 +133,14 @@ const WebsocketCat = () => {
           top: 0;
           left: 0;
           width: 100%;
-          max-width: 300px;
+          max-width: 200px;
+        }
+        
+        @media (min-width: 768px) and (max-width: 1023px) {
+          .cat-exiting,
+          .cat-entering {
+            max-width: 200px;
+          }
         }
         
         @media (min-width: 1024px) {
