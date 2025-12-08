@@ -76,7 +76,7 @@ const AboutMe = () => {
   }
   
   return (
-    <section className="w-full bg-transparent py-12 pb-16 px-4 relative z-10">
+    <section className="w-full bg-transparent py-6 lg:py-12 pb-8 lg:pb-16 px-4 relative z-10">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col gap-8">
           <MyJourney />

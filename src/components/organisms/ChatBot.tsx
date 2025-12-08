@@ -154,7 +154,7 @@ const ChatBot = () => {
           <Image
             src="/images/question.svg"
             alt={t('chat.catAlt')}
-            className="w-48 h-48 md:w-64 md:h-64 lg:w-80 lg:h-80"
+            className="w-40 h-40 md:w-56 md:h-56 lg:w-80 lg:h-80"
             objectFit="contain"
           />
         </div>
