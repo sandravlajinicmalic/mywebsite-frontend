@@ -18,6 +18,8 @@ const ActiveRewards = () => {
   const previousColorStateRef = useRef<boolean>(false)
   const expirationTimersRef = useRef<NodeJS.Timeout[]>([])
   const optimisticColorApplyTimeRef = useRef<number | null>(null)
+  const isFetchingRef = useRef<boolean>(false)
+  const lastFetchTimeRef = useRef<number>(0)
 
   useEffect(() => {
     const fetchRewards = async () => {
@@ -26,6 +28,22 @@ const ActiveRewards = () => {
         setIsLoading(false)
         return
       }
+
+      // Prevent multiple simultaneous fetches
+      if (isFetchingRef.current) {
+        console.log('⏸️  ActiveRewards: Fetch already in progress, skipping...')
+        return
+      }
+      
+      // Throttle: don't fetch more than once per 5 seconds
+      const now = Date.now()
+      if (now - lastFetchTimeRef.current < 5000) {
+        console.log('⏸️  ActiveRewards: Throttled: too soon since last fetch')
+        return
+      }
+      
+      isFetchingRef.current = true
+      lastFetchTimeRef.current = now
 
       try {
         const rewards = await userService.getActiveRewards()
@@ -139,6 +157,7 @@ const ActiveRewards = () => {
         // Error fetching active rewards - silently fail
       } finally {
         setIsLoading(false)
+        isFetchingRef.current = false
       }
     }
 

@@ -45,6 +45,8 @@ const Header = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const avatarExpirationTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const isFetchingRef = useRef<boolean>(false)
+  const lastFetchTimeRef = useRef<number>(0)
 
   // Update default avatar when user changes
   useEffect(() => {
@@ -58,6 +60,22 @@ const Header = () => {
   useEffect(() => {
     const fetchRewards = async () => {
       if (!user) return
+      
+      // Prevent multiple simultaneous fetches
+      if (isFetchingRef.current) {
+        console.log('⏸️  Fetch already in progress, skipping...')
+        return
+      }
+      
+      // Throttle: don't fetch more than once per 5 seconds
+      const now = Date.now()
+      if (now - lastFetchTimeRef.current < 5000) {
+        console.log('⏸️  Throttled: too soon since last fetch')
+        return
+      }
+      
+      isFetchingRef.current = true
+      lastFetchTimeRef.current = now
       
       try {
         // Fetch avatar
@@ -135,13 +153,15 @@ const Header = () => {
         }
       } catch (error) {
         console.error('Error fetching rewards:', error)
+      } finally {
+        isFetchingRef.current = false
       }
     }
 
     fetchRewards()
 
-    // Refresh rewards every 5 seconds to check for expired rewards (more frequent check for accurate expiration)
-    const interval = setInterval(fetchRewards, 5000)
+    // Refresh rewards every 30 seconds to check for expired rewards
+    const interval = setInterval(fetchRewards, 30000)
     
     // Also listen for custom event to refresh rewards immediately when reward is activated
     const handleRewardActivated = () => {
