@@ -8,7 +8,7 @@ export const ROUTES = {
   FORGOT_NICKNAME: '/forgot-nickname',
 } as const
 
-export const APP_NAME = 'My Website' as const
+export const APP_NAME = 'MeowCrafts' as const
 
 // API Configuration
 export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api'
