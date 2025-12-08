@@ -117,39 +117,10 @@ const Header = () => {
             avatarExpirationTimerRef.current = setTimeout(() => {
               console.log('🔄 Avatar reward expired, reverting to default:', avatarData.originalAvatar)
               setUserAvatar(avatarData.originalAvatar)
-              // Also refresh rewards to get updated state
-              fetchRewards()
+              // Trigger event to refresh rewards (ActiveRewards component will handle it)
+              window.dispatchEvent(new CustomEvent('avatar-expired'))
             }, expiresIn)
           }
-        }
-
-        // Fetch all active rewards to check for nickname rewards
-        const activeRewards = await userService.getActiveRewards()
-        const nicknameRewardData = activeRewards.nickname
-        
-        // Check if nickname reward is expired
-        const isNicknameExpired = nicknameRewardData?.expiresAt 
-          ? new Date(nicknameRewardData.expiresAt) < new Date()
-          : true
-        
-        if (nicknameRewardData && nicknameRewardData.value && !isNicknameExpired) {
-          const previousReward = nicknameReward
-          const newReward = nicknameRewardData.value
-          
-          if (JSON.stringify(previousReward) !== JSON.stringify(newReward)) {
-            console.log('🔄 Nickname reward changed:', {
-              from: previousReward,
-              to: newReward,
-              expiresAt: nicknameRewardData.expiresAt
-            })
-          }
-          
-          setNicknameReward(newReward)
-        } else {
-          if (nicknameReward !== null) {
-            console.log('🔄 Nickname reward expired, using default')
-          }
-          setNicknameReward(null)
         }
       } catch (error) {
         console.error('Error fetching rewards:', error)
@@ -160,19 +131,30 @@ const Header = () => {
 
     fetchRewards()
 
-    // Refresh rewards every 30 seconds to check for expired rewards
-    const interval = setInterval(fetchRewards, 30000)
+    // Refresh avatar every 60 seconds (less frequent since ActiveRewards handles other rewards)
+    const interval = setInterval(fetchRewards, 60000)
     
-    // Also listen for custom event to refresh rewards immediately when reward is activated
+    // Listen for custom event to refresh avatar immediately when reward is activated
     const handleRewardActivated = () => {
-      // Fetch immediately for faster avatar update
+      // Fetch avatar immediately for faster update
       fetchRewards()
     }
     window.addEventListener('reward-activated', handleRewardActivated)
+    
+    // Listen for nickname reward updates from ActiveRewards component
+    const handleNicknameRewardUpdate = (event: Event) => {
+      const customEvent = event as CustomEvent
+      const nicknameRewardData = customEvent.detail?.nicknameReward
+      if (nicknameRewardData !== undefined) {
+        setNicknameReward(nicknameRewardData)
+      }
+    }
+    window.addEventListener('nickname-reward-updated', handleNicknameRewardUpdate)
 
     return () => {
       clearInterval(interval)
       window.removeEventListener('reward-activated', handleRewardActivated)
+      window.removeEventListener('nickname-reward-updated', handleNicknameRewardUpdate)
       // Clear avatar expiration timer on unmount
       if (avatarExpirationTimerRef.current) {
         clearTimeout(avatarExpirationTimerRef.current)

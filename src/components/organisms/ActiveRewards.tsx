@@ -93,6 +93,20 @@ const ActiveRewards = () => {
         
         setActiveRewards(rewards)
         
+        // Send nickname reward update to Header component via custom event
+        const nicknameRewardData = rewards.nickname
+        const isNicknameExpired = nicknameRewardData?.expiresAt 
+          ? new Date(nicknameRewardData.expiresAt) < new Date()
+          : true
+        
+        const nicknameReward = (nicknameRewardData && nicknameRewardData.value && !isNicknameExpired) 
+          ? nicknameRewardData.value 
+          : null
+        
+        window.dispatchEvent(new CustomEvent('nickname-reward-updated', {
+          detail: { nicknameReward }
+        }))
+        
         // Clear existing expiration timers
         expirationTimersRef.current.forEach(timer => clearTimeout(timer))
         expirationTimersRef.current = []
