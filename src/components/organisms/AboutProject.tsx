@@ -86,16 +86,16 @@ const AboutProject = () => {
         <div className="mb-6 lg:mb-12 flex flex-col lg:flex-row gap-8 pb-6 lg:pb-12 px-4 items-center lg:items-start">
           {/* How It All Started */}
           <div className="flex-1 text-left w-full max-w-lg mx-auto lg:mx-0">
-            <Text as="h3" size="3xl" weight="bold" className="mb-4 text-gray-900 dark:text-white md:text-4xl about-project-title" style={{ textShadow: '2px 2px 4px rgba(236, 72, 153, 0.8), 0 0 8px rgba(236, 72, 153, 0.5)' }}>
+            <Text as="h3" size="3xl" weight="bold" className="mb-4 !text-black !font-bold lg:!text-white lg:font-normal md:text-4xl about-project-title how-it-started-title">
               {t('aboutProject.howItStarted.title')}
             </Text>
-            <Text size="base" className="mb-4 leading-relaxed text-white dark:text-white max-w-sm md:text-lg about-project-text">
+            <Text size="base" className="mb-4 leading-relaxed !text-black lg:!text-white max-w-sm md:text-lg about-project-text">
               {t('aboutProject.howItStarted.paragraph1')}
             </Text>
-            <Text size="base" className="mb-4 leading-relaxed text-white dark:text-white max-w-sm md:text-lg about-project-text">
+            <Text size="base" className="mb-4 leading-relaxed !text-black lg:!text-white max-w-sm md:text-lg about-project-text">
               {t('aboutProject.howItStarted.paragraph2')}
             </Text>
-            <div className="mt-4 relative hidden md:block">
+            <div className="mt-4 relative hidden lg:block">
               <img
                 src="/images/thinking1.png"
                 alt={t('aboutProject.alt.thinkingCat')}
@@ -219,6 +219,14 @@ const AboutProject = () => {
             .about-project-text.text-sm {
               font-size: calc(1rem - 2px) !important; /* base (16px) - 2px = 14px */
             }
+          }
+          .how-it-started-title {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3) !important;
+          }
+        }
+        @media (min-width: 1024px) {
+          .how-it-started-title {
+            text-shadow: 2px 2px 4px rgba(236, 72, 153, 0.8), 0 0 8px rgba(236, 72, 153, 0.5) !important;
           }
         }
       `}</style>

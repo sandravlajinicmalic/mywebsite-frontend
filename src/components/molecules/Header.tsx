@@ -312,8 +312,8 @@ const Header = () => {
         <div className="flex justify-between items-center py-4">
           <div></div>
           
-          {/* Desktop Navigation - hidden on tablet and mobile */}
-          <nav className="hidden lg:flex items-center gap-6 justify-end">
+          {/* Desktop Navigation - hidden on mobile (below 768px) */}
+          <nav className="hidden md:flex items-center gap-6 justify-end">
             <Link 
               to={ROUTES.HOME}
               className="text-base font-medium text-gray-900 dark:text-white hover:text-[#06B6D4] transition-all underline-offset-4 uppercase cursor-pointer"
@@ -381,11 +381,11 @@ const Header = () => {
             )}
           </nav>
 
-          {/* Hamburger Button - visible on tablet and mobile (768px+) */}
+          {/* Hamburger Button - visible only on mobile (below 768px) */}
           {user && (
             <button
               onClick={() => setIsSideMenuOpen(!isSideMenuOpen)}
-              className="lg:hidden hamburger-button cursor-pointer p-2 text-white hover:text-[#06B6D4] transition-colors"
+              className="md:hidden hamburger-button cursor-pointer p-2 text-white hover:text-[#06B6D4] transition-colors"
               style={smallDropShadowStyle}
               aria-label={t('header.menuAriaLabel') || 'Menu'}
             >
@@ -402,14 +402,14 @@ const Header = () => {
       {/* Side Menu Overlay */}
       {isSideMenuOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
           onClick={() => setIsSideMenuOpen(false)}
         />
       )}
 
-      {/* Side Menu - visible on tablet and mobile (768px+) */}
+      {/* Side Menu - visible only on mobile (below 768px) */}
       <div 
-        className={`side-menu fixed top-0 right-0 h-full w-80 bg-black z-50 transform transition-transform duration-300 ease-in-out lg:hidden ${
+        className={`side-menu fixed top-0 right-0 h-full w-80 bg-black z-50 transform transition-transform duration-300 ease-in-out md:hidden ${
           isSideMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
         style={{
