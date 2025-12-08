@@ -155,7 +155,19 @@ const ScratchCard = ({ image, children }: ScratchCardProps) => {
   return (
     <div 
       ref={containerRef}
-      className="relative w-[320px] h-[520px] rounded-lg overflow-hidden cursor-grab active:cursor-grabbing shadow-lg hover:shadow-xl transition-shadow duration-300 select-none"
+      className="relative w-[320px] h-[520px] rounded-lg overflow-hidden cursor-grab active:cursor-grabbing select-none transition-all duration-300"
+      style={{
+        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4), 0 5px 15px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(244, 114, 182, 0.2)',
+        transform: 'perspective(1000px) rotateY(0deg) rotateX(0deg)',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'perspective(1000px) rotateY(-2deg) rotateX(2deg) translateY(-5px)'
+        e.currentTarget.style.boxShadow = '0 15px 40px rgba(0, 0, 0, 0.5), 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(244, 114, 182, 0.3)'
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg)'
+        e.currentTarget.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.4), 0 5px 15px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(244, 114, 182, 0.2)'
+      }}
     >
       {/* Content - tekst ispod */}
       <div className="w-full h-full bg-black border-2 border-[rgba(244,114,182,0.5)] rounded-lg p-6 flex flex-col shadow-[0_2px_8px_rgba(0,0,0,0.5),0_4px_16px_rgba(0,0,0,0.3)] select-none">
