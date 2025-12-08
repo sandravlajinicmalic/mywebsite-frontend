@@ -4,6 +4,14 @@ interface AboutCurvedBackgroundProps {
 }
 
 const AboutCurvedBackground = ({ flipped = false, inverted = false }: AboutCurvedBackgroundProps) => {
+  // Desktop verzije
+  const desktopLeftPath = "M1000,0 C700,75 600,135 1000,170 C1780,259 2000,358 1000,401 C-100,426 -200,588 1000,643 C3400,738 3400,833 1000,930 C280,970 220,1055 1000,1080 L0,1080 L0,0 Z"
+  const desktopRightPath = "M1000,0 C700,75 600,135 1000,170 C1780,259 2000,358 1000,401 C-100,426 -200,588 1000,643 C3400,738 3400,833 1000,930 C280,970 220,1055 1000,1080 L1920,1080 L1920,0 Z"
+  
+  // Tablet verzije - prva krivulja više u lijevo, podignuta gore, veća amplituda, početak pomeren u lijevo, donji deo pomeren gore; druga krivulja više u desno, povećana amplituda (kao D), pomereno dole, gornji deo spušten malo dole, pomereno još u desno; treća krivulja smanjena, pomereno dole, pomereno još u lijevo, ublažen prelaz sa plavom; četvrta krivulja ublažen prelaz sa zelenom; peta krivulja pomereno skroz u lijevo, još malo u lijevo
+  const tabletLeftPath = "M300,0 C-300,80 -500,150 1000,170 C2600,240 2900,320 1400,450 C1000,470 -100,600 900,680 C1800,710 2800,800 1000,930 C-400,970 -500,1055 1000,1080 L0,1080 L0,0 Z"
+  const tabletRightPath = "M300,0 C-300,80 -500,150 1000,170 C2600,240 2900,320 1400,450 C1000,470 -100,600 900,680 C1800,710 2800,800 1000,930 C-400,970 -500,1055 1000,1080 L1920,1080 L1920,0 Z"
+
   return (
     <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none w-full min-h-screen">
       <svg
@@ -21,45 +29,35 @@ const AboutCurvedBackground = ({ flipped = false, inverted = false }: AboutCurve
           </linearGradient>
         </defs>
         
-        {/* Left part - pink when inverted, transparent otherwise */}
-        {/* 
-          ANALIZA KRIVULJE - PODEŠENO:
-          [1] Prva krivulja: y 0→170, ide levo (170px) - BLAGO POMERENO GORE
-             Kontrolne: (700,75) (600,135) → Završava: (1000,170)
-          [2] Druga krivulja: y 170→401, ide desno (231px) - BLAGO SMANJENA NA RAČUN 3, BLAGO POMERENO GORE
-             Kontrolne: (1780,259) (2000,358) → Završava: (1000,401)
-          [3] Treća krivulja: y 401→643, ide levo (242px) - BLAGO SMANJENA NA RAČUN 4, SMANJENA ODOZGORE
-             Kontrolne: (-100,426) (-200,588) → Završava: (1000,643)
-          [4] Četvrta krivulja: y 643→930, ide desno (287px) - BLAGO POVEĆANA NA RAČUN 3
-             Kontrolne: (3400,738) (3400,833) → Završava: (1000,930)
-          [5] Peta krivulja: y 930→1080, ide levo (150px) - BLAGO POMERENO GORE
-             Kontrolne: (280,970) (220,1055) → Završava: (1000,1080)
-          [6] Završna linija: od (1000,1080) do (0,1080)
-        */}
-        <path
-          d="M1000,0 C700,75 600,135 1000,170 C1780,259 2000,358 1000,401 C-100,426 -200,588 1000,643 C3400,738 3400,833 1000,930 C280,970 220,1055 1000,1080 L0,1080 L0,0 Z"
-          fill={inverted ? "url(#pinkGradient)" : "transparent"}
-        />
+        {/* Desktop verzije */}
+        <g className="hidden lg:block">
+          {/* Left part - pink when inverted, transparent otherwise */}
+          <path
+            d={desktopLeftPath}
+            fill={inverted ? "url(#pinkGradient)" : "transparent"}
+          />
+          
+          {/* Right part - black when inverted, pink otherwise */}
+          <path
+            d={desktopRightPath}
+            fill={inverted ? "#000000" : "url(#pinkGradient)"}
+          />
+        </g>
         
-        {/* Right part - black when inverted, pink otherwise */}
-        {/* 
-          ANALIZA KRIVULJE - PODEŠENO:
-          [1] Prva krivulja: y 0→170, ide levo (170px) - BLAGO POMERENO GORE
-             Kontrolne: (700,75) (600,135) → Završava: (1000,170)
-          [2] Druga krivulja: y 170→401, ide desno (231px) - BLAGO SMANJENA NA RAČUN 3, BLAGO POMERENO GORE
-             Kontrolne: (1780,259) (2000,358) → Završava: (1000,401)
-          [3] Treća krivulja: y 401→643, ide levo (242px) - BLAGO SMANJENA NA RAČUN 4, SMANJENA ODOZGORE
-             Kontrolne: (-100,426) (-200,588) → Završava: (1000,643)
-          [4] Četvrta krivulja: y 643→930, ide desno (287px) - BLAGO POVEĆANA NA RAČUN 3
-             Kontrolne: (3400,738) (3400,833) → Završava: (1000,930)
-          [5] Peta krivulja: y 930→1080, ide levo (150px) - BLAGO POMERENO GORE
-             Kontrolne: (280,970) (220,1055) → Završava: (1000,1080)
-          [6] Završna linija: od (1000,1080) do (1920,1080)
-        */}
-        <path
-          d="M1000,0 C700,75 600,135 1000,170 C1780,259 2000,358 1000,401 C-100,426 -200,588 1000,643 C3400,738 3400,833 1000,930 C280,970 220,1055 1000,1080 L1920,1080 L1920,0 Z"
-          fill={inverted ? "#000000" : "url(#pinkGradient)"}
-        />
+        {/* Tablet verzije */}
+        <g className="block lg:hidden">
+          {/* Left part - pink when inverted, transparent otherwise */}
+          <path
+            d={tabletLeftPath}
+            fill={inverted ? "url(#pinkGradient)" : "transparent"}
+          />
+          
+          {/* Right part - black when inverted, pink otherwise */}
+          <path
+            d={tabletRightPath}
+            fill={inverted ? "#000000" : "url(#pinkGradient)"}
+          />
+        </g>
       </svg>
     </div>
   )

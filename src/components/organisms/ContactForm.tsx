@@ -57,35 +57,35 @@ const ContactForm = () => {
   }
   
   return (
-    <section className="w-full bg-transparent py-12 px-4 relative z-10">
+    <section className="w-full bg-transparent py-6 lg:py-12 px-4 relative z-10">
       <div className="max-w-6xl mx-auto">
         {/* Title and subtitle above */}
-        <div className="text-right mb-6">
-          <Text as="h2" size="4xl" weight="bold" className="mb-4 !text-black !font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
+        <div className="text-center md:text-right mb-6 px-4">
+          <Text as="h2" size="3xl" weight="bold" className="mb-4 !text-black !font-bold drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] md:text-4xl">
             {t('contact.titleSection')}
           </Text>
-          <div className="w-1/2 ml-auto pb-4">
-            <Text size="lg" className="!text-black">
+          <div className="w-full md:w-1/2 md:ml-auto pb-4">
+            <Text size="base" className="!text-black md:text-lg">
               {t('contact.subtitleSection')}
             </Text>
           </div>
         </div>
         
         {/* Image and Form in the same div */}
-        <div className="flex flex-col md:flex-row gap-8 items-center md:items-stretch">
+        <div className="flex flex-row gap-4 md:gap-8 items-center md:items-stretch">
           {/* Image */}
-          <div className="w-full md:w-1/3 relative">
+          <div className="w-auto md:w-1/3 relative flex justify-center md:justify-end flex-shrink-0">
             <Image
               src="/images/education.png"
               alt={t('contact.alt.education')}
-              className="absolute max-w-80 h-auto"
+              className="max-w-32 md:max-w-40 lg:max-w-80 h-auto relative md:absolute"
               style={{ bottom: '60px', right: '0' }}
               objectFit="contain"
             />
           </div>
           
           {/* Form */}
-          <div className="w-full md:w-2/3 flex flex-col justify-end">
+          <div className="flex-1 md:w-2/3 flex flex-col justify-end">
             <form onSubmit={handleSubmit} className="w-full flex flex-col">
               <div className="mb-4">
                 <textarea

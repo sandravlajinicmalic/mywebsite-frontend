@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
-import { Trophy } from 'lucide-react'
-import { Text } from '../atoms'
+import { Trophy, Menu, X, LogOut, Globe, Trash2, Cat } from 'lucide-react'
+import { Text, Button } from '../atoms'
 import { ROUTES } from '../../constants'
 import { authService } from '../../services/auth'
 import { useI18n } from '../../contexts/i18n'
@@ -9,6 +9,8 @@ import Modal from './Modal'
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { wheelService, userService, type WheelSpin } from '../../services'
 import { getUserDefaultAvatar } from '../../utils'
+import { useNavigate } from 'react-router-dom'
+import { disconnectSocket } from '../../services/socket'
 
 // Helper function to format date
 const formatDate = (dateString: string): string => {
@@ -23,7 +25,8 @@ const formatDate = (dateString: string): string => {
 }
 
 const Header = () => {
-  const { t } = useI18n()
+  const { t, language, setLanguage } = useI18n()
+  const navigate = useNavigate()
   const user = authService.getCurrentUser()
   const userNickname = user?.nickname || t('header.defaultNickname')
   
@@ -38,6 +41,9 @@ const Header = () => {
   const [spinHistory, setSpinHistory] = useState<WheelSpin[]>([])
   const [isLoadingHistory, setIsLoadingHistory] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [isSideMenuOpen, setIsSideMenuOpen] = useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
   const avatarExpirationTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   // Update default avatar when user changes
@@ -160,6 +166,7 @@ const Header = () => {
     
     setIsHistoryModalOpen(true)
     setIsLoadingHistory(true)
+    setIsSideMenuOpen(false) // Close side menu when opening modal
     
     // Always refresh history when opening modal
     try {
@@ -172,6 +179,78 @@ const Header = () => {
       setIsLoadingHistory(false)
     }
   }
+
+  const handleLogout = () => {
+    // Disconnect socket if connected
+    disconnectSocket()
+    // Logout user
+    authService.logout()
+    // Close side menu
+    setIsSideMenuOpen(false)
+    // Navigate to login page and reload
+    window.location.href = ROUTES.LOGIN
+  }
+
+  const handleDeleteProfile = () => {
+    setIsDeleteModalOpen(true)
+    setIsSideMenuOpen(false)
+  }
+
+  const handleDeleteConfirm = async () => {
+    setIsDeleting(true)
+    try {
+      await authService.deleteAccount()
+      // Close modal first
+      setIsDeleteModalOpen(false)
+      setIsDeleting(false)
+      // Navigate to login after successful deletion
+      navigate(ROUTES.LOGIN, { replace: true })
+      // Force page reload to ensure clean state
+      setTimeout(() => {
+        window.location.reload()
+      }, 100)
+    } catch (error) {
+      console.error('Error deleting account:', error)
+      setIsDeleting(false)
+      // error.message is already a translation key from the service
+      const errorMessage = error instanceof Error 
+        ? (error.message ? t(error.message) : t('nav.deleteProfile.error'))
+        : t('nav.deleteProfile.error')
+      alert(errorMessage)
+    }
+  }
+
+  const handleDeleteCancel = () => {
+    setIsDeleteModalOpen(false)
+    setIsDeleting(false)
+  }
+
+  const handleLanguageChange = (lang: 'sr' | 'en') => {
+    setLanguage(lang)
+  }
+
+  // Close side menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement
+      if (isSideMenuOpen && !target.closest('.side-menu') && !target.closest('.hamburger-button')) {
+        setIsSideMenuOpen(false)
+      }
+    }
+
+    if (isSideMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      // Prevent body scroll when menu is open
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.body.style.overflow = ''
+    }
+  }, [isSideMenuOpen])
 
   // Detect scroll
   useEffect(() => {
@@ -233,7 +312,8 @@ const Header = () => {
         <div className="flex justify-between items-center py-4">
           <div></div>
           
-          <nav className="flex items-center gap-6">
+          {/* Desktop Navigation - hidden on mobile (below 768px) */}
+          <nav className="hidden md:flex items-center gap-6 justify-end">
             <Link 
               to={ROUTES.HOME}
               className="text-base font-medium text-gray-900 dark:text-white hover:text-[#06B6D4] transition-all underline-offset-4 uppercase cursor-pointer"
@@ -300,9 +380,174 @@ const Header = () => {
               </>
             )}
           </nav>
+
+          {/* Hamburger Button - visible only on mobile (below 768px) */}
+          {user && (
+            <button
+              onClick={() => setIsSideMenuOpen(!isSideMenuOpen)}
+              className="md:hidden hamburger-button cursor-pointer p-2 text-white hover:text-[#06B6D4] transition-colors"
+              style={smallDropShadowStyle}
+              aria-label={t('header.menuAriaLabel') || 'Menu'}
+            >
+              {isSideMenuOpen ? (
+                <X className="w-6 h-6" strokeWidth={2} />
+              ) : (
+                <Menu className="w-6 h-6" strokeWidth={2} />
+              )}
+            </button>
+          )}
         </div>
       </div>
 
+      {/* Side Menu Overlay */}
+      {isSideMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          onClick={() => setIsSideMenuOpen(false)}
+        />
+      )}
+
+      {/* Side Menu - visible only on mobile (below 768px) */}
+      <div 
+        className={`side-menu fixed top-0 right-0 h-full w-80 bg-black z-50 transform transition-transform duration-300 ease-in-out md:hidden ${
+          isSideMenuOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+        style={{
+          boxShadow: '-4px 0 15px rgba(0, 0, 0, 0.5)',
+          borderLeft: '1px solid rgba(244, 114, 182, 0.5)'
+        }}
+      >
+        <div className="flex flex-col h-full overflow-y-auto">
+          {/* Header with close button */}
+          <div className="flex justify-end items-center p-4">
+            <button
+              onClick={() => setIsSideMenuOpen(false)}
+              className="text-white hover:text-[#06B6D4] transition-colors p-2"
+              aria-label={t('header.closeMenu') || 'Close menu'}
+            >
+              <X className="w-6 h-6" strokeWidth={2} />
+            </button>
+          </div>
+
+          {/* User Info Section - First */}
+          {user && (
+            <>
+              {/* User Avatar and Nickname */}
+              <div className="p-4 border-t border-b border-[rgba(244,114,182,0.5)]">
+                <div className="flex items-center justify-start gap-3">
+                  <img
+                    src={userAvatar}
+                    alt={`${userNickname} avatar`}
+                    className="w-12 h-12 rounded-full border-2 border-indigo-500 object-cover"
+                  />
+                  <div className="flex flex-col items-start">
+                    <Text 
+                      size="base" 
+                      weight="medium" 
+                      className="text-white text-left"
+                      style={{
+                        fontStyle: nicknameReward?.style === 'cursive' ? 'italic' : 'normal',
+                        fontFamily: nicknameReward?.style === 'cursive' 
+                          ? '"Brush Script MT", "Lucida Handwriting", cursive' 
+                          : undefined,
+                        fontSize: nicknameReward?.fontSize 
+                          ? `${parseFloat(nicknameReward.fontSize)}em` 
+                          : undefined
+                      }}
+                    >
+                      {nicknameReward?.prefix ? `${nicknameReward.prefix} ` : ''}{userNickname}
+                    </Text>
+                  </div>
+                </div>
+              </div>
+
+              {/* Navigation Links - Second */}
+              <div className="flex flex-col p-4 border-b border-[rgba(244,114,182,0.5)]">
+                <Link
+                  to={ROUTES.HOME}
+                  onClick={() => setIsSideMenuOpen(false)}
+                  className="text-base font-medium text-white hover:text-[#06B6D4] transition-all uppercase py-3 px-2 text-left"
+                  style={{ 
+                    fontFamily: '"Barlow Semi Condensed", sans-serif',
+                  }}
+                >
+                  {t('nav.home')}
+                </Link>
+                <Link
+                  to={ROUTES.ABOUT}
+                  onClick={() => setIsSideMenuOpen(false)}
+                  className="text-base font-medium text-white hover:text-[#06B6D4] transition-all uppercase py-3 px-2 text-left"
+                  style={{ 
+                    fontFamily: '"Barlow Semi Condensed", sans-serif',
+                  }}
+                >
+                  {t('nav.about')}
+                </Link>
+              </div>
+
+              {/* Trophy Button */}
+              <div className="px-4 pt-4 pb-2">
+                <button
+                  onClick={handleTrophyClick}
+                  className="w-full flex items-center justify-start gap-3 text-white hover:text-[#06B6D4] transition-colors py-2"
+                >
+                  <Trophy className="w-5 h-5" strokeWidth={2} />
+                  <Text size="base" weight="medium">
+                    {t('header.rewardHistoryTitle')}
+                  </Text>
+                </button>
+              </div>
+
+              {/* Language Selector */}
+              <div className="px-4 py-2">
+                <div className="flex items-center justify-start gap-3">
+                  <Globe className="w-5 h-5 text-white" />
+                  <button
+                    onClick={() => handleLanguageChange(language === 'sr' ? 'en' : 'sr')}
+                    className="flex items-center gap-2 text-white hover:text-[#06B6D4] transition-colors cursor-pointer"
+                  >
+                    <span className={`text-base font-medium ${language === 'sr' ? 'text-[#06B6D4]' : 'text-white'}`}>
+                      SR
+                    </span>
+                    <span className="text-white">/</span>
+                    <span className={`text-base font-medium ${language === 'en' ? 'text-[#06B6D4]' : 'text-white'}`}>
+                      EN
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Delete Profile Button */}
+              <div className="px-4 pt-2 pb-4 border-b border-[rgba(244,114,182,0.5)]">
+                <button
+                  onClick={handleDeleteProfile}
+                  className="w-full flex items-center justify-start gap-3 text-white hover:text-red-400 transition-colors py-2"
+                >
+                  <Trash2 className="w-5 h-5" />
+                  <Text size="base" weight="medium">
+                    {t('nav.deleteProfile')}
+                  </Text>
+                </button>
+              </div>
+
+              {/* Logout Button */}
+              <div className="p-4 mt-auto">
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center justify-end gap-3 text-white hover:text-[#06B6D4] transition-colors py-2"
+                >
+                  <Text size="base" weight="medium">
+                    {t('nav.logout')}
+                  </Text>
+                  <LogOut className="w-5 h-5" />
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Reward History Modal */}
       <Modal
         isOpen={isHistoryModalOpen}
         onClose={() => setIsHistoryModalOpen(false)}
@@ -366,6 +611,44 @@ const Header = () => {
           </div>
         )}
       </Modal>
+
+      {/* Delete Account Modal */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={handleDeleteCancel}
+        title={t('userMenu.deleteModal.title')}
+        size="md"
+        footer={
+          <div className="flex gap-3 w-full">
+            <Button
+              variant="outline"
+              onClick={handleDeleteConfirm}
+              className="flex-1 bg-black"
+              disabled={isDeleting}
+            >
+              {isDeleting ? t('userMenu.deleteModal.deleting') : t('userMenu.deleteModal.deleteButton')}
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleDeleteCancel}
+              className="flex-1"
+              disabled={isDeleting}
+            >
+              {t('userMenu.deleteModal.cancelButton')}
+            </Button>
+          </div>
+        }
+      >
+        <div className="space-y-4 text-center">
+          <Text size="base" className="text-white">
+            {t('userMenu.deleteModal.message1')}
+          </Text>
+          <Text size="base" className="text-white">
+            {t('userMenu.deleteModal.message2')}
+          </Text>
+        </div>
+      </Modal>
+
       <style>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 6px;

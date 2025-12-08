@@ -7,5 +7,5 @@ export const ROUTES = {
   ABOUT: '/about',
 } as const
 
-export const APP_NAME = 'My Website' as const
+export const APP_NAME = 'MeowCrafts' as const
 

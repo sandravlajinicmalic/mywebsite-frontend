@@ -41,12 +41,35 @@ const ChatBot = () => {
       </div>
 
       {/* Layout with messages */}
-      <div className="flex gap-8 items-start justify-center w-full">
+      <div className="flex flex-col lg:flex-row gap-8 items-center lg:items-start justify-center w-full px-4">
         {/* Messages section on the left */}
-        <div className="w-2/5 max-w-lg bg-transparent rounded-3xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-visible flex flex-col relative">
-          {/* Arrow from message bubble to cat */}
+        <div className="w-full lg:w-2/5 max-w-lg bg-transparent rounded-3xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-visible flex flex-col relative">
+          {/* Arrow pointing down - visible on tablet and smaller screens (< 1024px) */}
           <div 
-            className="absolute right-0 bottom-4 translate-x-full z-10"
+            className="arrow-down-light absolute left-1/2 -translate-x-1/2 -bottom-6 z-10"
+            style={{
+              width: 0,
+              height: 0,
+              borderLeft: '24px solid transparent',
+              borderRight: '24px solid transparent',
+              borderTop: '24px solid rgb(255, 255, 255)',
+              filter: 'drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.1))'
+            }}
+          />
+          <div 
+            className="arrow-down-dark absolute left-1/2 -translate-x-1/2 -bottom-6 z-10"
+            style={{
+              width: 0,
+              height: 0,
+              borderLeft: '24px solid transparent',
+              borderRight: '24px solid transparent',
+              borderTop: '24px solid rgb(31, 41, 55)',
+              filter: 'drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.1))'
+            }}
+          />
+          {/* Arrow from message bubble to cat - visible only on desktop (≥ 1024px) */}
+          <div 
+            className="arrow-right-light absolute right-0 bottom-4 translate-x-full z-10"
             style={{
               width: 0,
               height: 0,
@@ -59,7 +82,7 @@ const ChatBot = () => {
             }}
           />
           <div 
-            className="absolute right-0 bottom-4 translate-x-full z-10 hidden dark:block"
+            className="arrow-right-dark absolute right-0 bottom-4 translate-x-full z-10"
             style={{
               width: 0,
               height: 0,
@@ -70,7 +93,7 @@ const ChatBot = () => {
             }}
           />
           {/* Message bubbles */}
-          <div ref={messagesContainerRef} className="h-[400px] overflow-y-auto overflow-x-hidden pl-4 pr-1 pt-4 pb-0 bg-transparent custom-scrollbar flex flex-col" style={{ scrollbarGutter: 'stable' }}>
+          <div ref={messagesContainerRef} className="h-[400px] md:h-[450px] lg:h-[400px] overflow-y-auto overflow-x-hidden pl-4 pr-1 pt-4 pb-0 bg-transparent custom-scrollbar flex flex-col" style={{ scrollbarGutter: 'stable' }}>
             <div className="flex-1 space-y-4">
               {messages.map((message, index) => (
                 <div
@@ -127,11 +150,11 @@ const ChatBot = () => {
         </div>
 
         {/* Cat image on the right */}
-        <div className="flex-shrink-0 ml-8 mt-40">
+        <div className="flex-shrink-0 ml-12 lg:ml-0 mt-8 lg:mt-40 flex justify-center">
           <Image
             src="/images/question.svg"
             alt={t('chat.catAlt')}
-            className="w-80 h-80"
+            className="w-40 h-40 md:w-56 md:h-56 lg:w-80 lg:h-80"
             objectFit="contain"
           />
         </div>
@@ -154,6 +177,54 @@ const ChatBot = () => {
         .custom-scrollbar {
           scrollbar-width: thin;
           scrollbar-color: #9ca3af transparent;
+        }
+        
+        /* Arrow pointing down - visible on tablet and smaller screens (< 1024px) */
+        .arrow-down-light {
+          display: block;
+        }
+        .arrow-down-dark {
+          display: none;
+        }
+        @media (min-width: 1024px) {
+          .arrow-down-light,
+          .arrow-down-dark {
+            display: none !important;
+          }
+        }
+        @media (prefers-color-scheme: dark) {
+          .arrow-down-light {
+            display: none;
+          }
+          .arrow-down-dark {
+            display: block;
+          }
+          @media (min-width: 1024px) {
+            .arrow-down-dark {
+              display: none !important;
+            }
+          }
+        }
+        
+        /* Arrow pointing right - visible only on desktop (≥ 1024px) */
+        .arrow-right-light {
+          display: none;
+        }
+        .arrow-right-dark {
+          display: none;
+        }
+        @media (min-width: 1024px) {
+          .arrow-right-light {
+            display: block;
+          }
+        }
+        @media (min-width: 1024px) and (prefers-color-scheme: dark) {
+          .arrow-right-light {
+            display: none;
+          }
+          .arrow-right-dark {
+            display: block;
+          }
         }
       `}</style>
     </div>

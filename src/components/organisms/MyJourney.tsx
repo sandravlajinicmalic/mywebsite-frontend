@@ -50,25 +50,32 @@ const ScratchCard = ({ image, children }: ScratchCardProps) => {
     ctx.closePath()
     ctx.stroke()
     
-    // Draw image in center
-    const img = new Image()
-    img.src = image
-    img.onload = () => {
-      const imgSize = 220
-      const x = (canvas.width - imgSize) / 2
-      const y = (canvas.height - imgSize) / 2 - 30
-      ctx.drawImage(img, x, y, imgSize, imgSize)
-      
-      // Draw "SCRATCH FOR MORE" text below the image in two lines
-      ctx.fillStyle = 'rgb(236, 72, 153)'
-      ctx.font = '600 32px "Barlow Semi Condensed", sans-serif'
-      ctx.textAlign = 'center'
-      ctx.textBaseline = 'middle'
-      const lineHeight = 40
-      const textY = y + imgSize + 60
-      ctx.fillText('SCRATCH FOR', canvas.width / 2, textY)
-      ctx.fillText('MORE', canvas.width / 2, textY + lineHeight)
-    }
+        // Draw image in center
+        const img = new Image()
+        img.src = image
+        img.onload = () => {
+          // Smanji veličinu slike za tablete i manje ekrane
+          const isSmallScreen = canvas.height < 500
+          const imgSize = isSmallScreen 
+            ? Math.min(120, canvas.width * 0.4)
+            : Math.min(220, canvas.width * 0.6)
+          const x = (canvas.width - imgSize) / 2
+          const y = (canvas.height - imgSize) / 2 - (isSmallScreen ? 10 : 30)
+          ctx.drawImage(img, x, y, imgSize, imgSize)
+          
+          // Draw "SCRATCH FOR MORE" text below the image in two lines
+          ctx.fillStyle = 'rgb(236, 72, 153)'
+          const fontSize = isSmallScreen 
+            ? Math.min(18, canvas.width * 0.065)
+            : Math.min(32, canvas.width * 0.1)
+          ctx.font = `600 ${fontSize}px "Barlow Semi Condensed", sans-serif`
+          ctx.textAlign = 'center'
+          ctx.textBaseline = 'middle'
+          const lineHeight = fontSize * 1.25
+          const textY = y + imgSize + (isSmallScreen ? 25 : 60)
+          ctx.fillText('SCRATCH FOR', canvas.width / 2, textY)
+          ctx.fillText('MORE', canvas.width / 2, textY + lineHeight)
+        }
   }, [image])
 
   useEffect(() => {
@@ -155,7 +162,7 @@ const ScratchCard = ({ image, children }: ScratchCardProps) => {
   return (
     <div 
       ref={containerRef}
-      className="relative w-[320px] h-[520px] rounded-lg overflow-hidden cursor-grab active:cursor-grabbing select-none transition-all duration-300"
+      className="relative w-full max-w-[260px] md:max-w-[280px] lg:max-w-[320px] h-[320px] md:h-[350px] lg:h-[520px] rounded-lg overflow-hidden cursor-grab active:cursor-grabbing select-none transition-all duration-300"
       style={{
         boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4), 0 5px 15px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(244, 114, 182, 0.2)',
         transform: 'perspective(1000px) rotateY(0deg) rotateX(0deg)',
@@ -170,7 +177,7 @@ const ScratchCard = ({ image, children }: ScratchCardProps) => {
       }}
     >
       {/* Content - tekst ispod */}
-      <div className="w-full h-full bg-black border-2 border-[rgba(244,114,182,0.5)] rounded-lg p-6 flex flex-col shadow-[0_2px_8px_rgba(0,0,0,0.5),0_4px_16px_rgba(0,0,0,0.3)] select-none">
+      <div className="w-full h-full bg-black border-2 border-[rgba(244,114,182,0.5)] rounded-lg p-2.5 md:p-3 lg:p-6 flex flex-col shadow-[0_2px_8px_rgba(0,0,0,0.5),0_4px_16px_rgba(0,0,0,0.3)] select-none">
         {children}
       </div>
       
@@ -227,64 +234,74 @@ const MyJourney = () => {
   ]
 
   return (
-    <div>
-      <Text as="h1" size="4xl" weight="bold" className="mb-8 text-gray-900 dark:text-white" style={{ textShadow: '2px 2px 4px rgba(236, 72, 153, 0.8), 0 0 8px rgba(236, 72, 153, 0.5)' }}>
-        {t('aboutMe.career.title')}
-      </Text>
-      <div className="py-32">
-        <div className="flex flex-row gap-16 justify-center items-center">
+    <div className="px-4 lg:px-0">
+      <div className="w-full max-w-lg mx-auto lg:max-w-none lg:mx-0">
+        <Text as="h1" size="4xl" weight="bold" className="mb-8 text-gray-900 dark:text-white text-left my-journey-title" style={{ textShadow: '2px 2px 4px rgba(236, 72, 153, 0.8), 0 0 8px rgba(236, 72, 153, 0.5)' }}>
+          {t('aboutMe.career.title')}
+        </Text>
+      </div>
+      <div className="py-6 md:py-4 lg:py-32">
+        <div className="flex flex-col lg:flex-row gap-4 md:gap-5 lg:gap-16 justify-center items-center">
           <ScratchCard image={careerPath[0].image}>
-            <div className="mb-2 flex flex-col">
-              <Text size="2xl" weight="semibold" className="!text-white uppercase mb-3">
+            <div className="mb-1 md:mb-2 flex flex-col">
+              <Text size="2xl" weight="semibold" className="!text-white uppercase mb-1 md:mb-2 lg:mb-3 text-lg md:text-xl lg:text-2xl">
                 {careerPath[0].company}
               </Text>
-              <Text size="lg" className="!text-white">
+              <Text size="lg" className="!text-white text-sm md:text-base lg:text-lg">
                 {careerPath[0].location}
               </Text>
             </div>
-            <Text size="xl" weight="semibold" className="!text-white mb-3">
+            <Text size="xl" weight="semibold" className="!text-white mb-1 md:mb-2 lg:mb-3 text-base md:text-lg lg:text-xl">
               {careerPath[0].role}
             </Text>
-            <Text size="lg" className="!text-white whitespace-pre-line">
+            <Text size="lg" className="!text-white whitespace-pre-line text-sm md:text-base lg:text-lg">
               {careerPath[0].description}
             </Text>
           </ScratchCard>
 
           <ScratchCard image={careerPath[1].image}>
-            <div className="mb-2 flex flex-col">
-              <Text size="2xl" weight="semibold" className="!text-white uppercase mb-3">
+            <div className="mb-1 md:mb-2 flex flex-col">
+              <Text size="2xl" weight="semibold" className="!text-white uppercase mb-1 md:mb-2 lg:mb-3 text-lg md:text-xl lg:text-2xl">
                 {careerPath[1].company}
               </Text>
-              <Text size="lg" className="!text-white">
+              <Text size="lg" className="!text-white text-sm md:text-base lg:text-lg">
                 {careerPath[1].location}
               </Text>
             </div>
-            <Text size="xl" weight="semibold" className="!text-white mb-3">
+            <Text size="xl" weight="semibold" className="!text-white mb-1 md:mb-2 lg:mb-3 text-base md:text-lg lg:text-xl">
               {careerPath[1].role}
             </Text>
-            <Text size="lg" className="!text-white whitespace-pre-line">
+            <Text size="lg" className="!text-white whitespace-pre-line text-sm md:text-base lg:text-lg">
               {careerPath[1].description}
             </Text>
           </ScratchCard>
 
           <ScratchCard image={careerPath[2].image}>
-            <div className="mb-2 flex flex-col">
-              <Text size="2xl" weight="semibold" className="!text-white uppercase mb-3">
+            <div className="mb-1 md:mb-2 flex flex-col">
+              <Text size="2xl" weight="semibold" className="!text-white uppercase mb-1 md:mb-2 lg:mb-3 text-lg md:text-xl lg:text-2xl">
                 {careerPath[2].company}
               </Text>
-              <Text size="lg" className="!text-white">
+              <Text size="lg" className="!text-white text-sm md:text-base lg:text-lg">
                 {careerPath[2].location}
               </Text>
             </div>
-            <Text size="xl" weight="semibold" className="!text-white mb-3">
+            <Text size="xl" weight="semibold" className="!text-white mb-1 md:mb-2 lg:mb-3 text-base md:text-lg lg:text-xl">
               {careerPath[2].role}
             </Text>
-            <Text size="lg" className="!text-white whitespace-pre-line">
+            <Text size="lg" className="!text-white whitespace-pre-line text-sm md:text-base lg:text-lg">
               {careerPath[2].description}
             </Text>
           </ScratchCard>
         </div>
       </div>
+      <style>{`
+        /* Smanji font naslova za 4px za tablete i manje ekrane */
+        @media (max-width: 1023px) {
+          .my-journey-title {
+            font-size: calc(2.25rem - 4px) !important; /* 4xl (36px) - 4px = 32px */
+          }
+        }
+      `}</style>
     </div>
   )
 }

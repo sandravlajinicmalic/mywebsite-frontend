@@ -20,13 +20,13 @@ const WebsocketCat = () => {
   } = useWebsocketCat()
 
   return (
-    <section className="w-full bg-transparent pt-16 pb-6 px-8 md:px-12 lg:px-16 relative z-10">
+    <section className="w-full bg-transparent pt-4 md:pt-8 lg:pt-16 pb-6 px-4 md:px-8 lg:px-16 relative z-10">
       <div className="max-w-6xl mx-auto relative">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 lg:gap-8">
           {/* Left side - Cat image and Sleep button */}
-          <div className="flex flex-col items-center relative" style={{ minHeight: '400px', justifyContent: 'space-between' }}>
+          <div className="flex flex-col items-center relative order-1 lg:order-1" style={{ minHeight: '300px', justifyContent: 'space-between' }}>
             {/* Container for animation - fixed height */}
-            <div className="w-full max-w-xs relative cat-container">
+            <div className="w-full max-w-[200px] md:max-w-[200px] lg:max-w-xs relative cat-container" style={{ height: '180px' }}>
               {/* Old image - exiting */}
               {showOldImage && (
                 <Image
@@ -51,7 +51,7 @@ const WebsocketCat = () => {
               onClick={handleReset} 
               variant="primary" 
               size="lg" 
-              className="w-full max-w-xs"
+              className="w-full max-w-xs mt-20 md:mt-24 lg:mt-0"
               disabled={isSleeping}
             >
               {getSleepButtonText()}
@@ -59,7 +59,7 @@ const WebsocketCat = () => {
           </div>
 
           {/* Right side - Terminal */}
-          <div className="w-full">
+          <div className="w-full order-2 lg:order-2 flex justify-center lg:block">
             <div className="terminal-container">
               <div className="terminal-header">
                 <div className="terminal-buttons">
@@ -97,8 +97,20 @@ const WebsocketCat = () => {
         }
 
         .cat-container {
-          height: 300px;
+          height: 180px;
           position: relative;
+        }
+        
+        @media (min-width: 768px) {
+          .cat-container {
+            height: 200px;
+          }
+        }
+        
+        @media (min-width: 1024px) {
+          .cat-container {
+            height: 300px;
+          }
         }
 
         .cat-image {
@@ -111,7 +123,7 @@ const WebsocketCat = () => {
           top: 0;
           left: 0;
           width: 100%;
-          max-width: 20rem;
+          max-width: 200px;
           will-change: transform;
           animation: catExit 0.7s ease-in forwards;
         }
@@ -121,7 +133,21 @@ const WebsocketCat = () => {
           top: 0;
           left: 0;
           width: 100%;
-          max-width: 20rem;
+          max-width: 200px;
+        }
+        
+        @media (min-width: 768px) and (max-width: 1023px) {
+          .cat-exiting,
+          .cat-entering {
+            max-width: 200px;
+          }
+        }
+        
+        @media (min-width: 1024px) {
+          .cat-exiting,
+          .cat-entering {
+            max-width: 20rem;
+          }
         }
 
         .cat-entering.animating {
@@ -155,11 +181,30 @@ const WebsocketCat = () => {
           border-radius: 8px;
           overflow: hidden;
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-          height: 400px;
+          height: 280px;
           display: flex;
           flex-direction: column;
           position: relative;
           z-index: 2;
+          width: 100%;
+          max-width: 500px;
+          margin-top: 16px;
+        }
+        
+        @media (min-width: 768px) {
+          .terminal-container {
+            height: 380px;
+            margin-top: 20px;
+          }
+        }
+        
+        @media (min-width: 1024px) {
+          .terminal-container {
+            max-width: 100%;
+            width: 100%;
+            height: 400px;
+            margin-top: 0;
+          }
         }
 
         .terminal-header {
@@ -210,8 +255,14 @@ const WebsocketCat = () => {
 
         .terminal-content {
           font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
-          font-size: 14px;
+          font-size: 10px;
           line-height: 1.6;
+        }
+        
+        @media (min-width: 1024px) {
+          .terminal-content {
+            font-size: 14px;
+          }
         }
 
         .terminal-line {

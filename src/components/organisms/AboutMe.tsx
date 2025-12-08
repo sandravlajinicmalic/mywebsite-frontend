@@ -76,17 +76,17 @@ const AboutMe = () => {
   }
   
   return (
-    <section className="w-full bg-transparent py-12 pb-16 px-4 relative z-10">
+    <section className="w-full bg-transparent py-6 lg:py-12 pb-8 lg:pb-16 px-4 relative z-10">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col gap-8">
           <MyJourney />
 
           {/* My Toolbox of Tricks */}
           <div>
-            <Text as="h2" size="4xl" weight="bold" className="mb-4 text-center text-white dark:text-white" style={{ textShadow: '2px 2px 4px rgba(236, 72, 153, 0.8), 0 0 8px rgba(236, 72, 153, 0.5)' }}>
+            <Text as="h2" size="3xl" weight="bold" className="mb-4 text-center text-white dark:text-white md:text-4xl" style={{ textShadow: '2px 2px 4px rgba(236, 72, 153, 0.8), 0 0 8px rgba(236, 72, 153, 0.5)' }}>
               {t('aboutMe.tools.title')}
             </Text>
-            <Text size="lg" className="mb-12 text-center text-white dark:text-white">
+            <Text size="base" className="mb-12 text-center text-white dark:text-white md:text-lg">
               {t('aboutMe.tools.subtitle')}
             </Text>
             
@@ -95,11 +95,11 @@ const AboutMe = () => {
               {toolsCategories.map((category, catIndex) => (
                 <div key={catIndex}>
                   <div className="flex items-center justify-center gap-2 mb-2">
-                    <Text as="h3" size="xl" weight="bold" className="text-gray-900 dark:text-white">
+                    <Text as="h3" size="lg" weight="bold" className="text-gray-900 dark:text-white md:text-xl">
                       {category.title}
                     </Text>
                   </div>
-                  <div className="flex flex-wrap justify-center gap-3">
+                  <div className="flex flex-wrap justify-center gap-2 md:gap-3">
                     {category.techs.map((tech) => {
                       const iconUrl = getIconUrl(tech);
                       return (

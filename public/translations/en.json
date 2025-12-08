@@ -7,6 +7,7 @@
   "nav.language.en": "English",
   "nav.language.sr": "Srpski",
   "nav.logout": "Logout",
+  "nav.menu": "Menu",
 
   "login.email": "Email address",
   "login.email.placeholder": "Enter your email address",
@@ -106,6 +107,8 @@
   "header.defaultNickname": "User",
   "header.footerMessage": "No cats were bribed in the making of these rewards.",
   "header.loading": "Loading...",
+  "header.menuAriaLabel": "Open menu",
+  "header.closeMenu": "Close menu",
   "header.noRewards": "You haven't won any rewards yet. Spin the wheel to win a reward!",
   "header.rewardHistoryAriaLabel": "Show reward history",
   "header.rewardHistoryTitle": "Reward History",
