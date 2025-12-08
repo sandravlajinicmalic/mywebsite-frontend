@@ -128,29 +128,31 @@ export const useWebsocketCat = () => {
 
     // Connection events
     socket.on(SOCKET_EVENTS.CONNECT, () => {
-      console.log('Connected to WebSocket server')
       // Request current state and logs after connection
       socket.emit(SOCKET_EVENTS.GET_CURRENT_STATE)
       socket.emit(SOCKET_EVENTS.GET_LOGS, { limit: 50 })
     })
 
     socket.on(SOCKET_EVENTS.DISCONNECT, () => {
-      console.log('Disconnected from WebSocket server')
+      // Handle disconnect if needed
     })
 
-    socket.on(SOCKET_EVENTS.CONNECT_ERROR, (error) => {
-      console.error('WebSocket connection error:', error)
+    socket.on(SOCKET_EVENTS.CONNECT_ERROR, () => {
+      // Handle connection error if needed
     })
+    
+    // If not connected, try to connect manually
+    if (!socket.connected) {
+      socket.connect()
+    }
 
     // Listen for cat state changes
     socket.on(SOCKET_EVENTS.CAT_STATE_CHANGED, (data: { state: CatState }) => {
-      console.log('Cat state changed:', data.state)
       setCatState(data.state)
     })
 
     // Listen for Sleep activation
     socket.on(SOCKET_EVENTS.CAT_RESTING, (data: { restUntil: string; userName: string }) => {
-      console.log('Cat sleeping:', data)
       setIsSleeping(true)
       setSleepEndTime(new Date(data.restUntil))
       setSleptBy(data.userName)
@@ -164,7 +166,6 @@ export const useWebsocketCat = () => {
 
     // Listen for Sleep period ending
     socket.on(SOCKET_EVENTS.CAT_REST_ENDED, () => {
-      console.log('Cat sleep period ended')
       setIsSleeping(false)
       setSleepEndTime(null)
       setSleptBy(null)
@@ -175,20 +176,38 @@ export const useWebsocketCat = () => {
 
     // Listen for initial logs
     socket.on(SOCKET_EVENTS.INITIAL_LOGS, (data: LogEntry[]) => {
-      console.log('Received initial logs:', data.length)
-      setLogs(data.reverse()) // Reverse to show oldest first
+      if (data && Array.isArray(data)) {
+        setLogs(data.reverse()) // Reverse to show oldest first
+      } else {
+        setLogs([])
+      }
     })
 
     // Listen for new logs
     socket.on(SOCKET_EVENTS.NEW_LOG, (log: LogEntry) => {
-      console.log('New log received:', log)
-      setLogs(prev => [...prev, log])
+      if (log && log.id && log.action) {
+        setLogs(prev => [...prev, log])
+      }
     })
 
     // If already connected, request immediately
     if (socket.connected) {
       socket.emit(SOCKET_EVENTS.GET_CURRENT_STATE)
       socket.emit(SOCKET_EVENTS.GET_LOGS, { limit: 50 })
+    } else {
+      // Wait a bit and try again if connection happens
+      const checkConnection = setInterval(() => {
+        if (socket.connected) {
+          socket.emit(SOCKET_EVENTS.GET_CURRENT_STATE)
+          socket.emit(SOCKET_EVENTS.GET_LOGS, { limit: 50 })
+          clearInterval(checkConnection)
+        }
+      }, 1000)
+      
+      // Clear interval after 10 seconds
+      setTimeout(() => {
+        clearInterval(checkConnection)
+      }, 10000)
     }
 
     return () => {

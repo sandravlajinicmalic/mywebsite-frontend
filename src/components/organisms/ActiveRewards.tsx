@@ -36,11 +36,6 @@ const ActiveRewards = () => {
         const currentYarnState = yarnReward && yarnReward.value && !isYarnExpired
         
         if (currentYarnState !== previousYarnState) {
-          if (currentYarnState) {
-            console.log('🪢 Yarn ball appeared!', { expiresAt: yarnReward.expiresAt })
-          } else {
-            console.log('🪢 Yarn ball disappeared (reward expired)')
-          }
           setPreviousYarnState(currentYarnState)
         }
 
@@ -51,10 +46,8 @@ const ActiveRewards = () => {
         
         if (currentCursor !== previousCursorState) {
           if (currentCursor) {
-            console.log('🐾 Cursor changed to paw!', { cursor: currentCursor, expiresAt: cursorReward.expiresAt })
             applyCustomCursor(currentCursor)
           } else {
-            console.log('🐾 Cursor reverted to default (reward expired)')
             removeCustomCursor()
           }
           setPreviousCursorState(currentCursor)
@@ -67,12 +60,10 @@ const ActiveRewards = () => {
         
         if (currentColorState !== previousColorState) {
           if (currentColorState) {
-            console.log('🎨 Color theme changed! Pink → Blue', { swap: colorReward.value.swap, expiresAt: colorReward.expiresAt })
             applyColorSwap()
             // Clear optimistic time ref since reward is now confirmed
             optimisticColorApplyTimeRef.current = null
           } else {
-            console.log('🎨 Color theme reverted to default (reward expired)')
             removeColorSwap()
             optimisticColorApplyTimeRef.current = null
           }
@@ -145,7 +136,7 @@ const ActiveRewards = () => {
           }
         }
       } catch (error) {
-        console.error('Error fetching active rewards:', error)
+        // Error fetching active rewards - silently fail
       } finally {
         setIsLoading(false)
       }
@@ -153,8 +144,8 @@ const ActiveRewards = () => {
 
     fetchRewards()
 
-    // Refresh rewards every 5 seconds to check for expired rewards (more frequent check for accurate expiration)
-    const interval = setInterval(fetchRewards, 5000)
+    // Refresh rewards every 30 seconds to check for expired rewards
+    const interval = setInterval(fetchRewards, 30000)
     
     // Also listen for custom event to refresh rewards immediately
     const handleRewardActivated = (event: Event) => {
