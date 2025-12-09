@@ -246,11 +246,7 @@ export const useWebsocketCat = () => {
       return t('cat.sleep.putToSleep')
     }
 
-    if (currentUser?.nickname === sleptBy) {
-      return `${t('cat.sleep.sleeping')}${timeRemaining ? ` (${timeRemaining})` : ''}`
-    }
-
-    return `${t('cat.sleep.activatedBy')} ${sleptBy}${timeRemaining ? ` (${timeRemaining})` : ''}`
+    return `${t('cat.sleep.sleeping')}${timeRemaining ? ` (${timeRemaining})` : ''}`
   }
 
   return {
