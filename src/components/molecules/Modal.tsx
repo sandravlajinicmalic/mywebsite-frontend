@@ -25,6 +25,7 @@ const Modal = ({
   const [isAnimating, setIsAnimating] = useState(false)
   const scrollYRef = useRef<number>(0)
   const backdropRef = useRef<HTMLDivElement>(null)
+  const modalContentRef = useRef<HTMLDivElement>(null)
   const backdropPreventScrollRef = useRef<((e: Event) => void) | null>(null)
 
   // Close modal on ESC key and prevent scroll
@@ -36,6 +37,35 @@ const Modal = ({
     }
 
     const preventScroll = (e: Event) => {
+      // Allow scrolling within scrollable elements inside the modal
+      const target = e.target as HTMLElement
+      const modalContent = modalContentRef.current
+      
+      if (target && modalContent && modalContent.contains(target)) {
+        // Check if the event is within a scrollable element
+        let element: HTMLElement | null = target
+        while (element && element !== document.body) {
+          const style = window.getComputedStyle(element)
+          const overflowY = style.overflowY || style.overflow
+          const isScrollable = 
+            (overflowY === 'auto' || overflowY === 'scroll') &&
+            element.scrollHeight > element.clientHeight
+          
+          if (isScrollable) {
+            // Allow scrolling within this element
+            return
+          }
+          
+          // Stop checking once we're outside the modal content
+          if (element === modalContent) {
+            break
+          }
+          
+          element = element.parentElement
+        }
+      }
+      
+      // Prevent scroll on backdrop and body (but not inside modal scrollable areas)
       e.preventDefault()
     }
 
@@ -132,6 +162,8 @@ const Modal = ({
       
       {/* Modal Content */}
       <div 
+        ref={modalContentRef}
+        data-modal-content
         className={`relative bg-black rounded-lg w-full ${sizes[size]} max-h-[90vh] flex flex-col transition-all duration-300 shadow-[0_0_15px_rgba(244,114,182,0.3),0_0_30px_rgba(244,114,182,0.2)] ${
           isAnimating 
             ? 'opacity-100 scale-100 translate-y-0' 

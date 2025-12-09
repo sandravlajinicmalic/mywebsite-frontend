@@ -582,12 +582,14 @@ const Header = () => {
           </div>
         ) : (
           <div 
-            className={`space-y-3 my-6 ml-6 mr-[5px] ${spinHistory.length > 5 ? 'overflow-y-scroll max-h-[200px] min-h-0 custom-scrollbar' : ''}`}
+            className={`space-y-3 my-6 ml-6 mr-[5px] ${spinHistory.length > 5 ? 'overflow-y-auto max-h-[200px] min-h-0 custom-scrollbar' : ''}`}
             style={{ 
               scrollbarGutter: 'stable', 
               maxHeight: spinHistory.length > 5 ? '200px' : 'none',
-              overflowY: spinHistory.length > 5 ? 'scroll' : 'visible',
-              display: 'block'
+              overflowY: spinHistory.length > 5 ? 'auto' : 'visible',
+              display: 'block',
+              touchAction: 'pan-y',
+              WebkitOverflowScrolling: 'touch'
             }}
           >
             {spinHistory.map((spin) => (
