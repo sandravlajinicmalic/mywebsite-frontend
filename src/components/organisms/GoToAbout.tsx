@@ -9,6 +9,10 @@ const GoToAbout = () => {
 
   const handleGoToAbout = () => {
     navigate(ROUTES.ABOUT)
+    // Scroll to top after navigation
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }, 0)
   }
 
   return (
