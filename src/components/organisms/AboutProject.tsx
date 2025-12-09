@@ -51,8 +51,8 @@ const AboutProject = () => {
       href: t('aboutProject.docs.backendUrl')
     },
     {
-      label: t('aboutProject.docs.database'),
-      href: t('aboutProject.docs.databaseUrl')
+      label: t('aboutProject.docs.supabase'),
+      href: t('aboutProject.docs.supabaseUrl')
     },
     {
       label: t('aboutProject.docs.smartchat'),

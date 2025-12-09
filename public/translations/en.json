@@ -64,6 +64,8 @@
   "aboutProject.docs.database": "Supabase Database Schema",
   "aboutProject.docs.databaseUrl": "https://github.com/sandravlajinicmalic/mywebsite-backend/blob/main/database/SUPABASE_DATABASE_SCHEMA.md",
   "aboutProject.docs.frontend": "Frontend Repository",
+  "aboutProject.docs.supabase": "Supabase Documentation",
+  "aboutProject.docs.supabaseUrl": "https://supabase.com/docs",
   "aboutProject.docs.frontendUrl": "https://github.com/sandravlajinicmalic/mywebsite-frontend",
   "aboutProject.docs.smartchat": "SmartChat Logic",
   "aboutProject.docs.smartchatUrl": "https://github.com/sandravlajinicmalic/mywebsite-frontend/blob/main/SMARTCHAT_DOCUMENTATION.md",
