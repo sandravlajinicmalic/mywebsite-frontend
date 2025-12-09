@@ -42,11 +42,11 @@ const Text = ({
   }
   
   const colors: Record<TextColor, string> = {
-    default: 'text-gray-900 dark:text-white',
-    muted: 'text-gray-600 dark:text-gray-400',
-    primary: 'text-indigo-600 dark:text-indigo-400',
-    danger: 'text-red-600 dark:text-red-400',
-    success: 'text-green-600 dark:text-green-400',
+    default: 'text-white',
+    muted: 'text-gray-400',
+    primary: 'text-indigo-400',
+    danger: 'text-red-400',
+    success: 'text-green-400',
   }
   
   // Automatically apply heading font and weight for h1-h6 elements

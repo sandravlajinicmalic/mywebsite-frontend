@@ -318,7 +318,7 @@ const Header = () => {
           <nav className="hidden md:flex items-center gap-6 justify-end">
             <Link 
               to={ROUTES.HOME}
-              className="text-base font-medium text-gray-900 dark:text-white hover:text-[#06B6D4] transition-all underline-offset-4 uppercase cursor-pointer"
+              className="text-base font-medium text-white hover:text-[#06B6D4] transition-all underline-offset-4 uppercase cursor-pointer"
               style={{ 
                 fontFamily: '"Barlow Semi Condensed", sans-serif',
                 ...textShadowStyle
@@ -328,7 +328,7 @@ const Header = () => {
             </Link>
             <Link 
               to={ROUTES.ABOUT}
-              className="text-base font-medium text-gray-900 dark:text-white hover:text-[#06B6D4] transition-all underline-offset-4 uppercase cursor-pointer"
+              className="text-base font-medium text-white hover:text-[#06B6D4] transition-all underline-offset-4 uppercase cursor-pointer"
               style={{ 
                 fontFamily: '"Barlow Semi Condensed", sans-serif',
                 ...textShadowStyle
@@ -348,7 +348,7 @@ const Header = () => {
                 <Text 
                   size="base" 
                   weight="medium" 
-                  className="text-gray-900 dark:text-white transition-all"
+                  className="text-white transition-all"
                   style={{
                     ...textShadowStyle,
                     fontStyle: nicknameReward?.style === 'cursive' ? 'italic' : 'normal',

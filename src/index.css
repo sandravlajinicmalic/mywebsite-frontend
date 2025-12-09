@@ -3,15 +3,35 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    color-scheme: light;
+  }
+  
   body {
-    font-family: "Red Hat Text", sans-serif;
+    font-family: "Red Hat Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-optical-sizing: auto;
     font-weight: 400;
     background-color: theme('colors.black');
+    color: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    font-family: "Barlow Semi Condensed", sans-serif;
+    font-family: "Barlow Semi Condensed", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-weight: 600;
+    color: #ffffff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Ensure text colors are applied correctly on mobile */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Force consistent colors on all devices */
+  p, span, div, a, li, td, th, label, input, textarea, button {
+    color: inherit;
   }
 }

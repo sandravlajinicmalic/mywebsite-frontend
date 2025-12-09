@@ -46,7 +46,7 @@ const Input = ({
   return (
     <div className="w-full">
       {label && (
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label className={`block text-sm font-medium mb-1 ${variant === 'white' ? 'text-gray-700' : 'text-gray-300'}`}>
           {label}
         </label>
       )}

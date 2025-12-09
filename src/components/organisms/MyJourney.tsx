@@ -236,7 +236,7 @@ const MyJourney = () => {
   return (
     <div className="px-4 lg:px-0">
       <div className="w-full max-w-lg mx-auto lg:max-w-none lg:mx-0">
-        <Text as="h1" size="4xl" weight="bold" className="mb-8 text-gray-900 dark:text-white text-left my-journey-title" style={{ textShadow: '2px 2px 4px rgba(236, 72, 153, 0.8), 0 0 8px rgba(236, 72, 153, 0.5)' }}>
+        <Text as="h1" size="4xl" weight="bold" className="mb-8 text-white text-left my-journey-title" style={{ textShadow: '2px 2px 4px rgba(236, 72, 153, 0.8), 0 0 8px rgba(236, 72, 153, 0.5)' }}>
           {t('aboutMe.career.title')}
         </Text>
       </div>

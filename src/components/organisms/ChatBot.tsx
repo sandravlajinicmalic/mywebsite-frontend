@@ -43,7 +43,7 @@ const ChatBot = () => {
       {/* Layout with messages */}
       <div className="flex flex-col lg:flex-row gap-8 items-center lg:items-start justify-center w-full px-4">
         {/* Messages section on the left */}
-        <div className="w-full lg:w-2/5 max-w-lg bg-transparent rounded-3xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-visible flex flex-col relative">
+        <div className="w-full lg:w-2/5 max-w-lg bg-transparent rounded-3xl shadow-lg border border-gray-700 overflow-visible flex flex-col relative">
           {/* Arrow pointing down - visible on tablet and smaller screens (< 1024px) */}
           <div 
             className="arrow-down-light absolute left-1/2 -translate-x-1/2 -bottom-6 z-10"
@@ -104,14 +104,14 @@ const ChatBot = () => {
                     className={`max-w-[95%] rounded-3xl px-5 py-3 shadow-lg ${
                       message.role === 'user'
                         ? 'bg-[#06B6D4] text-white rounded-tl-sm shadow-[0_4px_6px_-1px_rgba(6,182,212,0.3),0_2px_4px_-1px_rgba(6,182,212,0.2),0_0_10px_rgba(6,182,212,0.3)]'
-                        : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-tl-3xl rounded-bl-3xl rounded-br-sm shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)]'
+                        : 'bg-gray-800 text-white border border-gray-700 rounded-tl-3xl rounded-bl-3xl rounded-br-sm shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)]'
                     }`}
                   >
                     <Text size="sm" className="whitespace-pre-wrap">
                       {message.content}
                     </Text>
                     {message.timestamp && (
-                      <Text size="xs" className={`mt-1 ${message.role === 'user' ? 'text-cyan-100' : 'text-gray-500 dark:text-gray-400'}`}>
+                      <Text size="xs" className={`mt-1 ${message.role === 'user' ? 'text-cyan-100' : 'text-gray-400'}`}>
                         {message.timestamp.toLocaleTimeString('sr-RS', { 
                           hour: '2-digit', 
                           minute: '2-digit' 
@@ -124,7 +124,7 @@ const ChatBot = () => {
               {isLoading && (
                 <div className="flex justify-end">
                   <div 
-                    className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-3xl px-5 py-3 shadow-lg shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)]"
+                    className="bg-gray-800 border border-gray-700 rounded-3xl px-5 py-3 shadow-lg shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)]"
                   >
                     <div className="flex gap-1">
                       <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
@@ -192,19 +192,6 @@ const ChatBot = () => {
             display: none !important;
           }
         }
-        @media (prefers-color-scheme: dark) {
-          .arrow-down-light {
-            display: none;
-          }
-          .arrow-down-dark {
-            display: block;
-          }
-          @media (min-width: 1024px) {
-            .arrow-down-dark {
-              display: none !important;
-            }
-          }
-        }
         
         /* Arrow pointing right - visible only on desktop (≥ 1024px) */
         .arrow-right-light {
@@ -215,14 +202,6 @@ const ChatBot = () => {
         }
         @media (min-width: 1024px) {
           .arrow-right-light {
-            display: block;
-          }
-        }
-        @media (min-width: 1024px) and (prefers-color-scheme: dark) {
-          .arrow-right-light {
-            display: none;
-          }
-          .arrow-right-dark {
             display: block;
           }
         }

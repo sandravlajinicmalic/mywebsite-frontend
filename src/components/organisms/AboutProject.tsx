@@ -141,14 +141,14 @@ const AboutProject = () => {
             <div className="flex flex-col lg:flex-row gap-8 items-center">
               {/* Features List - Left Side */}
               <div className="flex-[1.2] text-left lg:text-right w-full lg:w-auto">
-                <Text as="h3" size="3xl" weight="bold" className="mb-4 text-gray-900 dark:text-white md:text-4xl about-project-title" style={{ textShadow: '2px 2px 4px rgba(236, 72, 153, 0.8), 0 0 8px rgba(236, 72, 153, 0.5)' }}>
+                <Text as="h3" size="3xl" weight="bold" className="mb-4 text-white md:text-4xl about-project-title" style={{ textShadow: '2px 2px 4px rgba(236, 72, 153, 0.8), 0 0 8px rgba(236, 72, 153, 0.5)' }}>
                   {t('aboutProject.features.title')}
                 </Text>
                 <ul className="space-y-1">
                   {keyFeatures.map((feature, index) => (
                     <li key={index} className="flex flex-col items-start lg:items-end">
-                      <Text as="h4" size="base" className="text-gray-900 dark:text-white md:text-lg about-project-text">
-                        {feature.title} <span className="text-sm md:text-base font-normal italic text-gray-500 dark:text-gray-400 font-sans about-project-text">– {feature.description}</span>
+                      <Text as="h4" size="base" className="text-white md:text-lg about-project-text">
+                        {feature.title} <span className="text-sm md:text-base font-normal italic text-gray-400 font-sans about-project-text">– {feature.description}</span>
                       </Text>
                     </li>
                   ))}
@@ -170,10 +170,10 @@ const AboutProject = () => {
         {/* Documentation & Links */}
         <div className="mb-6 lg:mb-12 px-4 lg:px-0">
           <div className="w-full max-w-lg mx-auto lg:max-w-none lg:mx-0 text-right lg:text-center">
-            <Text as="h3" size="3xl" weight="bold" className="mb-4 text-white dark:text-white md:text-4xl about-project-title" style={{ textShadow: '2px 2px 4px rgba(236, 72, 153, 0.8), 0 0 8px rgba(236, 72, 153, 0.5)' }}>
+            <Text as="h3" size="3xl" weight="bold" className="mb-4 text-white md:text-4xl about-project-title" style={{ textShadow: '2px 2px 4px rgba(236, 72, 153, 0.8), 0 0 8px rgba(236, 72, 153, 0.5)' }}>
               {t('aboutProject.docs.title')}
             </Text>
-            <Text size="base" className="mb-6 leading-relaxed text-white dark:text-white md:text-lg about-project-text">
+            <Text size="base" className="mb-6 leading-relaxed text-white md:text-lg about-project-text">
               {t('aboutProject.docs.subtitle')}
             </Text>
             <ul className="space-y-1 flex flex-col items-end lg:items-center">

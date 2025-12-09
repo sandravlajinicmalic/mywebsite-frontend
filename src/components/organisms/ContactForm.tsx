@@ -108,17 +108,17 @@ const ContactForm = () => {
                 {/* Error message container with fixed height to prevent layout shift */}
                 <div className="mt-1 min-h-[20px]">
                   {fieldError && (
-                    <p className="text-sm text-black dark:text-black">
+                    <p className="text-sm text-black">
                       {fieldError}
                     </p>
                   )}
                   {error && !fieldError && (
-                    <p className="text-sm text-black dark:text-black">
+                    <p className="text-sm text-black">
                       {error}
                     </p>
                   )}
                   {success && !fieldError && !error && (
-                    <p className="text-sm text-black dark:text-black">
+                    <p className="text-sm text-black">
                       {t('contact.success') || 'Message sent successfully!'}
                     </p>
                   )}

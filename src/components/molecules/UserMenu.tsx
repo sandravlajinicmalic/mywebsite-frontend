@@ -112,7 +112,7 @@ const UserMenu = ({ userNickname, userAvatar }: UserMenuProps) => {
       {/* Avatar Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-12 h-12 rounded-full overflow-hidden border-2 border-indigo-500 dark:border-indigo-400 hover:border-indigo-600 dark:hover:border-indigo-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 cursor-pointer"
+        className="w-12 h-12 rounded-full overflow-hidden border-2 border-indigo-400 hover:border-indigo-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 cursor-pointer"
         style={dropShadowStyle}
         aria-label={t('userMenu.ariaLabel')}
       >
