@@ -52,7 +52,7 @@ const ChatBot = () => {
               height: 0,
               borderLeft: '24px solid transparent',
               borderRight: '24px solid transparent',
-              borderTop: '24px solid rgb(255, 255, 255)',
+              borderTop: '24px solid rgb(31, 41, 55)',
               filter: 'drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.1))'
             }}
           />
@@ -75,7 +75,7 @@ const ChatBot = () => {
               height: 0,
               borderTop: '24px solid transparent',
               borderBottom: '24px solid transparent',
-              borderLeft: '24px solid rgb(255, 255, 255)',
+              borderLeft: '24px solid rgb(31, 41, 55)',
               filter: 'drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.1))',
               borderTopColor: 'transparent',
               borderBottomColor: 'transparent'
