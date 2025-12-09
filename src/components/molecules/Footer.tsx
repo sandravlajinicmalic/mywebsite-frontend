@@ -19,14 +19,18 @@ const Footer = () => {
           {/* Social Icons */}
           <div className="flex gap-4">
             <a
-              href="#"
+              href="https://github.com/sandravlajinicmalic"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-white hover:text-gray-400 transition-colors"
               aria-label={t('footer.ariaLabel.github')}
             >
               <Github size={24} />
             </a>
             <a
-              href="#"
+              href="https://www.linkedin.com/in/sandra-vlajinic-malic-65919119b"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-white hover:text-gray-400 transition-colors"
               aria-label={t('footer.ariaLabel.linkedin')}
             >
