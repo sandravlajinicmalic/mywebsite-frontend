@@ -559,21 +559,98 @@ Preview the production build locally.
 
 ## 🚀 Deployment
 
-### Vercel
+### AWS Amplify
 
-The project is configured for Vercel deployment:
+The project is deployed on AWS Amplify with custom domain support.
 
-1. Connect your GitHub repository to Vercel
-2. Set environment variables:
-   - `VITE_API_URL`: Your production backend URL
-3. Deploy
+#### Initial Setup
 
-See [VERCEL_ENV_SETUP.md](./VERCEL_ENV_SETUP.md) for detailed instructions.
+1. **Connect GitHub Repository:**
+   - Go to AWS Amplify Console
+   - Click "New app" → "Host web app"
+   - Connect your GitHub repository
+   - Select the branch (usually `main`)
 
-### Environment Variables
+2. **Configure Build Settings:**
+   - Amplify will auto-detect the build settings from `amplify.yml`
+   - The build configuration uses `npm install` and `npm run build`
+   - Output directory: `dist`
 
-Set in your deployment platform:
-- `VITE_API_URL`: Backend API URL
+3. **Set Environment Variables:**
+   - Go to **App settings** → **Environment variables**
+   - Add: `VITE_API_URL=https://api.meow-crafts.com/api`
+   - (Replace with your actual backend API URL)
+
+4. **Deploy:**
+   - Amplify will automatically deploy on every push to the connected branch
+   - Or manually trigger deployment from the console
+
+#### Custom Domain Setup
+
+The frontend is configured with a custom domain: `www.meow-crafts.com`
+
+**Setup Process:**
+1. **Add Domain in Amplify:**
+   - Go to **Domain management** → **Add domain**
+   - Enter your domain: `meow-crafts.com`
+   - Amplify will automatically find your Route 53 hosted zone
+
+2. **Configure Subdomain:**
+   - Select subdomain: `www.meow-crafts.com` (or root domain)
+   - Amplify will automatically add DNS records to Route 53
+   - Wait for DNS propagation (5-60 minutes)
+
+3. **SSL Certificate:**
+   - Amplify automatically creates and manages SSL certificates
+   - Certificate covers both `meow-crafts.com` and `www.meow-crafts.com`
+   - Certificate validation happens automatically via DNS
+
+4. **Verify:**
+   - Check that the domain is active in Amplify Console
+   - Test: `https://www.meow-crafts.com`
+
+#### Build Configuration
+
+The build is configured via `amplify.yml`:
+
+```yaml
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm install
+    build:
+      commands:
+        - npm run build
+  artifacts:
+    baseDirectory: dist
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+```
+
+**Note:** Uses `npm install` instead of `npm ci` because `package-lock.json` is in `.gitignore`.
+
+#### Environment Variables
+
+**Production Environment Variables (AWS Amplify):**
+- `VITE_API_URL=https://api.meow-crafts.com/api`
+
+**Local Development:**
+- Create `.env` file:
+  ```env
+  VITE_API_URL=http://localhost:3000/api
+  ```
+
+#### Educational Purpose Tags
+
+To mark resources for educational purposes:
+1. Go to **App settings** → **General** → **Tags**
+2. Add tag: **Key**: `Purpose`, **Value**: `Educational`
+3. Save
 
 ---
 
@@ -659,16 +736,30 @@ Uses Tailwind's default spacing scale (4px base unit).
 ### Common Issues
 
 **API Connection Errors:**
-- Verify `VITE_API_URL` is set correctly
-- Check backend server is running
-- Verify CORS configuration on backend
+- Verify `VITE_API_URL` is set correctly in AWS Amplify environment variables
+- Check backend server is running and accessible
+- Verify CORS configuration on backend (check `FRONTEND_URL` environment variable)
+- Test API directly: `curl https://api.meow-crafts.com/health`
+
+**CORS Errors:**
+- Verify backend `FRONTEND_URL` environment variable matches your frontend domain
+- Check that `FRONTEND_URL` doesn't have trailing slash (e.g., `https://www.meow-crafts.com` not `https://www.meow-crafts.com/`)
+- Restart backend environment after changing `FRONTEND_URL`
+- Check browser console for specific CORS error messages
 
 **WebSocket Connection Issues:**
 - Check backend WebSocket server is running
 - Verify Socket.io version compatibility
 - Check network/firewall settings
+- Test WebSocket connection: Check browser Network tab → WS filter
 
-**Build Errors:**
+**Build Errors in Amplify:**
+- Check Amplify build logs for specific errors
+- Verify `amplify.yml` configuration is correct
+- Ensure `package.json` has all required dependencies
+- Check that build output directory matches `amplify.yml` configuration (`dist`)
+
+**Build Errors Locally:**
 - Clear `node_modules` and reinstall: `rm -rf node_modules && npm install`
 - Clear Vite cache: `rm -rf node_modules/.vite`
 - Check TypeScript errors: `npm run build`
@@ -677,6 +768,12 @@ Uses Tailwind's default spacing scale (4px base unit).
 - Verify translation files exist in `public/translations/`
 - Check browser console for fetch errors
 - Verify file paths are correct
+
+**Custom Domain Issues:**
+- Check DNS propagation: Use [dnschecker.org](https://dnschecker.org/)
+- Verify DNS records in Route 53 match Amplify requirements
+- Wait for SSL certificate validation (can take up to 24 hours)
+- Check Amplify Console → Domain management for status
 
 ---
 
