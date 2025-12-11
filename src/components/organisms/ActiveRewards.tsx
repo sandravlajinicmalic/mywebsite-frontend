@@ -19,7 +19,6 @@ const ActiveRewards = () => {
   const expirationTimersRef = useRef<NodeJS.Timeout[]>([])
   const optimisticColorApplyTimeRef = useRef<number | null>(null)
   const isFetchingRef = useRef<boolean>(false)
-  const lastFetchTimeRef = useRef<number>(0)
 
   useEffect(() => {
     const fetchRewards = async () => {
@@ -35,15 +34,7 @@ const ActiveRewards = () => {
         return
       }
       
-      // Throttle: don't fetch more than once per 5 seconds
-      const now = Date.now()
-      if (now - lastFetchTimeRef.current < 5000) {
-        console.log('⏸️  ActiveRewards: Throttled: too soon since last fetch')
-        return
-      }
-      
       isFetchingRef.current = true
-      lastFetchTimeRef.current = now
 
       try {
         const rewards = await userService.getActiveRewards()
@@ -111,6 +102,29 @@ const ActiveRewards = () => {
         expirationTimersRef.current.forEach(timer => clearTimeout(timer))
         expirationTimersRef.current = []
         
+        // Timer for nickname reward
+        if (nicknameRewardData?.expiresAt && !isNicknameExpired) {
+          const expiresIn = new Date(nicknameRewardData.expiresAt).getTime() - Date.now()
+          if (expiresIn > 0) {
+            const timer = setTimeout(() => {
+              // Remove nickname reward when expired
+              window.dispatchEvent(new CustomEvent('nickname-reward-updated', {
+                detail: { nicknameReward: null }
+              }))
+              fetchRewards()
+            }, expiresIn)
+            expirationTimersRef.current.push(timer)
+          }
+        } else if (!nicknameRewardData || isNicknameExpired) {
+          // Reward expired or doesn't exist, but effect is still active
+          // Send null to remove nickname styling
+          if (nicknameReward !== null) {
+            window.dispatchEvent(new CustomEvent('nickname-reward-updated', {
+              detail: { nicknameReward: null }
+            }))
+          }
+        }
+        
         // Set up timers to automatically remove effects when rewards expire
         // Timer for yarn reward
         if (yarnReward?.expiresAt && !isYarnExpired) {
@@ -124,8 +138,18 @@ const ActiveRewards = () => {
           }
         }
         
-        // Check if cursor reward expired (no timer needed, will be caught by frequent checks)
-        if (!cursorReward || isCursorExpired) {
+        // Timer for cursor reward
+        if (cursorReward?.expiresAt && !isCursorExpired) {
+          const expiresIn = new Date(cursorReward.expiresAt).getTime() - Date.now()
+          if (expiresIn > 0) {
+            const timer = setTimeout(() => {
+              removeCustomCursor()
+              previousCursorStateRef.current = null
+              fetchRewards()
+            }, expiresIn)
+            expirationTimersRef.current.push(timer)
+          }
+        } else if (!cursorReward || isCursorExpired) {
           // Reward expired or doesn't exist, but effect is still active
           if (previousCursorStateRef.current) {
             removeCustomCursor()
@@ -175,12 +199,10 @@ const ActiveRewards = () => {
       }
     }
 
+    // Initial fetch on mount
     fetchRewards()
-
-    // Refresh rewards every 30 seconds to check for expired rewards
-    const interval = setInterval(fetchRewards, 30000)
     
-    // Also listen for custom event to refresh rewards immediately
+    // Listen for custom event to refresh rewards when reward is activated
     const handleRewardActivated = (event: Event) => {
       // Get reward type from event detail if available, or apply optimistically
       const customEvent = event as CustomEvent
@@ -201,18 +223,29 @@ const ActiveRewards = () => {
       if (rewardType === 'Chase the Yarn!') {
         // Yarn will be applied after fetchRewards confirms
       }
+      if (rewardType === 'Royal Meowjesty' || rewardType === 'Fancy Schmancy Nickname') {
+        // Nickname will be applied after fetchRewards confirms
+      }
       
       // Fetch after a short delay to allow backend to create the reward
       // This ensures the reward exists when we fetch
+      // Use longer delay for nickname rewards to ensure backend has processed them
+      const delay = (rewardType === 'Royal Meowjesty' || rewardType === 'Fancy Schmancy Nickname') ? 500 : 200
       setTimeout(() => {
         fetchRewards()
-      }, 200)
+      }, delay)
     }
     window.addEventListener('reward-activated', handleRewardActivated)
+    
+    // Listen for avatar expiration event to refresh rewards
+    const handleAvatarExpired = () => {
+      fetchRewards()
+    }
+    window.addEventListener('avatar-expired', handleAvatarExpired)
 
     return () => {
-      clearInterval(interval)
       window.removeEventListener('reward-activated', handleRewardActivated)
+      window.removeEventListener('avatar-expired', handleAvatarExpired)
       // Clear all expiration timers
       expirationTimersRef.current.forEach(timer => clearTimeout(timer))
       expirationTimersRef.current = []

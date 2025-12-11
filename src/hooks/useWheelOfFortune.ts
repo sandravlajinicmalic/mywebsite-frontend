@@ -172,13 +172,15 @@ export const useWheelOfFortune = () => {
       
       setTimeout(() => {
         // Dispatch event to trigger components to refresh (for rewards that need visual effects)
-        // This includes: avatar changes, cursor, color swap, and yarn ball
+        // This includes: avatar changes, cursor, color swap, yarn ball, and nickname changes
         // Dispatch at the same time as modal opens so effects appear simultaneously
         const rewardsRequiringRefresh = [
           'New Me, Who Dis?',      // Changes avatar
           'Paw-some Cursor',        // Changes cursor
           'Color Catastrophe',      // Changes color theme
-          'Chase the Yarn!'         // Shows yarn ball
+          'Chase the Yarn!',        // Shows yarn ball
+          'Royal Meowjesty',        // Changes nickname (prefix)
+          'Fancy Schmancy Nickname' // Changes nickname (style)
         ]
         if (rewardsRequiringRefresh.includes(actualWinningItem)) {
           // Dispatch event to notify components (ActiveRewards, Header) to refetch rewards immediately

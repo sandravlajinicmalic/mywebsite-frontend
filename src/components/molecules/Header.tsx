@@ -28,7 +28,11 @@ const Header = () => {
   const { t, language, setLanguage } = useI18n()
   const navigate = useNavigate()
   const user = authService.getCurrentUser()
-  const userNickname = user?.nickname || t('header.defaultNickname')
+  
+  // Memoize userNickname to prevent unnecessary recalculations
+  const userNickname = useMemo(() => {
+    return user?.nickname || t('header.defaultNickname')
+  }, [user?.nickname, t])
   
   // Calculate default avatar based on user ID/nickname to avoid flash of wrong avatar
   const defaultAvatar = useMemo(() => {
@@ -46,7 +50,6 @@ const Header = () => {
   const [isDeleting, setIsDeleting] = useState(false)
   const avatarExpirationTimerRef = useRef<NodeJS.Timeout | null>(null)
   const isFetchingRef = useRef<boolean>(false)
-  const lastFetchTimeRef = useRef<number>(0)
 
   // Update default avatar when user changes
   useEffect(() => {
@@ -54,7 +57,7 @@ const Header = () => {
       // Only update if we're still using default avatar
       setUserAvatar(defaultAvatar)
     }
-  }, [defaultAvatar, user])
+  }, [defaultAvatar, user?.id, userAvatar])
 
   // Fetch active rewards from backend
   useEffect(() => {
@@ -67,15 +70,7 @@ const Header = () => {
         return
       }
       
-      // Throttle: don't fetch more than once per 5 seconds
-      const now = Date.now()
-      if (now - lastFetchTimeRef.current < 5000) {
-        console.log('⏸️  Throttled: too soon since last fetch')
-        return
-      }
-      
       isFetchingRef.current = true
-      lastFetchTimeRef.current = now
       
       try {
         // Fetch avatar
@@ -117,6 +112,8 @@ const Header = () => {
             avatarExpirationTimerRef.current = setTimeout(() => {
               console.log('🔄 Avatar reward expired, reverting to default:', avatarData.originalAvatar)
               setUserAvatar(avatarData.originalAvatar)
+              // Fetch from backend to ensure state is synced after expiration
+              fetchRewards()
               // Trigger event to refresh rewards (ActiveRewards component will handle it)
               window.dispatchEvent(new CustomEvent('avatar-expired'))
             }, expiresIn)
@@ -129,15 +126,24 @@ const Header = () => {
       }
     }
 
+    // Initial fetch on mount
     fetchRewards()
-
-    // Refresh avatar every 60 seconds (less frequent since ActiveRewards handles other rewards)
-    const interval = setInterval(fetchRewards, 60000)
     
-    // Listen for custom event to refresh avatar immediately when reward is activated
-    const handleRewardActivated = () => {
-      // Fetch avatar immediately for faster update
-      fetchRewards()
+    // Listen for custom event to refresh avatar when reward is activated
+    const handleRewardActivated = (event: Event) => {
+      const customEvent = event as CustomEvent
+      const rewardType = customEvent.detail?.rewardType
+      
+      // For avatar rewards, fetch after a short delay to allow backend to create the reward
+      if (rewardType === 'New Me, Who Dis?') {
+        // Fetch after delay to ensure backend has created the reward
+        setTimeout(() => {
+          fetchRewards()
+        }, 500)
+      } else {
+        // For other rewards, fetch immediately (they don't affect avatar)
+        fetchRewards()
+      }
     }
     window.addEventListener('reward-activated', handleRewardActivated)
     
@@ -152,7 +158,6 @@ const Header = () => {
     window.addEventListener('nickname-reward-updated', handleNicknameRewardUpdate)
 
     return () => {
-      clearInterval(interval)
       window.removeEventListener('reward-activated', handleRewardActivated)
       window.removeEventListener('nickname-reward-updated', handleNicknameRewardUpdate)
       // Clear avatar expiration timer on unmount
@@ -161,7 +166,7 @@ const Header = () => {
         avatarExpirationTimerRef.current = null
       }
     }
-  }, [user]) // Only depend on user - re-run if user changes (login/logout)
+  }, [user?.id]) // Only depend on user ID - re-run if user changes (login/logout)
 
   const handleTrophyClick = async () => {
     if (!user) return
