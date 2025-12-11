@@ -68,6 +68,7 @@ export const mapBackendErrorToTranslationKey = (errorMessage: string): string =>
     'Failed to initialize cat state': 'api.cat.failedToInitialize',
     'Cat state initialized': 'api.cat.stateInitialized',
     'Cat is already sleeping': 'api.cat.alreadySleeping',
+    'Cat is still waking up, please wait': 'api.cat.stillWakingUp',
     'Someone else has already put the cat to sleep!': 'api.cat.someoneElsePutToSleep',
     'Error putting cat to sleep': 'api.cat.errorPuttingToSleep',
     

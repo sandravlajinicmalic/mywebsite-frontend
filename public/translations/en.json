@@ -159,6 +159,8 @@
   "cat.sleep.mustBeLoggedIn": "You must be logged in to activate Sleep",
   "cat.sleep.putToSleep": "Put cat to sleep (1 min)",
   "cat.sleep.sleeping": "Sleeping",
+  "cat.sleep.wakingUp": "Cat is waking up...",
+  "cat.sleep.needMoreRest": "Need more rest",
   "cat.websocketAlt": "Websocket Cat",
 
   "websocketCat.terminal.title": "websocket-terminal",
@@ -206,6 +208,7 @@
   "api.auth.validationFailed": "Validation failed",
 
   "api.cat.alreadySleeping": "Cat is already sleeping",
+  "api.cat.stillWakingUp": "Cat is still waking up, please wait",
   "api.cat.errorPuttingToSleep": "Error putting cat to sleep",
   "api.cat.failedToGetStatus": "Failed to get cat status",
   "api.cat.failedToInitialize": "Failed to initialize cat state",

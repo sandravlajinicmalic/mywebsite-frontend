@@ -52,7 +52,7 @@ const WebsocketCat = () => {
               variant="primary" 
               size="lg" 
               className="w-full max-w-xs mt-20 md:mt-24 lg:mt-0"
-              disabled={isSleeping}
+              disabled={isSleeping || catState === 'wake'}
             >
               {getSleepButtonText()}
             </Button>

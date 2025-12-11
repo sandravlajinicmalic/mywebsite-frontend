@@ -159,6 +159,8 @@
   "cat.sleep.mustBeLoggedIn": "Moraš biti ulogovan da bi uspavao mačku.",
   "cat.sleep.putToSleep": "Uspavaj mačku (1 min drijemke)",
   "cat.sleep.sleeping": "Spava...",
+  "cat.sleep.wakingUp": "Mačka se budi",
+  "cat.sleep.needMoreRest": "Treba joj još odmora",
   "cat.websocketAlt": "Mačka na vezi (websocket)",
 
   "websocketCat.terminal.title": "websocket-terminal",
@@ -206,6 +208,7 @@
   "api.auth.validationFailed": "Validacija nije prošla.",
 
   "api.cat.alreadySleeping": "Mačka već spava — pusti je da sanja.",
+  "api.cat.stillWakingUp": "Mačka se još budi, sačekaj malo.",
   "api.cat.errorPuttingToSleep": "Greška prilikom uspavljivanja mačke.",
   "api.cat.failedToGetStatus": "Nije uspelo dobijanje statusa mačke.",
   "api.cat.failedToInitialize": "Greška pri pokretanju",

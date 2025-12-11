@@ -5,7 +5,7 @@ import { useI18n } from '../contexts/i18n'
 import { SOCKET_EVENTS } from '../constants'
 import { mapBackendErrorToTranslationKey } from '../utils'
 
-export type CatState = 'playing' | 'zen' | 'sleeping' | 'happy' | 'tired' | 'angry'
+export type CatState = 'playing' | 'zen' | 'sleeping' | 'happy' | 'tired' | 'angry' | 'wake'
 
 export interface LogEntry {
   id: string
@@ -38,7 +38,8 @@ export const useWebsocketCat = () => {
         sleeping: '/images/sleeping.svg',
         happy: '/images/education.svg',
         tired: '/images/tired.svg',
-        angry: '/images/angry.svg'
+        angry: '/images/angry.svg',
+        wake: '/images/wake.svg'
     }
     return imageMap[state] || '/images/heavy-metal.svg'
   }
@@ -61,13 +62,9 @@ export const useWebsocketCat = () => {
       const diff = sleepEndTime.getTime() - now.getTime()
 
       if (diff <= 0) {
-        // Sleep period ended - reset state
-        setIsSleeping(false)
-        setSleepEndTime(null)
-        setSleptBy(null)
-        setTimeRemaining('')
-        // Explicitly set cat state to playing when sleep ends (fallback if backend event doesn't arrive)
-        setCatState('playing')
+        // Sleep period ended - show "Need more rest" and wait for backend event
+        // Don't reset sleepEndTime here - cat-rest-ended handler will do that
+        setTimeRemaining(t('cat.sleep.needMoreRest'))
         return
       }
 
@@ -77,7 +74,7 @@ export const useWebsocketCat = () => {
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [isSleeping, sleepEndTime])
+  }, [isSleeping, sleepEndTime, t])
 
   // Auto-scroll terminal to bottom
   useEffect(() => {
@@ -100,7 +97,7 @@ export const useWebsocketCat = () => {
       return
     }
 
-    // Start animation
+    // Start animation for all state changes (including 'wake')
     setIsAnimating(true)
     setShowOldImage(true)
     
@@ -149,6 +146,12 @@ export const useWebsocketCat = () => {
     // Listen for cat state changes
     socket.on(SOCKET_EVENTS.CAT_STATE_CHANGED, (data: { state: CatState }) => {
       setCatState(data.state)
+      
+      // Reset isSleeping when state changes to something other than 'sleeping' or 'wake'
+      // This ensures button stays disabled during wake transition
+      if (data.state !== 'sleeping' && data.state !== 'wake') {
+        setIsSleeping(false)
+      }
     })
 
     // Listen for Sleep activation
@@ -166,12 +169,13 @@ export const useWebsocketCat = () => {
 
     // Listen for Sleep period ending
     socket.on(SOCKET_EVENTS.CAT_REST_ENDED, () => {
-      setIsSleeping(false)
+      // Don't reset isSleeping here - wait for cat-state-changed event
+      // We'll reset it when state changes to something other than 'wake' or 'sleeping'
       setSleepEndTime(null)
       setSleptBy(null)
       setTimeRemaining('')
-      // Explicitly set cat state to playing when sleep ends
-      setCatState('playing')
+      // Don't set state here - wait for cat-state-changed event
+      // It will first be 'wake', then normal state after 10 seconds
     })
 
     // Listen for initial logs
@@ -242,8 +246,17 @@ export const useWebsocketCat = () => {
   }
 
   const getSleepButtonText = (): string => {
+    if (catState === 'wake') {
+      return t('cat.sleep.wakingUp')
+    }
+
     if (!isSleeping) {
       return t('cat.sleep.putToSleep')
+    }
+
+    // If timeRemaining is "Need more rest", show it differently
+    if (timeRemaining === t('cat.sleep.needMoreRest')) {
+      return `${t('cat.sleep.sleeping')} - ${timeRemaining}`
     }
 
     return `${t('cat.sleep.sleeping')}${timeRemaining ? ` (${timeRemaining})` : ''}`
