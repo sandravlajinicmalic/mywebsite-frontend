@@ -18,7 +18,7 @@ const Footer = () => {
 
           {/* Icons Attribution - Centered on mobile, between copyright and social icons on desktop */}
           <Text size="xs" className="text-gray-400 text-center">
-            Icons by{' '}
+            Icons designed by{' '}
             <a
               href="https://www.flaticon.com/authors/stickers"
               target="_blank"
