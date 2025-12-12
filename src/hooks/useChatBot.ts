@@ -7,6 +7,7 @@ export const useChatBot = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [inputValue, setInputValue] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [shouldShake, setShouldShake] = useState(false)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -67,6 +68,13 @@ export const useChatBot = () => {
       if (response.messageCode) {
         // Use messageCode directly for translation
         responseContent = t(`api.chat.${response.messageCode}`)
+        
+        // Trigger shake animation if message is about dogs
+        if (response.messageCode === 'catMessageDog') {
+          setShouldShake(true)
+          // Reset shake after animation completes
+          setTimeout(() => setShouldShake(false), 500)
+        }
       }
       // If no messageCode, responseContent is already the AI-generated text (no mapping needed)
       
@@ -125,6 +133,7 @@ export const useChatBot = () => {
     messages,
     inputValue,
     isLoading,
+    shouldShake,
     messagesContainerRef,
     handleSend,
     handleClear,

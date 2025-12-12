@@ -8,6 +8,7 @@ const ChatBot = () => {
     messages,
     inputValue,
     isLoading,
+    shouldShake,
     messagesContainerRef,
     handleSend,
     handleClear,
@@ -154,7 +155,7 @@ const ChatBot = () => {
           <Image
             src="/images/question.svg"
             alt={t('chat.catAlt')}
-            className="w-40 h-40 md:w-56 md:h-56 lg:w-80 lg:h-80"
+            className={`w-40 h-40 md:w-56 md:h-56 lg:w-80 lg:h-80 ${shouldShake ? 'shake-animation' : ''}`}
             objectFit="contain"
           />
         </div>
@@ -177,6 +178,35 @@ const ChatBot = () => {
         .custom-scrollbar {
           scrollbar-width: thin;
           scrollbar-color: #9ca3af transparent;
+        }
+        
+        /* Shake animation for cat image when asked about dogs - like cat is angry/trembling */
+        @keyframes catAngryShake {
+          0%, 100% { transform: translateX(0) translateY(0) rotate(0deg); }
+          1% { transform: translateX(-5px) translateY(-3px) rotate(-3deg); }
+          2% { transform: translateX(5px) translateY(3px) rotate(3deg); }
+          3% { transform: translateX(-6px) translateY(-4px) rotate(-4deg); }
+          4% { transform: translateX(6px) translateY(4px) rotate(4deg); }
+          5% { transform: translateX(-5px) translateY(-3px) rotate(-3deg); }
+          6% { transform: translateX(5px) translateY(3px) rotate(3deg); }
+          7% { transform: translateX(-6px) translateY(-4px) rotate(-4deg); }
+          8% { transform: translateX(6px) translateY(4px) rotate(4deg); }
+          9% { transform: translateX(-5px) translateY(-3px) rotate(-3deg); }
+          10% { transform: translateX(5px) translateY(3px) rotate(3deg); }
+          11% { transform: translateX(-6px) translateY(-4px) rotate(-4deg); }
+          12% { transform: translateX(6px) translateY(4px) rotate(4deg); }
+          13% { transform: translateX(-4px) translateY(-2px) rotate(-2deg); }
+          14% { transform: translateX(4px) translateY(2px) rotate(2deg); }
+          15% { transform: translateX(-3px) translateY(-1px) rotate(-1.5deg); }
+          16% { transform: translateX(3px) translateY(1px) rotate(1.5deg); }
+          17% { transform: translateX(-2px) translateY(-1px) rotate(-1deg); }
+          18% { transform: translateX(2px) translateY(1px) rotate(1deg); }
+          19% { transform: translateX(-1px) translateY(0) rotate(-0.5deg); }
+          20% { transform: translateX(1px) translateY(0) rotate(0.5deg); }
+          21% { transform: translateX(0) translateY(0) rotate(0deg); }
+        }
+        .shake-animation {
+          animation: catAngryShake 1.2s ease-in-out;
         }
         
         /* Arrow pointing down - visible on tablet and smaller screens (< 1024px) */
