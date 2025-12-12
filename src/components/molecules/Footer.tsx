@@ -10,10 +10,41 @@ const Footer = () => {
   return (
     <footer className="bg-black text-white mt-auto">
       <div className="container mx-auto px-4 py-6">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           {/* Copyright */}
           <Text size="sm" className="text-white">
             © {currentYear} {APP_NAME}. {t('footer.allRightsReserved')}
+          </Text>
+
+          {/* Icons Attribution - Centered on mobile, between copyright and social icons on desktop */}
+          <Text size="xs" className="text-gray-400 text-center">
+            Icons by{' '}
+            <a
+              href="https://www.flaticon.com/authors/stickers"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-300 hover:text-white transition-colors underline"
+            >
+              Stickers
+            </a>
+            {' '}and{' '}
+            <a
+              href="https://www.flaticon.com/authors/freepik"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-300 hover:text-white transition-colors underline"
+            >
+              Freepik
+            </a>
+            {' '}from{' '}
+            <a
+              href="https://www.flaticon.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-300 hover:text-white transition-colors underline"
+            >
+              Flaticon
+            </a>
           </Text>
 
           {/* Social Icons */}
