@@ -1,15 +1,15 @@
 {
-  "name": "MeowCrafts",
-  "short_name": "MC",
+  "name": "MyWebSite",
+  "short_name": "MySite",
   "icons": [
     {
-      "src": "/meowcrafts.dev/web-app-manifest-192x192.png",
+      "src": "/meow-crafts.com/web-app-manifest-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/meowcrafts.dev/web-app-manifest-512x512.png",
+      "src": "/meow-crafts.com/web-app-manifest-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
