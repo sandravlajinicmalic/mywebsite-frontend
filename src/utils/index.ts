@@ -6,7 +6,7 @@
  */
 
 // Translation utilities
-export { mapBackendErrorToTranslationKey } from './translations'
+export { extractErrorCode } from './translations'
 
 // Cursor utilities
 export { applyCustomCursor, removeCustomCursor } from './cursor'

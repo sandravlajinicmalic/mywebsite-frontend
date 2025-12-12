@@ -3,7 +3,7 @@ import getSocket from '../services/socket'
 import { authService } from '../services/auth'
 import { useI18n } from '../contexts/i18n'
 import { SOCKET_EVENTS } from '../constants'
-import { mapBackendErrorToTranslationKey } from '../utils'
+import { extractErrorCode } from '../utils'
 
 export type CatState = 'playing' | 'zen' | 'sleeping' | 'happy' | 'tired' | 'angry' | 'wake'
 
@@ -162,8 +162,8 @@ export const useWebsocketCat = () => {
     })
 
     // Listen for Sleep denial
-    socket.on(SOCKET_EVENTS.REST_DENIED, (data: { message: string }) => {
-      const translationKey = mapBackendErrorToTranslationKey(data.message)
+    socket.on(SOCKET_EVENTS.REST_DENIED, (data: { errorCode?: string; message?: string }) => {
+      const translationKey = extractErrorCode(data)
       alert(t(translationKey))
     })
 

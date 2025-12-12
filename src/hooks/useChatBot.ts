@@ -1,15 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { chatService, type ChatMessage } from '../services/chat'
 import { useI18n } from '../contexts/i18n'
-import { mapBackendErrorToTranslationKey } from '../utils'
-
-/**
- * Map backend chat response messages to translation keys
- */
-const mapBackendResponseToTranslationKey = (response: string): string => {
-  // Use the same mapping function since chat responses use similar messages
-  return mapBackendErrorToTranslationKey(response)
-}
 
 export const useChatBot = () => {
   const { t, language } = useI18n()
@@ -71,13 +62,13 @@ export const useChatBot = () => {
       const response = await chatService.sendMessage(userMessage.content, undefined, language)
       console.log('[CHATBOT] Received response:', response)
       
-      // Map backend response messages to translations if needed
+      // Use messageCode if available, otherwise use response text directly
       let responseContent = response.response
-      // Check if response is a known backend message that should be translated
-      const responseTranslationKey = mapBackendResponseToTranslationKey(responseContent)
-      if (responseTranslationKey && responseTranslationKey !== responseContent) {
-        responseContent = t(responseTranslationKey)
+      if (response.messageCode) {
+        // Use messageCode directly for translation
+        responseContent = t(`api.chat.${response.messageCode}`)
       }
+      // If no messageCode, responseContent is already the AI-generated text (no mapping needed)
       
       const assistantMessage: ChatMessage = {
         role: 'assistant',

@@ -10,6 +10,7 @@ export interface ChatMessage {
 export interface ChatResponse {
   response: string
   isAboutCats: boolean
+  messageCode?: string // Optional code for frontend translation mapping
 }
 
 export const chatService = {

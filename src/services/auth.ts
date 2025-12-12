@@ -1,6 +1,6 @@
 import api from './api'
 import { STORAGE_KEYS } from '../constants'
-import { mapBackendErrorToTranslationKey } from '../utils'
+import { extractErrorCode } from '../utils'
 
 export interface User {
   id: string
@@ -58,6 +58,7 @@ export const authService = {
         const axiosError = error as { 
           response?: { 
             data?: { 
+              errorCode?: string
               error?: string
               errors?: ValidationErrors
             } 
@@ -70,18 +71,24 @@ export const authService = {
         if (validationErrors) {
           const mappedErrors: ValidationErrors = {}
           if (validationErrors.email) {
-            mappedErrors.email = mapBackendErrorToTranslationKey(validationErrors.email)
+            // Check if it's already a translation key
+            mappedErrors.email = validationErrors.email.startsWith('api.') 
+              ? validationErrors.email 
+              : `api.${validationErrors.email}`
           }
           if (validationErrors.nickname) {
-            mappedErrors.nickname = mapBackendErrorToTranslationKey(validationErrors.nickname)
+            mappedErrors.nickname = validationErrors.nickname.startsWith('api.') 
+              ? validationErrors.nickname 
+              : `api.${validationErrors.nickname}`
           }
-          const loginError = new Error(mapBackendErrorToTranslationKey(errorData?.error || 'Validation failed')) as LoginError
+          const errorCode = extractErrorCode(errorData)
+          const loginError = new Error(errorCode) as LoginError
           loginError.errors = mappedErrors
           throw loginError
         }
         
-        const errorMessage = mapBackendErrorToTranslationKey(errorData?.error || 'An error occurred during login')
-        throw new Error(errorMessage)
+        const errorCode = extractErrorCode(errorData)
+        throw new Error(errorCode)
       }
       throw new Error('An error occurred during login. Please try again.')
     }
@@ -157,12 +164,13 @@ export const authService = {
         const axiosError = error as { 
           response?: { 
             data?: { 
+              errorCode?: string
               error?: string
             } 
           } 
         }
-        const errorMessage = mapBackendErrorToTranslationKey(axiosError.response?.data?.error || 'Failed to delete account')
-        throw new Error(errorMessage)
+        const errorCode = extractErrorCode(axiosError.response?.data)
+        throw new Error(errorCode)
       }
       throw new Error('Failed to delete account. Please try again.')
     }
@@ -171,9 +179,9 @@ export const authService = {
   /**
    * Request nickname reminder via email
    */
-  async forgotNickname(email: string): Promise<{ success: boolean; message: string }> {
+  async forgotNickname(email: string): Promise<{ success: boolean; message?: string; messageCode?: string }> {
     try {
-      const response = await api.post<{ success: boolean; message: string }>('/auth/forgot-nickname', {
+      const response = await api.post<{ success: boolean; message?: string; messageCode?: string }>('/auth/forgot-nickname', {
         email,
       })
       return response.data
@@ -189,8 +197,8 @@ export const authService = {
           } 
         }
         const errorData = axiosError.response?.data
-        const errorMessage = mapBackendErrorToTranslationKey(errorData?.error || errorData?.message || 'Failed to send nickname reminder')
-        throw new Error(errorMessage)
+        const errorCode = extractErrorCode(errorData)
+        throw new Error(errorCode)
       }
       throw new Error('Failed to send nickname reminder. Please try again.')
     }

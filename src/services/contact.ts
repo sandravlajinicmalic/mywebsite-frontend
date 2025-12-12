@@ -1,5 +1,5 @@
 import api from './api'
-import { mapBackendErrorToTranslationKey } from '../utils'
+import { extractErrorCode } from '../utils'
 
 export interface ContactRequest {
   name: string
@@ -10,12 +10,14 @@ export interface ContactRequest {
 
 export interface ContactResponse {
   success: boolean
-  message: string
+  message?: string
+  messageCode?: string
   data?: unknown
 }
 
 export interface ContactError {
-  error: string
+  errorCode?: string
+  error?: string
   field?: string
 }
 
@@ -33,7 +35,8 @@ export const contactService = {
         const axiosError = error as { response?: { data?: ContactError } }
         const errorData = axiosError.response?.data
         if (errorData) {
-          const customError = new Error(mapBackendErrorToTranslationKey(errorData.error)) as Error & { field?: string }
+          const errorCode = extractErrorCode(errorData)
+          const customError = new Error(errorCode) as Error & { field?: string }
           customError.field = errorData.field
           throw customError
         }
