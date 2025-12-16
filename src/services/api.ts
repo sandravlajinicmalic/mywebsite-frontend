@@ -27,11 +27,25 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    if (error.response?.status === 401) {
-      // Token expired or invalid - clear storage and redirect to login
-      localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
-      localStorage.removeItem(STORAGE_KEYS.USER)
-      window.location.href = '/'
+    // Handle 401 (Unauthorized) - token expired or invalid
+    // Also handle 403 (Forbidden) for backward compatibility
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      const errorData = error.response?.data as { errorCode?: string } | undefined
+      const errorCode = errorData?.errorCode
+      
+      // Check if it's a token-related error
+      if (
+        errorCode === 'auth.tokenExpired' ||
+        errorCode === 'auth.invalidToken' ||
+        errorCode === 'auth.invalidOrExpiredToken' ||
+        errorCode === 'auth.accessTokenRequired'
+      ) {
+        // Clear storage and redirect to login
+        localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN)
+        localStorage.removeItem(STORAGE_KEYS.USER)
+        // Use window.location.href for reliable redirect outside React context
+        window.location.href = '/'
+      }
     }
     return Promise.reject(error)
   }
